@@ -39,3 +39,10 @@ makedocs(
         ],
     ]
 )
+
+
+deploydocs(
+    repo = "github.com/lanl-ansi/PowerModelsITD.jl.git",
+    push_preview = false,
+    devbranch = "main",
+)
