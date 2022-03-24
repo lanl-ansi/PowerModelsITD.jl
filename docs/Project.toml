@@ -1,0 +1,2 @@
+[compat]
+Documenter = "~0.27.7"
