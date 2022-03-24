@@ -1,5 +1,9 @@
 # PowerModelsITD.jl Change Log
 
+## v0.6.0
+
+- First released version.
+
 ## v0.5.9
 
 - Performed file formatting that trims trailing whitespaces and inserts a final newline to all files.
