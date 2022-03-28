@@ -13,7 +13,6 @@ nw_ids
 ## Helper functions
 
 ```@docs
-@smart_constraint
 silence!
 ```
 
