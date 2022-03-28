@@ -2,7 +2,9 @@
 
 ## Staged
 
-- Add support for JuMP v1.0
+- Added Pluto Notebook `Beginners Guide.jl` to Docs based on Pluto v0.15.1 (Note: Higher Pluto versions break the integration).
+- Removed `@smart_constraint` from docs.
+- Added support for JuMP v1.0
 
 ## v0.6.0
 
