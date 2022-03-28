@@ -58,12 +58,12 @@ if !_FAST
             Pluto.update_run!(ss, nb, nb.cells)
             html = Pluto.generate_html(nb)
 
-            fileout = "/docs/build/tutorials/$(basename(file)).html"
+            fileout = "docs/build/tutorials/$(basename(file)).html"
             open(fileout, "w") do io
                 write(io, html)
             end
 
-            doc = open("/docs/build/tutorials/$(replace(basename(file), ".jl" => ".html"))", "r") do io
+            doc = open("docs/build/tutorials/$(replace(basename(file), ".jl" => ".html"))", "r") do io
                 Gumbo.parsehtml(read(io, String))
             end
 
@@ -82,7 +82,7 @@ if !_FAST
             doc.root[2][1][2][2] = iframe
 
             # Overwrite HTML
-            open("/docs/build/tutorials/$(replace(basename(file), ".jl" => ".html"))", "w") do io
+            open("docs/build/tutorials/$(replace(basename(file), ".jl" => ".html"))", "w") do io
                 Gumbo.prettyprint(io, doc)
             end
         end
