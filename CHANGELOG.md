@@ -1,6 +1,6 @@
 # PowerModelsITD.jl Change Log
 
-## Staged
+## v0.6.1
 
 - Added Pluto Notebook `Beginners Guide.jl` to Docs based on Pluto v0.15.1 (Note: Higher Pluto versions break the integration).
 - Removed `@smart_constraint` from docs.
