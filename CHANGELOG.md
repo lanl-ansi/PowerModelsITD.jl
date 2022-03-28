@@ -1,5 +1,9 @@
 # PowerModelsITD.jl Change Log
 
+## Staged
+
+- Add support for JuMP v1.0
+
 ## v0.6.0
 
 - First released version.
