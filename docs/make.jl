@@ -51,7 +51,7 @@ if !_FAST
     ss = Pluto.ServerSession()
     client = Pluto.ClientSession(Symbol("client", rand(UInt16)), nothing)
     ss.connected_clients[client.id] = client
-    for file in readdir("/examples", join=true)
+    for file in readdir("examples", join=true)
         if endswith(file, ".jl")
             nb = Pluto.load_notebook_nobackup(file)
             client.connected_notebook = nb
