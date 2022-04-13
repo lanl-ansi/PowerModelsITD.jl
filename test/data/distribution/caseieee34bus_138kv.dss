@@ -8,7 +8,7 @@
 ! This might be set to a different value because of a previous run
 Set DefaultBaseFrequency=60
 
-New object=circuit.ieee34-2
+New object=circuit.IEEE_34_138kv
 !~ basekv=138 pu=1.05 angle=30 mvasc3=200000  !stiffen up a bit over default
 ~ basekv=138 pu=1.05 angle=30  !stiffen up a bit over default
 ~ MVAsc3=200000 MVASC1=200000    ! stiffen the source to approximate inf source

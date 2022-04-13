@@ -1,11 +1,11 @@
 !
 ! This script is a modified version of the 3-bus system
-! with a oltc (voltage regulator) 
+! with a oltc (voltage regulator)
 ! Juan Ospina, September 2021
 !
 
 !Clear
-New Circuit.3Bus_example
+New Circuit.3bus_bal_oltc_mn
 !  define a really stiff source
 ~ basekv=230 pu=1.00 MVAsc3=200000 MVAsc1=210000
 
@@ -31,9 +31,9 @@ New Transformer.reg1c phases=1 Windings=2 bank=reg1 XHL=0.01 kVAs=[10666 10666]
 ~ %rs=[0 0] ! correct default here
 
 ! POINT REGULATOR CONTROLS TO REGULATOR TRANSFORMER AND SET PARAMETERS
-new regcontrol.creg1a  transformer=reg1a winding=2 vreg=122  band=2  ptratio=65  ctprim=700  R=3   X=9 
-new regcontrol.creg1b like=creg1a   transformer=reg1b 
-new regcontrol.creg1c like=creg1a   transformer=reg1c 
+new regcontrol.creg1a  transformer=reg1a winding=2 vreg=122  band=2  ptratio=65  ctprim=700  R=3   X=9
+new regcontrol.creg1b like=creg1a   transformer=reg1b
+new regcontrol.creg1c like=creg1a   transformer=reg1c
 
 
 !Define Linecodes

@@ -83,8 +83,8 @@ Helper function for assigning boundary buses. `data` is the pmitd dictionary con
 boundary buses to be assigned, and `nw` is the network number.
 """
 function _assign_boundary_buses!(data::Dict{String,<:Any}, conn; multinetwork::Bool=false, nw::String="0")
+
     tran_bus_name, dist_bus_name = conn["transmission_boundary"], conn["distribution_boundary"]
-    dist_bus_name = "voltage_source."*dist_bus_name # add voltage_source. prefix for opendss name
 
     if multinetwork
         tran_buses, dist_buses = data["it"][_PM.pm_it_name]["nw"][nw]["bus"], data["it"][_PMD.pmd_it_name]["nw"][nw]["bus"]
@@ -101,6 +101,12 @@ function _assign_boundary_buses!(data::Dict{String,<:Any}, conn; multinetwork::B
     catch e
         @error "The transmission bus specified in the JSON file does not exists. Please input an existing bus!"
         throw(error())
+    end
+
+    # rearrange the name of bus if more than 1 ckts
+    dist_bus_name_vector = split(dist_bus_name, ".")
+    if (length(dist_bus_name_vector)>2)
+        dist_bus_name = dist_bus_name_vector[2] * "." * dist_bus_name_vector[1] * "." * dist_bus_name_vector[3]
     end
 
     try

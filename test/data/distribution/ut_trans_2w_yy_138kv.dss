@@ -4,7 +4,7 @@
 Set DefaultBaseFrequency=60
 
 ! New Circuit
-New circuit.ut_trans
+New circuit.ut_trans_138kv
 ~ basekv=138 pu=1.00 MVAsc3=200000 MVAsc1=210000
 
 ! Substation Transformer

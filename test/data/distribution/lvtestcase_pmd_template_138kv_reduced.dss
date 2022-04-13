@@ -1,10 +1,10 @@
-!Version based on: 
+!Version based on:
 ! Khan, Maman Ahmad; Hayes, Barry (2021): A Reduced Electrically-Equivalent Model of the IEEE European
 ! Low Voltage Test Feeder. TechRxiv. Preprint. https://doi.org/10.36227/techrxiv.16785832.v1
 
 Set DefaultBaseFrequency=50  ! for European system
 
-New circuit.LVTest
+New circuit.LV_138kv_1kw_reduced
 !  define a really stiff source
 ~ BasekV=138 pu=1.05 MVAsc3=200000 MVAsc1=210000
 
@@ -35,61 +35,61 @@ New Transformer.TR1 Buses=[Substation 1] Conns=[Delta Wye] kVs=[11 0.416] kVAs=[
 
 !Loads.txt
 !#######################
-New Load.LOAD1 Phases=1 Bus1=5.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD2 Phases=1 Bus1=7.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD3 Phases=1 Bus1=10.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD4 Phases=1 Bus1=11.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD5 Phases=1 Bus1=12.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD6 Phases=1 Bus1=13.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD7 Phases=1 Bus1=21.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD8 Phases=1 Bus1=25.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD9 Phases=1 Bus1=26.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD10 Phases=1 Bus1=29.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD11 Phases=1 Bus1=30.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD12 Phases=1 Bus1=33.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD13 Phases=1 Bus1=34.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD14 Phases=1 Bus1=37.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD15 Phases=1 Bus1=39.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD16 Phases=1 Bus1=40.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD17 Phases=1 Bus1=42.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD18 Phases=1 Bus1=45.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD19 Phases=1 Bus1=46.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD20 Phases=1 Bus1=47.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD21 Phases=1 Bus1=49.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD22 Phases=1 Bus1=50.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD23 Phases=1 Bus1=52.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD24 Phases=1 Bus1=54.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD25 Phases=1 Bus1=57.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD26 Phases=1 Bus1=60.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD27 Phases=1 Bus1=62.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD28 Phases=1 Bus1=64.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD29 Phases=1 Bus1=66.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD30 Phases=1 Bus1=67.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD31 Phases=1 Bus1=72.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD32 Phases=1 Bus1=73.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD33 Phases=1 Bus1=75.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD34 Phases=1 Bus1=76.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD35 Phases=1 Bus1=77.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD36 Phases=1 Bus1=80.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD37 Phases=1 Bus1=81.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD38 Phases=1 Bus1=83.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD39 Phases=1 Bus1=87.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD40 Phases=1 Bus1=88.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD41 Phases=1 Bus1=93.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD42 Phases=1 Bus1=95.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD43 Phases=1 Bus1=96.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD44 Phases=1 Bus1=97.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD45 Phases=1 Bus1=102.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD46 Phases=1 Bus1=103.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD47 Phases=1 Bus1=104.3 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD48 Phases=1 Bus1=106.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD49 Phases=1 Bus1=107.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD50 Phases=1 Bus1=110.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD51 Phases=1 Bus1=112.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD52 Phases=1 Bus1=113.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD53 Phases=1 Bus1=114.2 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD54 Phases=1 Bus1=115.1 kV=0.23 kw=1 PF=0.95 Model=1 
-New Load.LOAD55 Phases=1 Bus1=116.1 kV=0.23 kw=1 PF=0.95 Model=1 
+New Load.LOAD1 Phases=1 Bus1=5.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD2 Phases=1 Bus1=7.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD3 Phases=1 Bus1=10.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD4 Phases=1 Bus1=11.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD5 Phases=1 Bus1=12.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD6 Phases=1 Bus1=13.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD7 Phases=1 Bus1=21.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD8 Phases=1 Bus1=25.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD9 Phases=1 Bus1=26.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD10 Phases=1 Bus1=29.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD11 Phases=1 Bus1=30.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD12 Phases=1 Bus1=33.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD13 Phases=1 Bus1=34.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD14 Phases=1 Bus1=37.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD15 Phases=1 Bus1=39.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD16 Phases=1 Bus1=40.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD17 Phases=1 Bus1=42.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD18 Phases=1 Bus1=45.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD19 Phases=1 Bus1=46.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD20 Phases=1 Bus1=47.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD21 Phases=1 Bus1=49.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD22 Phases=1 Bus1=50.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD23 Phases=1 Bus1=52.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD24 Phases=1 Bus1=54.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD25 Phases=1 Bus1=57.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD26 Phases=1 Bus1=60.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD27 Phases=1 Bus1=62.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD28 Phases=1 Bus1=64.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD29 Phases=1 Bus1=66.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD30 Phases=1 Bus1=67.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD31 Phases=1 Bus1=72.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD32 Phases=1 Bus1=73.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD33 Phases=1 Bus1=75.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD34 Phases=1 Bus1=76.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD35 Phases=1 Bus1=77.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD36 Phases=1 Bus1=80.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD37 Phases=1 Bus1=81.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD38 Phases=1 Bus1=83.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD39 Phases=1 Bus1=87.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD40 Phases=1 Bus1=88.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD41 Phases=1 Bus1=93.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD42 Phases=1 Bus1=95.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD43 Phases=1 Bus1=96.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD44 Phases=1 Bus1=97.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD45 Phases=1 Bus1=102.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD46 Phases=1 Bus1=103.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD47 Phases=1 Bus1=104.3 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD48 Phases=1 Bus1=106.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD49 Phases=1 Bus1=107.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD50 Phases=1 Bus1=110.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD51 Phases=1 Bus1=112.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD52 Phases=1 Bus1=113.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD53 Phases=1 Bus1=114.2 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD54 Phases=1 Bus1=115.1 kV=0.23 kw=1 PF=0.95 Model=1
+New Load.LOAD55 Phases=1 Bus1=116.1 kV=0.23 kw=1 PF=0.95 Model=1
 !#######################
 
 !Lines.txt

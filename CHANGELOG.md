@@ -1,5 +1,16 @@
 # PowerModelsITD.jl Change Log
 
+## v0.7.0 (Prep)
+
+- Refactored the renaming function `_rename_network_components!` to rename components of a distribution system based on the name of the circuit.
+- New renaming structure `cktname.element`.
+- Changed names of circuits in distribution system test cases (OpenDSS files) to avoid collisions and test new renaming function.
+- Refactored function `_assign_boundary_buses` in `data.jl` such that boundary buses can be assigned using the new naming convention.
+- Added error message alerting the user that distribution system names must be unique to avoid name collisions.
+- Added option for user to allow the automatic renaming `auto_rename=true` of the circuits (for cases when the user wants PMITD to handle the renaming sequentially).
+- Added new function `_check_and_rename_circuits!` that checks that the names of distribution system circuits are unique when passing multiple distribution systems. If `auto_rename=true` is not specified, an `error` will be displayed.
+- Added new function `_correct_boundary_names!` that corrects the boundary names passed in the JSON file based on the auto generated circuit names. A warning is displayed informing the user that the naming will be done sequentially (in case this may not be what the user wants).
+
 ## v0.6.1
 
 - Added Pluto Notebook `Beginners Guide.jl` to Docs based on Pluto v0.15.1 (Note: Higher Pluto versions break the integration).

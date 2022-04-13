@@ -1,6 +1,6 @@
 !
 ! This script is a modified version of the LVtestcase system
-! with a oltc (voltage regulator) 
+! with a oltc (voltage regulator)
 ! Juan Ospina, September 2021
 !
 
@@ -9,7 +9,7 @@
 
 Set DefaultBaseFrequency=50  ! for European system
 
-New circuit.LVTest
+New circuit.LV_138kv_10kw_oltc
 !  define a really stiff source
 ~ BasekV=138 pu=1.05 MVAsc3=200000 MVAsc1=210000
 
@@ -39,9 +39,9 @@ New Transformer.reg1c phases=1 Windings=2 bank=reg1 XHL=0.01 kVAs=[800 800]
 ~ %rs=[0 0] ! correct default here
 
 ! POINT REGULATOR CONTROLS TO REGULATOR TRANSFORMER AND SET PARAMETERS
-new regcontrol.creg1a  transformer=reg1a winding=2 vreg=240  band=3  ptratio=1 ctprim=163.5 R=3   X=9 
-new regcontrol.creg1b like=creg1a   transformer=reg1b 
-new regcontrol.creg1c like=creg1a   transformer=reg1c 
+new regcontrol.creg1a  transformer=reg1a winding=2 vreg=240  band=3  ptratio=1 ctprim=163.5 R=3   X=9
+new regcontrol.creg1b like=creg1a   transformer=reg1b
+new regcontrol.creg1c like=creg1a   transformer=reg1c
 
 ! Transformer OLTC control
 Transformer.reg1a.Tap=(0.00625  16 * 1 +)   ! Tap
@@ -68,61 +68,61 @@ New LineCode.4c_95_SAC_XC nphases=3 R1=0.322 X1=0.074 R0=0.804 X0=0.093 C1=0 C0=
 
 !Loads.txt
 !#######################
-New Load.LOAD1 Phases=1 Bus1=34.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD2 Phases=1 Bus1=47.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD3 Phases=1 Bus1=70.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD4 Phases=1 Bus1=73.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD5 Phases=1 Bus1=74.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD6 Phases=1 Bus1=83.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD7 Phases=1 Bus1=178.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD8 Phases=1 Bus1=208.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD9 Phases=1 Bus1=225.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD10 Phases=1 Bus1=248.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD11 Phases=1 Bus1=249.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD12 Phases=1 Bus1=264.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD13 Phases=1 Bus1=276.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD14 Phases=1 Bus1=289.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD15 Phases=1 Bus1=314.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD16 Phases=1 Bus1=320.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD17 Phases=1 Bus1=327.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD18 Phases=1 Bus1=337.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD19 Phases=1 Bus1=342.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD20 Phases=1 Bus1=349.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD21 Phases=1 Bus1=387.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD22 Phases=1 Bus1=388.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD23 Phases=1 Bus1=406.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD24 Phases=1 Bus1=458.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD25 Phases=1 Bus1=502.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD26 Phases=1 Bus1=522.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD27 Phases=1 Bus1=539.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD28 Phases=1 Bus1=556.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD29 Phases=1 Bus1=562.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD30 Phases=1 Bus1=563.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD31 Phases=1 Bus1=611.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD32 Phases=1 Bus1=614.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD33 Phases=1 Bus1=619.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD34 Phases=1 Bus1=629.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD35 Phases=1 Bus1=639.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD36 Phases=1 Bus1=676.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD37 Phases=1 Bus1=682.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD38 Phases=1 Bus1=688.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD39 Phases=1 Bus1=701.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD40 Phases=1 Bus1=702.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD41 Phases=1 Bus1=755.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD42 Phases=1 Bus1=778.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD43 Phases=1 Bus1=780.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD44 Phases=1 Bus1=785.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD45 Phases=1 Bus1=813.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD46 Phases=1 Bus1=817.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD47 Phases=1 Bus1=835.3 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD48 Phases=1 Bus1=860.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD49 Phases=1 Bus1=861.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD50 Phases=1 Bus1=886.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD51 Phases=1 Bus1=896.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD52 Phases=1 Bus1=898.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD53 Phases=1 Bus1=899.2 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD54 Phases=1 Bus1=900.1 kV=0.23 kw=10 PF=0.95 
-New Load.LOAD55 Phases=1 Bus1=906.1 kV=0.23 kw=10 PF=0.95 
+New Load.LOAD1 Phases=1 Bus1=34.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD2 Phases=1 Bus1=47.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD3 Phases=1 Bus1=70.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD4 Phases=1 Bus1=73.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD5 Phases=1 Bus1=74.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD6 Phases=1 Bus1=83.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD7 Phases=1 Bus1=178.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD8 Phases=1 Bus1=208.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD9 Phases=1 Bus1=225.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD10 Phases=1 Bus1=248.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD11 Phases=1 Bus1=249.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD12 Phases=1 Bus1=264.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD13 Phases=1 Bus1=276.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD14 Phases=1 Bus1=289.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD15 Phases=1 Bus1=314.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD16 Phases=1 Bus1=320.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD17 Phases=1 Bus1=327.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD18 Phases=1 Bus1=337.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD19 Phases=1 Bus1=342.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD20 Phases=1 Bus1=349.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD21 Phases=1 Bus1=387.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD22 Phases=1 Bus1=388.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD23 Phases=1 Bus1=406.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD24 Phases=1 Bus1=458.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD25 Phases=1 Bus1=502.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD26 Phases=1 Bus1=522.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD27 Phases=1 Bus1=539.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD28 Phases=1 Bus1=556.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD29 Phases=1 Bus1=562.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD30 Phases=1 Bus1=563.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD31 Phases=1 Bus1=611.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD32 Phases=1 Bus1=614.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD33 Phases=1 Bus1=619.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD34 Phases=1 Bus1=629.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD35 Phases=1 Bus1=639.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD36 Phases=1 Bus1=676.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD37 Phases=1 Bus1=682.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD38 Phases=1 Bus1=688.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD39 Phases=1 Bus1=701.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD40 Phases=1 Bus1=702.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD41 Phases=1 Bus1=755.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD42 Phases=1 Bus1=778.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD43 Phases=1 Bus1=780.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD44 Phases=1 Bus1=785.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD45 Phases=1 Bus1=813.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD46 Phases=1 Bus1=817.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD47 Phases=1 Bus1=835.3 kV=0.23 kw=10 PF=0.95
+New Load.LOAD48 Phases=1 Bus1=860.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD49 Phases=1 Bus1=861.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD50 Phases=1 Bus1=886.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD51 Phases=1 Bus1=896.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD52 Phases=1 Bus1=898.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD53 Phases=1 Bus1=899.2 kV=0.23 kw=10 PF=0.95
+New Load.LOAD54 Phases=1 Bus1=900.1 kV=0.23 kw=10 PF=0.95
+New Load.LOAD55 Phases=1 Bus1=906.1 kV=0.23 kw=10 PF=0.95
 !#######################
 
 !Lines.txt

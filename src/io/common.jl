@@ -30,7 +30,6 @@ function _convert_to_pmitd_structure(data::Vector{Any})
             data_structured = Dict{String, Any}("it"=> Dict{String, Any}("pmitd"=>Dict{String, Any}(bound_num=>Dict(i))))
         else
             data_structured["it"]["pmitd"][bound_num] = i
-            data_structured["it"]["pmitd"][bound_num]["distribution_boundary"] = data_structured["it"]["pmitd"][bound_num]["distribution_boundary"]*"_"*string(bound_num)  # change name of distribution system boundary bus after first one.
         end
         # add 1 to the number of links in the vector provided
         number_of_links += 1
@@ -106,19 +105,18 @@ end
 """
     function parse_power_distribution_file(
         pmd_file::String,
-        pmd_base::Dict{String,<:Any}=Dict{String, Any}(),
-        ms_num::Int=1;
+        pmd_base::Dict{String,<:Any}=Dict{String, Any}();
         unique::Bool=true,
         multinetwork::Bool=false)
     )
 
 Parses power distribution files from the file `pmd_file` depending on the file extension.
-`pmd_base` represents a dictionary that contains data from other pmd systems, `ms_num` is the
-multi-system number (current distribution system number) and `unique` represents if the pmd data provided
+`pmd_base` represents a dictionary that contains data from other pmd systems, `unique` represents if the pmd data provided
 is the first one passed or unique. If it is not `unique`, then the components need to be renamed before being added.
 Returns a PowerModelsDistribution data structured pmd network (a dictionary) with renamed components (if applicable).
 """
-function parse_power_distribution_file(pmd_file::String, pmd_base::Dict{String,<:Any}=Dict{String, Any}(), ms_num::Int=1; unique::Bool=true, multinetwork::Bool=false)
+function parse_power_distribution_file(pmd_file::String, pmd_base::Dict{String,<:Any}=Dict{String, Any}(); unique::Bool=true, multinetwork::Bool=false, auto_rename::Bool=false, ms_num::Int=1)
+
     # Exception if pmd file is not compatible
     try
         if split(pmd_file, ".")[end] != "m" && split(pmd_file, ".")[end] != "dss" # If not reading a MATPOWER or DSS file.
@@ -139,8 +137,14 @@ function parse_power_distribution_file(pmd_file::String, pmd_base::Dict{String,<
     end
 
     if (unique == false)
+        # Check if pmd_base has the "ckt_names" keys, if not add it
+        if !(haskey(pmd_base, "ckt_names"))
+            pmd_base["ckt_names"] = [pmd_base["name"]]
+        end
+        # checks the circuit names are not the same, if so, rename them based on user input
+        _check_and_rename_circuits!(pmd_base, data; auto_rename=auto_rename, ms_num=ms_num)
         # change the name of all components in data using the Engineering model
-        _rename_components!(pmd_base, data, ms_num)
+        _rename_components!(pmd_base, data)
         return pmd_base
     else
         pmd_base = data
@@ -160,9 +164,9 @@ end
 Parses PowerModels, PowerModelsDistribution, and PowerModelsITD boundary linkage input files and returns a data dictionary
 with the combined information of the inputted dictionaries.
 """
-function parse_files(pm_file::String, pmd_file::String, pmitd_file::String; multinetwork::Bool=false)
+function parse_files(pm_file::String, pmd_file::String, pmitd_file::String; multinetwork::Bool=false, auto_rename::Bool=false)
     pmd_files = [pmd_file] # convert to vector
-    return parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork)
+    return parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
 end
 
 
@@ -177,19 +181,19 @@ end
 Parses PowerModels, PowerModelsDistribution vector, and PowerModelsITD linkage input files and returns a data dictionary
 with the combined information of the inputted dictionaries.
 """
-function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; multinetwork::Bool=false)
+function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; multinetwork::Bool=false, auto_rename::Bool=false)
     pmitd_data = parse_link_file(pmitd_file)                              # Parse linking file
     pmitd_data["per_unit"] = false                                        # Add default per_unit field
 
     # parse multi-systems (multiple distribution systems)
     ms_data = Dict{String, Any}()  # initialize empty pmd dictionary
-    num_ms = size(pmd_files)[1] # number of distribution systems (ms: multi-systems )
+    num_ms = length(pmd_files) # number of distribution systems (ms: multi-systems )
     unique_flag = true # flag to know if it is the first pmd structure
-    for ms in 1:num_ms
+    for ms in 1:1:num_ms
         if (unique_flag == false) # pmd already exists
-            ms_data = parse_power_distribution_file(pmd_files[ms], ms_data, ms; unique=unique_flag, multinetwork=multinetwork)
+            ms_data = parse_power_distribution_file(pmd_files[ms], ms_data; unique=unique_flag, multinetwork=multinetwork, auto_rename=auto_rename, ms_num=ms)
         else
-            ms_data = parse_power_distribution_file(pmd_files[ms], ms_data, ms; multinetwork=multinetwork)
+            ms_data = parse_power_distribution_file(pmd_files[ms], ms_data; multinetwork=multinetwork)
             unique_flag = false
         end
     end
@@ -211,6 +215,11 @@ function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; mul
 
     # Ensure all datasets use the same unit bases.
     resolve_units!(pmitd_data; multinetwork=multinetwork, number_multinetworks=number_multinetworks)
+
+    # correct distribution system names in pmitd data structure if auto_rename=true
+    if (auto_rename==true) && (num_ms>1)
+        _correct_boundary_names!(pmitd_data)
+    end
 
     # convert pmitd data to multinetwork (based on the number of multinetworks)
     if multinetwork

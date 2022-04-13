@@ -1,29 +1,29 @@
 [
     {
-        "transmission_boundary": "33", 
-        "distribution_boundary": "source"
+        "transmission_boundary": "33",
+        "distribution_boundary": "voltage_source.source"
     },
     {
-		"transmission_boundary": "45", 
-        "distribution_boundary": "source"
+		"transmission_boundary": "45",
+        "distribution_boundary": "voltage_source.source"
 	},
     {
-        "transmission_boundary": "53", 
-        "distribution_boundary": "source"
+        "transmission_boundary": "53",
+        "distribution_boundary": "voltage_source.source"
     },
     {
-        "transmission_boundary": "150", 
-        "distribution_boundary": "source"
+        "transmission_boundary": "150",
+        "distribution_boundary": "voltage_source.source"
     },
     {
-		"transmission_boundary": "178", 
-        "distribution_boundary": "source"
+		"transmission_boundary": "178",
+        "distribution_boundary": "voltage_source.source"
 	},
     {
-		"transmission_boundary": "187", 
-        "distribution_boundary": "source"
+		"transmission_boundary": "187",
+        "distribution_boundary": "voltage_source.source"
 	}
-   
+
 ]
 
 
