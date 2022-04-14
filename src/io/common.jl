@@ -105,17 +105,20 @@ end
 """
     function parse_power_distribution_file(
         pmd_file::String,
-        pmd_base::Dict{String,<:Any}=Dict{String, Any}();
+        base_data::Dict{String,<:Any}=Dict{String, Any}();
         unique::Bool=true,
-        multinetwork::Bool=false)
+        multinetwork::Bool=false,
+        auto_rename::Bool=false,
+        ms_num::Int=1
     )
 
 Parses power distribution files from the file `pmd_file` depending on the file extension.
-`pmd_base` represents a dictionary that contains data from other pmd systems, `unique` represents if the pmd data provided
-is the first one passed or unique. If it is not `unique`, then the components need to be renamed before being added.
+`base_data` represents a dictionary that contains data from other pmd systems (serving as
+the base where all data will be combined), `unique` represents if the pmd data provided is
+the first one passed or unique. If it is not `unique`, then the components need to be renamed before being added.
 Returns a PowerModelsDistribution data structured pmd network (a dictionary) with renamed components (if applicable).
 """
-function parse_power_distribution_file(pmd_file::String, pmd_base::Dict{String,<:Any}=Dict{String, Any}(); unique::Bool=true, multinetwork::Bool=false, auto_rename::Bool=false, ms_num::Int=1)
+function parse_power_distribution_file(pmd_file::String, base_data::Dict{String,<:Any}=Dict{String, Any}(); unique::Bool=true, multinetwork::Bool=false, auto_rename::Bool=false, ms_num::Int=1)
 
     # Exception if pmd file is not compatible
     try
@@ -137,18 +140,24 @@ function parse_power_distribution_file(pmd_file::String, pmd_base::Dict{String,<
     end
 
     if (unique == false)
-        # Check if pmd_base has the "ckt_names" keys, if not add it
-        if !(haskey(pmd_base, "ckt_names"))
-            pmd_base["ckt_names"] = [pmd_base["name"]]
+
+        # Check if base_data has the "ckt_names" keys, if not add it
+        if !(haskey(base_data, "ckt_names"))
+            base_data["ckt_names"] = [base_data["name"]]
         end
-        # checks the circuit names are not the same, if so, rename them based on user input
-        _check_and_rename_circuits!(pmd_base, data; auto_rename=auto_rename, ms_num=ms_num)
+
+        # checks the circuit names are not the same, and rename them only if auto_rename=true
+        _check_and_rename_circuits!(base_data, data; auto_rename=auto_rename, ms_num=ms_num)
+
         # change the name of all components in data using the Engineering model
-        _rename_components!(pmd_base, data)
-        return pmd_base
+        _rename_components!(base_data, data)
+
+        return base_data
     else
-        pmd_base = data
-        return pmd_base
+        base_data = deepcopy(data)           # deepcopy of data (avoid referencing when deleting)
+        _clean_pmd_base_data!(base_data)     # removes components to be renamed
+        _rename_components!(base_data, data) # adds back renamed components
+        return base_data
     end
 end
 
@@ -159,6 +168,7 @@ end
         pmd_file::String,
         pmitd_file::String;
         multinetwork::Bool=false
+        auto_rename::Bool=false
     )
 
 Parses PowerModels, PowerModelsDistribution, and PowerModelsITD boundary linkage input files and returns a data dictionary
@@ -175,25 +185,35 @@ end
         pm_file::String,
         pmd_files::Vector,
         pmitd_file::String;
-        multinetwork::Bool=false
+        multinetwork::Bool=false,
+        auto_rename::Bool=false
     )
 
 Parses PowerModels, PowerModelsDistribution vector, and PowerModelsITD linkage input files and returns a data dictionary
 with the combined information of the inputted dictionaries.
 """
 function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; multinetwork::Bool=false, auto_rename::Bool=false)
-    pmitd_data = parse_link_file(pmitd_file)                              # Parse linking file
-    pmitd_data["per_unit"] = false                                        # Add default per_unit field
+
+    # parse boundary data
+    pmitd_data = parse_link_file(pmitd_file)    # Parse boundary linking file
+    pmitd_data["per_unit"] = false              # Add default per_unit field
 
     # parse multi-systems (multiple distribution systems)
-    ms_data = Dict{String, Any}()  # initialize empty pmd dictionary
-    num_ms = length(pmd_files) # number of distribution systems (ms: multi-systems )
-    unique_flag = true # flag to know if it is the first pmd structure
+    ms_data = Dict{String, Any}()   # initialize empty pmd dictionary
+    num_ms = length(pmd_files)      # number of distribution systems (ms: multi-systems )
+    unique_flag = true              # flag to know if it is the first pmd structure
     for ms in 1:1:num_ms
-        if (unique_flag == false) # pmd already exists
-            ms_data = parse_power_distribution_file(pmd_files[ms], ms_data; unique=unique_flag, multinetwork=multinetwork, auto_rename=auto_rename, ms_num=ms)
+        if (unique_flag == false)   # pmd already exists, so data will be checked, renamed, and added to the dict that already exists
+            ms_data = parse_power_distribution_file(pmd_files[ms],
+                                                    ms_data;
+                                                    unique=unique_flag,
+                                                    multinetwork=multinetwork,
+                                                    auto_rename=auto_rename,
+                                                    ms_num=ms)
         else
-            ms_data = parse_power_distribution_file(pmd_files[ms], ms_data; multinetwork=multinetwork)
+            ms_data = parse_power_distribution_file(pmd_files[ms],
+                                                    ms_data;
+                                                    multinetwork=multinetwork)
             unique_flag = false
         end
     end
@@ -201,23 +221,30 @@ function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; mul
     # create the entire it=>pmd=>data dictionary structure
     pmd_combined_data = Dict("multiinfrastructure" => true, "it" => Dict(_PMD.pmd_it_name => ms_data), "per_unit" => false)
 
-    # Apply update_data at the end after the entire ms dictionary is created
-    _IM.update_data!(pmitd_data, pmd_combined_data) # Update data with distribution data
+    # Apply update_data to combined ms pmd data.
+    _IM.update_data!(pmitd_data, pmd_combined_data)
 
     # get the multinetwork number from pmd (.csv file data)
-    number_multinetworks = 0 # initialize number of multinetworks var
+    number_multinetworks = 0 # initialize number of multinetworks counter
     if multinetwork
         number_multinetworks = length(pmd_combined_data["it"][_PMD.pmd_it_name]["mn_lookup"])
     end
 
     # Update data with transmission system data
-    _IM.update_data!(pmitd_data, parse_power_transmission_file(pm_file, skip_correct=false; multinetwork=multinetwork, number_multinetworks=number_multinetworks))
+    _IM.update_data!(pmitd_data,
+                    parse_power_transmission_file(pm_file,
+                                                skip_correct=false;
+                                                multinetwork=multinetwork,
+                                                number_multinetworks=number_multinetworks
+                                                )
+                    )
 
     # Ensure all datasets use the same unit bases.
     resolve_units!(pmitd_data; multinetwork=multinetwork, number_multinetworks=number_multinetworks)
 
-    # correct distribution system names in pmitd data structure if auto_rename=true
-    if (auto_rename==true) && (num_ms>1)
+    # correct distribution system names in pmitd data structure if auto_rename=true (correction done sequentially)
+    # if (auto_rename==true) && (num_ms>1)
+    if (auto_rename==true)
         _correct_boundary_names!(pmitd_data)
     end
 
@@ -228,4 +255,5 @@ function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; mul
 
     # Return the complete ITD data dictionary.
     return pmitd_data
+
 end

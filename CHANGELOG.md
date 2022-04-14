@@ -10,6 +10,10 @@
 - Added option for user to allow the automatic renaming `auto_rename=true` of the circuits (for cases when the user wants PMITD to handle the renaming sequentially).
 - Added new function `_check_and_rename_circuits!` that checks that the names of distribution system circuits are unique when passing multiple distribution systems. If `auto_rename=true` is not specified, an `error` will be displayed.
 - Added new function `_correct_boundary_names!` that corrects the boundary names passed in the JSON file based on the auto generated circuit names. A warning is displayed informing the user that the naming will be done sequentially (in case this may not be what the user wants).
+- Added new function `_clean_pmd_base_data!` that removes/cleans components from pmd dictionary for its subsequent renaming.
+- Added new function `_remove_network_components!` that performs the removal of dictionary keys needed by the `_clean_pmd_base_data!` function.
+- Added descriptive docstrings to newly added functions.
+- Refactored `parse_files` and `parse_power_distribution_file` to support new naming conventions for `pmd` data.
 
 ## v0.6.1
 

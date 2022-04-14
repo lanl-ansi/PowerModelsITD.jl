@@ -103,7 +103,7 @@ function _assign_boundary_buses!(data::Dict{String,<:Any}, conn; multinetwork::B
         throw(error())
     end
 
-    # rearrange the name of bus if more than 1 ckts
+    # rearrange the name of ditro. bus: cktname.voltage_source.source -> voltage_source.cktname.source (PMD MATH model format)
     dist_bus_name_vector = split(dist_bus_name, ".")
     if (length(dist_bus_name_vector)>2)
         dist_bus_name = dist_bus_name_vector[2] * "." * dist_bus_name_vector[1] * "." * dist_bus_name_vector[3]
