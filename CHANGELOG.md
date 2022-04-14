@@ -15,6 +15,7 @@
 - Added descriptive docstrings to newly added functions.
 - Refactored `parse_files` and `parse_power_distribution_file` to support new naming conventions for `pmd` data.
 - Added `auto_rename` option to all `solve_X` functions that require the option.
+- Added a new dictionary key `"belongs_to_ckt"` to every component renamed by the `_rename_network_components!` function. This will help knowing (and mapping back) to what circuit(network) each component in `pmd` belongs to.
 
 ## v0.6.1
 

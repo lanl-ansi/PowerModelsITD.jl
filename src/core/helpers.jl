@@ -221,6 +221,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
                 base_data["bus"] = Dict()
             end
             base_data["bus"][new_key] = value
+            base_data["bus"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -239,6 +240,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             if (haskey(base_data["line"][new_key], "linecode"))
                 base_data["line"][new_key]["linecode"] = data["name"] * "." * base_data["line"][new_key]["linecode"]
             end
+            base_data["line"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -257,6 +259,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             if (haskey(base_data["switch"][new_key], "linecode"))
                 base_data["switch"][new_key]["linecode"] = data["name"] * "." * base_data["switch"][new_key]["linecode"]
             end
+            base_data["switch"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -272,6 +275,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             base_data["transformer"][new_key]["source_id"] = data["name"] * "." * base_data["transformer"][new_key]["source_id"]
             base_data["transformer"][new_key]["bus"][1] = data["name"] * "." * base_data["transformer"][new_key]["bus"][1]
             base_data["transformer"][new_key]["bus"][2] = data["name"] * "." * base_data["transformer"][new_key]["bus"][2]
+            base_data["transformer"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -286,6 +290,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             base_data["load"][new_key] = value
             base_data["load"][new_key]["source_id"] = data["name"] * "." * base_data["load"][new_key]["source_id"]
             base_data["load"][new_key]["bus"] = data["name"] * "." * base_data["load"][new_key]["bus"]
+            base_data["load"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -298,6 +303,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
                 base_data["linecode"] = Dict()
             end
             base_data["linecode"][new_key] = value
+            base_data["linecode"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -312,6 +318,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             base_data["voltage_source"][new_key] = value
             base_data["voltage_source"][new_key]["source_id"] = data["name"] * "." * base_data["voltage_source"][new_key]["source_id"]
             base_data["voltage_source"][new_key]["bus"] = data["name"] * "." * base_data["voltage_source"][new_key]["bus"]
+            base_data["voltage_source"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -326,6 +333,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             base_data["generator"][new_key] = value
             base_data["generator"][new_key]["source_id"] = data["name"] * "." * base_data["generator"][new_key]["source_id"]
             base_data["generator"][new_key]["bus"] = data["name"] * "." * base_data["generator"][new_key]["bus"]
+            base_data["generator"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -340,6 +348,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             base_data["shunt"][new_key] = value
             base_data["shunt"][new_key]["source_id"] = data["name"] * "." * base_data["shunt"][new_key]["source_id"]
             base_data["shunt"][new_key]["bus"] = data["name"] * "." * base_data["shunt"][new_key]["bus"]
+            base_data["shunt"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -354,6 +363,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             base_data["solar"][new_key] = value
             base_data["solar"][new_key]["source_id"] = data["name"] * "." * base_data["solar"][new_key]["source_id"]
             base_data["solar"][new_key]["bus"] = data["name"] * "." * base_data["solar"][new_key]["bus"]
+            base_data["solar"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -368,6 +378,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             base_data["storage"][new_key] = value
             base_data["storage"][new_key]["source_id"] = data["name"] * "." * base_data["storage"][new_key]["source_id"]
             base_data["storage"][new_key]["bus"] = data["name"] * "." * base_data["storage"][new_key]["bus"]
+            base_data["storage"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
         end
     end
 
