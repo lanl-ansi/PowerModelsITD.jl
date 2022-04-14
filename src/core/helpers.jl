@@ -46,11 +46,14 @@ function _rename_components!(base_data::Dict{String,<:Any}, data::Dict{String,<:
     # Check if multinetwork
     if haskey(base_data, "nw")
         for (nw, mn_data) in data["nw"]
-            _rename_network_components!(base_data["nw"][nw], mn_data)
+            _rename_network_components!(base_data["nw"][nw], mn_data, data["name"])
         end
     else
-        _rename_network_components!(base_data, data)
+        _rename_network_components!(base_data, data, data["name"])
     end
+
+    # add file name to "files" dictionary in "pmd"
+    _add_file_name!(base_data, data)
 
 end
 
@@ -204,181 +207,183 @@ end
 """
     function _rename_network_components!(
         base_data::Dict{String,<:Any},
-        data::Dict{String,<:Any}
+        data::Dict{String,<:Any},
+        ckt_name::String
     )
 
 Rename specific components in single network dictionary. `base_data` is the dictionary where the renamed
 components are to be added, `data` is the dictionary containing the components to be renamed.
+`ckt_name` is the circuit name of `data`.
 """
-function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any})
+function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any}, ckt_name::String)
 
     # loop through buses
     if (haskey(data, "bus"))
         for (key, value) in data["bus"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "bus"))
                 base_data["bus"] = Dict()
             end
             base_data["bus"][new_key] = value
-            base_data["bus"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["bus"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through lines
     if (haskey(data, "line"))
         for (key, value) in data["line"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "line"))
                 base_data["line"] = Dict()
             end
             base_data["line"][new_key] = value
-            base_data["line"][new_key]["source_id"] = data["name"] * "." * base_data["line"][new_key]["source_id"]
-            base_data["line"][new_key]["f_bus"] = data["name"] * "." * base_data["line"][new_key]["f_bus"]
-            base_data["line"][new_key]["t_bus"] = data["name"] * "." * base_data["line"][new_key]["t_bus"]
+            base_data["line"][new_key]["source_id"] = ckt_name * "." * base_data["line"][new_key]["source_id"]
+            base_data["line"][new_key]["f_bus"] = ckt_name * "." * base_data["line"][new_key]["f_bus"]
+            base_data["line"][new_key]["t_bus"] = ckt_name * "." * base_data["line"][new_key]["t_bus"]
             if (haskey(base_data["line"][new_key], "linecode"))
-                base_data["line"][new_key]["linecode"] = data["name"] * "." * base_data["line"][new_key]["linecode"]
+                base_data["line"][new_key]["linecode"] = ckt_name * "." * base_data["line"][new_key]["linecode"]
             end
-            base_data["line"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["line"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through switch
     if (haskey(data, "switch"))
         for (key, value) in data["switch"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "switch"))
                 base_data["switch"] = Dict()
             end
             base_data["switch"][new_key] = value
-            base_data["switch"][new_key]["source_id"] = data["name"] * "." * base_data["switch"][new_key]["source_id"]
-            base_data["switch"][new_key]["f_bus"] = data["name"] * "." * base_data["switch"][new_key]["f_bus"]
-            base_data["switch"][new_key]["t_bus"] = data["name"] * "." * base_data["switch"][new_key]["t_bus"]
+            base_data["switch"][new_key]["source_id"] = ckt_name * "." * base_data["switch"][new_key]["source_id"]
+            base_data["switch"][new_key]["f_bus"] = ckt_name * "." * base_data["switch"][new_key]["f_bus"]
+            base_data["switch"][new_key]["t_bus"] = ckt_name * "." * base_data["switch"][new_key]["t_bus"]
             if (haskey(base_data["switch"][new_key], "linecode"))
-                base_data["switch"][new_key]["linecode"] = data["name"] * "." * base_data["switch"][new_key]["linecode"]
+                base_data["switch"][new_key]["linecode"] = ckt_name * "." * base_data["switch"][new_key]["linecode"]
             end
-            base_data["switch"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["switch"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through transformer
     if (haskey(data, "transformer"))
         for (key, value) in data["transformer"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "transformer"))
                 base_data["transformer"] = Dict()
             end
             base_data["transformer"][new_key] = value
-            base_data["transformer"][new_key]["source_id"] = data["name"] * "." * base_data["transformer"][new_key]["source_id"]
-            base_data["transformer"][new_key]["bus"][1] = data["name"] * "." * base_data["transformer"][new_key]["bus"][1]
-            base_data["transformer"][new_key]["bus"][2] = data["name"] * "." * base_data["transformer"][new_key]["bus"][2]
-            base_data["transformer"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["transformer"][new_key]["source_id"] = ckt_name * "." * base_data["transformer"][new_key]["source_id"]
+            base_data["transformer"][new_key]["bus"][1] = ckt_name * "." * base_data["transformer"][new_key]["bus"][1]
+            base_data["transformer"][new_key]["bus"][2] = ckt_name * "." * base_data["transformer"][new_key]["bus"][2]
+            base_data["transformer"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through load
     if (haskey(data, "load"))
         for (key, value) in data["load"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "load"))
                 base_data["load"] = Dict()
             end
             base_data["load"][new_key] = value
-            base_data["load"][new_key]["source_id"] = data["name"] * "." * base_data["load"][new_key]["source_id"]
-            base_data["load"][new_key]["bus"] = data["name"] * "." * base_data["load"][new_key]["bus"]
-            base_data["load"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["load"][new_key]["source_id"] = ckt_name * "." * base_data["load"][new_key]["source_id"]
+            base_data["load"][new_key]["bus"] = ckt_name * "." * base_data["load"][new_key]["bus"]
+            base_data["load"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through linecode
     if (haskey(data, "linecode"))
         for (key, value) in data["linecode"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "linecode"))
                 base_data["linecode"] = Dict()
             end
             base_data["linecode"][new_key] = value
-            base_data["linecode"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["linecode"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through voltage_sources
     if (haskey(data, "voltage_source"))
         for (key, value) in data["voltage_source"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
              # if key does not exists in base_data, add an empty Dict
              if !(haskey(base_data, "voltage_source"))
                 base_data["voltage_source"] = Dict()
             end
             base_data["voltage_source"][new_key] = value
-            base_data["voltage_source"][new_key]["source_id"] = data["name"] * "." * base_data["voltage_source"][new_key]["source_id"]
-            base_data["voltage_source"][new_key]["bus"] = data["name"] * "." * base_data["voltage_source"][new_key]["bus"]
-            base_data["voltage_source"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["voltage_source"][new_key]["source_id"] = ckt_name * "." * base_data["voltage_source"][new_key]["source_id"]
+            base_data["voltage_source"][new_key]["bus"] = ckt_name * "." * base_data["voltage_source"][new_key]["bus"]
+            base_data["voltage_source"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through generators
     if (haskey(data, "generator"))
         for (key, value) in data["generator"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "generator"))
                 base_data["generator"] = Dict()
             end
             base_data["generator"][new_key] = value
-            base_data["generator"][new_key]["source_id"] = data["name"] * "." * base_data["generator"][new_key]["source_id"]
-            base_data["generator"][new_key]["bus"] = data["name"] * "." * base_data["generator"][new_key]["bus"]
-            base_data["generator"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["generator"][new_key]["source_id"] = ckt_name * "." * base_data["generator"][new_key]["source_id"]
+            base_data["generator"][new_key]["bus"] = ckt_name * "." * base_data["generator"][new_key]["bus"]
+            base_data["generator"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through shunts
     if (haskey(data, "shunt"))
         for (key, value) in data["shunt"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "shunt"))
                 base_data["shunt"] = Dict()
             end
             base_data["shunt"][new_key] = value
-            base_data["shunt"][new_key]["source_id"] = data["name"] * "." * base_data["shunt"][new_key]["source_id"]
-            base_data["shunt"][new_key]["bus"] = data["name"] * "." * base_data["shunt"][new_key]["bus"]
-            base_data["shunt"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["shunt"][new_key]["source_id"] = ckt_name * "." * base_data["shunt"][new_key]["source_id"]
+            base_data["shunt"][new_key]["bus"] = ckt_name * "." * base_data["shunt"][new_key]["bus"]
+            base_data["shunt"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through solar PV systems
     if (haskey(data, "solar"))
         for (key, value) in data["solar"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "solar"))
                 base_data["solar"] = Dict()
             end
             base_data["solar"][new_key] = value
-            base_data["solar"][new_key]["source_id"] = data["name"] * "." * base_data["solar"][new_key]["source_id"]
-            base_data["solar"][new_key]["bus"] = data["name"] * "." * base_data["solar"][new_key]["bus"]
-            base_data["solar"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["solar"][new_key]["source_id"] = ckt_name * "." * base_data["solar"][new_key]["source_id"]
+            base_data["solar"][new_key]["bus"] = ckt_name * "." * base_data["solar"][new_key]["bus"]
+            base_data["solar"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through battery storage systems
     if (haskey(data, "storage"))
         for (key, value) in data["storage"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "storage"))
                 base_data["storage"] = Dict()
             end
             base_data["storage"][new_key] = value
-            base_data["storage"][new_key]["source_id"] = data["name"] * "." * base_data["storage"][new_key]["source_id"]
-            base_data["storage"][new_key]["bus"] = data["name"] * "." * base_data["storage"][new_key]["bus"]
-            base_data["storage"][new_key]["belongs_to_ckt"] = data["name"]  # add new category "belongs_to_ckt" to every component
+            base_data["storage"][new_key]["source_id"] = ckt_name * "." * base_data["storage"][new_key]["source_id"]
+            base_data["storage"][new_key]["bus"] = ckt_name * "." * base_data["storage"][new_key]["bus"]
+            base_data["storage"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -386,10 +391,23 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
     # loop through settings
     if (haskey(data, "settings"))
         for (key, value) in data["settings"]["vbases_default"]
-            new_key = data["name"] * "." * key
+            new_key = ckt_name * "." * key
             base_data["settings"]["vbases_default"][new_key] = value
         end
     end
+
+end
+
+
+"""
+    function _add_file_name!(
+        base_data::Dict{String,<:Any},
+        data::Dict{String,<:Any}
+    )
+
+Adds filename from `data` to "files" dictionary in pmd (`base_data`).
+"""
+function _add_file_name!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any})
 
     # add file name to "files" vector
     if (haskey(data, "files"))
@@ -399,7 +417,6 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             end
             push!(base_data["files"], file_name)
         end
-
     end
 
 end
