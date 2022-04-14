@@ -77,7 +77,7 @@ function _check_and_rename_circuits!(base_data::Dict{String,<:Any}, data::Dict{S
     # check that data ckt name is not repeating, throw error if it is
     if (data["name"] in base_data["ckt_names"])
         if (auto_rename==false)
-            error("Distribution systems have same circuit names! Please use different names for each distribution system. (e.g., New Circuit.NameOfCkt) or use the auto_rename=true option.")
+            @error "Distribution systems have same circuit names! Please use different names for each distribution system. (e.g., New Circuit.NameOfCkt) or use the auto_rename=true option."
         else
             data["name"] = data["name"] * "_" * string(ms_num)
         end
@@ -108,10 +108,12 @@ function _correct_boundary_names!(pmitd_data::Dict{String,<:Any})
     for (boundary, name) in zip(pmitd_data["it"][pmitd_it_name], pmitd_data["it"][_PMD.pmd_it_name]["ckt_names"])
         # rearrange the name of bus if more than 1 ckts
         old_dist_bus_name_vector = split(boundary[2]["distribution_boundary"], ".")
-        if (length(old_dist_bus_name_vector)>2)
+        if (length(old_dist_bus_name_vector)==3)
             boundary[2]["distribution_boundary"] = name * "." * old_dist_bus_name_vector[2] * "." * old_dist_bus_name_vector[3]
-        else
+        elseif (length(old_dist_bus_name_vector)==2)
             boundary[2]["distribution_boundary"] = name * "." * old_dist_bus_name_vector[1] * "." * old_dist_bus_name_vector[2]
+        else
+            @error "One of the 'distribution_boundary' names given in the JSON file is in an incompatible format. Please use the 'object.name' or 'cktName.object.name' formats."
         end
     end
 

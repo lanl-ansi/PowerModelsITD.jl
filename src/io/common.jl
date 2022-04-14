@@ -243,7 +243,6 @@ function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; mul
     resolve_units!(pmitd_data; multinetwork=multinetwork, number_multinetworks=number_multinetworks)
 
     # correct distribution system names in pmitd data structure if auto_rename=true (correction done sequentially)
-    # if (auto_rename==true) && (num_ms>1)
     if (auto_rename==true)
         _correct_boundary_names!(pmitd_data)
     end
