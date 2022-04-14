@@ -180,6 +180,7 @@ end
         solution_processors::Vector{<:Function}=Function[],
         pmitd_ref_extensions::Vector{<:Function}=Function[],
         make_si::Bool=true,
+        auto_rename::Bool=false,
         kwargs...
     )
 
@@ -191,6 +192,7 @@ and `pmitd_file`, respectively. Here, `pmitd_type` is the integrated power trans
 specification being considered, `multinetwork` is the boolean that defines if the modeling object should be define
 as multinetwork, `solution_processors` is the vector of the model solution processors, `pmitd_ref_extensions` is
 the array of modeling extensions, and `make_si` is the boolean that determines if the results are returned in SI or per-unit.
+The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -201,12 +203,13 @@ function solve_model(
     solution_processors::Vector{<:Function}=Function[],
     pmitd_ref_extensions::Vector{<:Function}=Function[],
     make_si::Bool=true,
+    auto_rename::Bool=false,
     kwargs...)
 
     pmd_files = [pmd_file] # convert to vector
 
     # Read power t&d and linkage data from files.
-    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork)
+    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
 
     # Instantiate and solve the PowerModelsITD modeling object.
     return solve_model(
@@ -233,6 +236,7 @@ end
         solution_processors::Vector{<:Function}=Function[],
         pmitd_ref_extensions::Vector{<:Function}=Function[],
         make_si::Bool=true,
+        auto_rename::Bool=false,
         kwargs...
     )
 
@@ -244,6 +248,7 @@ the build method for the problem specification being considered, `multinetwork` 
 modeling object should be define as multinetwork,`solution_processors` is the vector of the model solution processors,
 `pmitd_ref_extensions` is the array of modeling extensions, and `make_si` is the boolean that determines
 if the results are returned in SI or per-unit.
+The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -254,10 +259,11 @@ function solve_model(
     solution_processors::Vector{<:Function}=Function[],
     pmitd_ref_extensions::Vector{<:Function}=Function[],
     make_si::Bool=true,
+    auto_rename::Bool=false,
     kwargs...)
 
     # Read power t&d and linkage data from files.
-    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file, multinetwork=multinetwork)
+    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file, multinetwork=multinetwork, auto_rename=auto_rename)
 
     # Instantiate and solve the PowerModelsITD modeling object.
     return solve_model(

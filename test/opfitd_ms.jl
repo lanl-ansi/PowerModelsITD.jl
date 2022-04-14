@@ -11,9 +11,13 @@
         pmitd_file = joinpath(dirname(bound_path), "case5_case3x2.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
         # pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        # pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
         # @info "$(pmitd_data)"
-        result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
+        # result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
+
+        result = solve_opfitd(pm_file, pmd_files, pmitd_file, pmitd_type, ipopt; auto_rename=true)
+        # result = solve_opfitd(pm_file, pmd_files, pmitd_file, pmitd_type, ipopt)
+
         @test result["termination_status"] == LOCALLY_SOLVED
         # @test isapprox(result["objective"], 18277.938357; atol = 1e-4)
     end

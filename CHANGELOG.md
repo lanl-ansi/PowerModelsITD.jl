@@ -14,6 +14,7 @@
 - Added new function `_remove_network_components!` that performs the removal of dictionary keys needed by the `_clean_pmd_base_data!` function.
 - Added descriptive docstrings to newly added functions.
 - Refactored `parse_files` and `parse_power_distribution_file` to support new naming conventions for `pmd` data.
+- Added `auto_rename` option to all `solve_X` functions that require the option.
 
 ## v0.6.1
 
