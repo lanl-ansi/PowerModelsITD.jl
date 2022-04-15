@@ -78,6 +78,7 @@ function _check_and_rename_circuits!(base_data::Dict{String,<:Any}, data::Dict{S
     if (data["name"] in base_data["ckt_names"])
         if (auto_rename==false)
             @error "Distribution systems have same circuit names! Please use different names for each distribution system. (e.g., New Circuit.NameOfCkt) or use the auto_rename=true option."
+            throw(error())
         else
             data["name"] = data["name"] * "_" * string(ms_num)
         end
@@ -114,6 +115,7 @@ function _correct_boundary_names!(pmitd_data::Dict{String,<:Any})
             boundary[2]["distribution_boundary"] = name * "." * old_dist_bus_name_vector[1] * "." * old_dist_bus_name_vector[2]
         else
             @error "One of the 'distribution_boundary' names given in the JSON file is in an incompatible format. Please use the 'object.name' or 'cktName.object.name' formats."
+            throw(error())
         end
     end
 
