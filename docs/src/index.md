@@ -1,12 +1,11 @@
-===
 
 ```@meta
 CurrentModule = PowerModelsITD
 ```
 
-## What is PowerModelsITD?
+## What is PowerModelsITD.jl?
 
-[PowerModelsITD.jl](https://github.com/lanl-ansi/PowerModelsITD.jl) is a Julia/JuMP-based package for modeling integrated transmission-distribution power networks.
+[PowerModelsITD.jl](https://github.com/lanl-ansi/PowerModelsITD.jl) is a Julia/JuMP-based package for modeling and optimizing integrated transmission-distribution (ITD) power networks.
 
 ## Resources for Getting Started
 
@@ -14,21 +13,23 @@ Read the [Installation Guide](@ref Installation-Guide).
 
 Read the [Quickstart Guide](@ref Quick-Start-Guide).
 
-Read the introductory tutorial [Introduction to PowerModelsITD](@ref Introduction-to-PowerModelsITD).
+Read the [File Formats Guide](@ref File-Formats-Guide).
+
+Read the introductory tutorial [Introduction to PowerModelsITD.jl](@ref Introduction-to-PowerModelsITD).
 
 ## How the documentation is structured
 
 The following is a high-level overview of how our documentation is structured. There are three primary sections:
 
-- The **Manual** contains detailed documentation for certain aspects of PowerModelsITD, such as the [Data Models](@ref DataModelAPI), the [Network Formulations](@ref FormulationAPI), or the [Optimization Problem Specifications](@ref ProblemAPI).
+- The **Manual** contains detailed documentation for certain aspects of PowerModelsITD.jl, such as the [Data Models](@ref DataModelAPI), the [Network Formulations](@ref FormulationAPI), or the [Optimization Problem Specifications](@ref ProblemAPI).
 
-- **Tutorials** contains working examples of how to use PowerModelsITD. Start here if you are new to PowerModelsITD.
+- **Tutorials** contains working examples of how to use PowerModelsITD.jl. Start here if you are new to PowerModelsITD.jl.
 
-- The **API Reference** contains a complete list of the functions you can use in PowerModelsITD. Look here if you want to know how to use a particular function.
+- The **API Reference** contains a complete list of the functions you can use in PowerModelsITD.jl. Look here if you want to know how to use a particular function.
 
-## Citing PowerModelsITD
+## Citing PowerModelsITD.jl
 
-If you find PowerModelsITD useful for your work, we kindly request that you cite the following [publication]:
+If you find PowerModelsITD.jl useful for your work, we kindly request that you cite the following [publication]:
 
 ```bibtex
 @article{powermodelsitdresearchpaper,

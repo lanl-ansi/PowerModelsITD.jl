@@ -16,13 +16,14 @@ makedocs(
         collapselevel=1,
     ),
     strict=false,
-    sitename = "PowerModelsITD",
+    sitename = "PowerModelsITD.jl",
     authors = "Juan Ospina, David M Fobes, and contributors",
     pages = [
         "Introduction" => "index.md",
         "installation.md",
         "Manual" => [
             "Getting Started" => "manual/quickguide.md",
+            "File Formats" => "manual/fileformat.md",
         ],
         "Tutorials" => [
             "Beginners Guide" => "tutorials/Beginners Guide.md",

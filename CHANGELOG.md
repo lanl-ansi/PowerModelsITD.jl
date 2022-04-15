@@ -20,6 +20,8 @@
 - Fixed issues identified by unit tests related to new naming formatting for JSON files.
 - Added new JSON files with specific distribution system names to `test/json` folder.
 - Added `autorename.jl` unit tests designed to test errors that must appear when the new naming convention is not followed and `auto_rename=false`.
+- Added documentation to `/docs` that explains in detail the new 'ideal' format for the boundary linking JSON files.
+- Updated documentation guides and README.
 
 ## v0.6.1
 
