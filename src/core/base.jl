@@ -65,6 +65,7 @@ sol(pmitd::AbstractPowerModelITD, key::Symbol, idx::Any; nw::Int=nw_id_default) 
         build_method::Function;
         multinetwork::Bool=false,
         pmitd_ref_extensions::Vector{<:Function}=Function[],
+        auto_rename::Bool=false,
         kwargs...
     )
 
@@ -77,10 +78,10 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 """
 function instantiate_model(
     pm_file::String, pmd_files::Vector{String}, pmitd_file::String, pmitd_type::Type,
-    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
+    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
 
     # Read power t&d and linkage data from files.
-    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork)
+    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
 
     # Instantiate the PowerModelsITD object.
     return instantiate_model(
@@ -99,6 +100,7 @@ end
         build_method::Function;
         multinetwork::Bool=false,
         pmitd_ref_extensions::Vector{<:Function}=Function[],
+        auto_rename::Bool=false,
         kwargs...
     )
 
@@ -111,12 +113,12 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 """
 function instantiate_model(
     pm_file::String, pmd_file::String, pmitd_file::String, pmitd_type::Type,
-    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
+    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
 
     pmd_files = [pmd_file] # convert to vector
 
     # Read power t&d and linkage data from files.
-    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork)
+    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
 
     # Instantiate the PowerModelsITD object.
     return instantiate_model(

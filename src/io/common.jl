@@ -141,11 +141,6 @@ function parse_power_distribution_file(pmd_file::String, base_data::Dict{String,
 
     if (unique == false)
 
-        # Check if base_data has the "ckt_names" keys, if not add it
-        if !(haskey(base_data, "ckt_names"))
-            base_data["ckt_names"] = [base_data["name"]]
-        end
-
         # checks the circuit names are not the same, and rename them only if auto_rename=true
         _check_and_rename_circuits!(base_data, data; auto_rename=auto_rename, ms_num=ms_num)
 
@@ -157,6 +152,12 @@ function parse_power_distribution_file(pmd_file::String, base_data::Dict{String,
         base_data = deepcopy(data)           # deepcopy of data (avoid referencing when deleting)
         _clean_pmd_base_data!(base_data)     # removes components to be renamed
         _rename_components!(base_data, data) # adds back renamed components
+
+        # Check if base_data has the "ckt_names" keys, if not add it
+        if !(haskey(base_data, "ckt_names"))
+            base_data["ckt_names"] = [base_data["name"]]
+        end
+
         return base_data
     end
 end

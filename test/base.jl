@@ -7,7 +7,7 @@
 
     @testset "instantiate_model (with file inputs)" begin
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
-        pmitd = instantiate_model(pm_file, pmd_file, pmitd_file, pmitd_type, build_opfitd)
+        pmitd = instantiate_model(pm_file, pmd_file, pmitd_file, pmitd_type, build_opfitd; auto_rename=true)
         @test haskey(pmitd.data["it"], "pmitd") == true
         @test haskey(pmitd.data["it"], _PM.pm_it_name) == true
         @test haskey(pmitd.data["it"], _PMD.pmd_it_name) == true
@@ -15,7 +15,7 @@
 
     @testset "instantiate_model (with network inputs)" begin
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; auto_rename=true)
         pmitd = instantiate_model(pmitd_data, pmitd_type, build_opfitd)
         @test haskey(pmitd.data["it"], "pmitd") == true
         @test haskey(pmitd.data["it"], _PM.pm_it_name) == true
@@ -24,13 +24,13 @@
 
     @testset "solve_model (with file inputs): Balanced case5-case3 ACR-ACR" begin
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
-        result = solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt, build_opfitd)
+        result = solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt, build_opfitd; auto_rename=true)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
 
     @testset "solve_model (with network inputs): Balanced case5-case3 ACR-ACR" begin
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end

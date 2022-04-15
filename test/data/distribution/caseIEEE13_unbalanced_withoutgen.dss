@@ -6,7 +6,7 @@ Set DefaultBaseFrequency=60
 ! Tyler Patton, Jon Wood, and David Woods, April 2009
 !
 
-new circuit.IEEE_13_unbal_nogen
+new circuit.ieee13_unbal_nogen
 ~ basekv=230 pu=1.0001  phases=3 bus1=SourceBus
 ~ Angle=30
 ~ MVAsc3=200000 MVAsc1=210000

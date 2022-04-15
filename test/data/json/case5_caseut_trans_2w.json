@@ -1,6 +1,6 @@
 [
 	{
 		"transmission_boundary": "5",
-        "distribution_boundary": "voltage_source.source"
+        "distribution_boundary": "ut_trans_138kv_nosubs.voltage_source.source"
 	}
 ]

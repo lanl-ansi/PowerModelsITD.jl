@@ -103,7 +103,7 @@ not be correct.
 """
 function _correct_boundary_names!(pmitd_data::Dict{String,<:Any})
 
-    @warn "auto_rename option is true, so boundary names in `pmitd=>` will be overwritten sequentially and may not represent actual wanted boundary connection."
+    @warn "auto_rename option is true, so boundary names in 'pmitd=>' will be overwritten sequentially and may not represent the actual wanted boundary connections."
 
     for (boundary, name) in zip(pmitd_data["it"][pmitd_it_name], pmitd_data["it"][_PMD.pmd_it_name]["ckt_names"])
         # rearrange the name of bus if more than 1 ckts
@@ -200,7 +200,7 @@ function _remove_network_components!(base_data::Dict{String,<:Any})
     end
 
     if (haskey(base_data, "settings"))
-        base_data["settings"]["vbases_default"] = Dict() # clean the vbases_default
+        base_data["settings"]["vbases_default"] = Dict{String,Real}() # clean the vbases_default
     end
 
 end
