@@ -5,12 +5,13 @@
         result,
         pmitd_data::Dict{String,<:Any};
         make_si::Bool=false,
-        multinetwork::Bool=false
+        multinetwork::Bool=false,
+        solution_model::String="eng"
     )
 
 Transforms the PM and PMD solutions from SI units to per-unit (pu), and the PMD solution from MATH back to ENG model.
 """
-function _transform_solution_to_pu!(result, pmitd_data::Dict{String,<:Any}; make_si::Bool=false, multinetwork::Bool=false)
+function _transform_solution_to_pu!(result, pmitd_data::Dict{String,<:Any}; make_si::Bool=false, multinetwork::Bool=false, solution_model::String="eng")
 
     if multinetwork
         # Transmission system
@@ -38,18 +39,25 @@ function _transform_solution_to_pu!(result, pmitd_data::Dict{String,<:Any}; make
     # Make per unit
     _PM.make_per_unit!(result["solution"]["it"][_PM.pm_it_name])
 
-    # Transform pmd MATH result to ENG
-    result["solution"]["it"][_PMD.pmd_it_name] = _PMD.transform_solution(
-        result["solution"]["it"][_PMD.pmd_it_name],
-        pmitd_data["it"][_PMD.pmd_it_name];
-        make_si=make_si
-    )
+    # Convert to ENG or MATH models
+    if (solution_model=="eng") || (solution_model=="ENG")
+        # Transform pmd MATH result to ENG
+        result["solution"]["it"][_PMD.pmd_it_name] = _PMD.transform_solution(
+            result["solution"]["it"][_PMD.pmd_it_name],
+            pmitd_data["it"][_PMD.pmd_it_name];
+            make_si=make_si
+        )
 
-    # change PMD dictionary per_unit value (Not done automatically by PMD)
+        # Transform pmitd MATH result ref to ENG result ref
+        transform_pmitd_solution_to_eng!(result, pmitd_data)
+
+    elseif !(solution_model=="eng") && !(solution_model=="ENG") && !(solution_model=="math") && !(solution_model=="MATH")
+        @error "The solution_model $(solution_model) does not exists, please input 'eng' or 'math'"
+        throw(error())
+    end
+
+    # Change PMD dictionary per_unit value (Not done automatically by PMD)
     result["solution"]["it"][_PMD.pmd_it_name]["per_unit"] = true
-
-    # transform pmitd MATH result ref to ENG result ref
-    transform_pmitd_solution_to_eng!(result, pmitd_data)
 
 end
 
@@ -59,12 +67,13 @@ end
         result,
         pmitd_data::Dict{String,<:Any};
         make_si::Bool=true,
-        multinetwork::Bool=false
+        multinetwork::Bool=false,
+        solution_model::String="eng"
     )
 
 Transforms the PM and PMD solutions from per-unit (pu) to SI units, and the PMD solution from MATH back to ENG model.
 """
-function _transform_solution_to_si!(result, pmitd_data::Dict{String,<:Any}; make_si::Bool=true, multinetwork::Bool=false)
+function _transform_solution_to_si!(result, pmitd_data::Dict{String,<:Any}; make_si::Bool=true, multinetwork::Bool=false, solution_model::String="eng")
 
     if multinetwork
         # Transmission system
@@ -92,18 +101,30 @@ function _transform_solution_to_si!(result, pmitd_data::Dict{String,<:Any}; make
     # Make transmission system mixed units (not per unit)
     _PM.make_mixed_units!(result["solution"]["it"][_PM.pm_it_name])
 
-    # Transform pmd MATH result to ENG
-    result["solution"]["it"][_PMD.pmd_it_name] = _PMD.transform_solution(
-        result["solution"]["it"][_PMD.pmd_it_name],
-        pmitd_data["it"][_PMD.pmd_it_name];
-        make_si=make_si
-    )
-
     # Transform pmitd solution to PMD SI
     _transform_pmitd_solution_to_si!(result)
 
-    # transform pmitd MATH result ref to ENG result ref
-    transform_pmitd_solution_to_eng!(result, pmitd_data)
+    # Convert to ENG or MATH models
+    if (solution_model=="eng") || (solution_model=="ENG")
+        # Transform pmd MATH result to ENG
+        result["solution"]["it"][_PMD.pmd_it_name] = _PMD.transform_solution(
+            result["solution"]["it"][_PMD.pmd_it_name],
+            pmitd_data["it"][_PMD.pmd_it_name];
+            make_si=make_si
+        )
+
+        # Transform pmitd MATH result ref to ENG result ref
+        transform_pmitd_solution_to_eng!(result, pmitd_data)
+
+    elseif (solution_model=="math") || (solution_model=="MATH")
+        result["solution"]["it"][_PMD.pmd_it_name] = _PMD.solution_make_si(
+            result["solution"]["it"][_PMD.pmd_it_name],
+            pmitd_data["it"][_PMD.pmd_it_name]
+        )
+    elseif !(solution_model=="eng") && !(solution_model=="ENG") && !(solution_model=="math") && !(solution_model=="MATH")
+        @error "The solution_model $(solution_model) does not exists, please input 'eng' or 'math'"
+        throw(error())
+    end
 
 end
 
@@ -242,4 +263,3 @@ function transform_pmitd_solution_to_eng!(result::Dict{String,<:Any}, pmitd_data
     end
 
 end
-

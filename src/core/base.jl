@@ -183,6 +183,7 @@ end
         pmitd_ref_extensions::Vector{<:Function}=Function[],
         make_si::Bool=true,
         auto_rename::Bool=false,
+        solution_model::String="eng",
         kwargs...
     )
 
@@ -195,6 +196,7 @@ specification being considered, `multinetwork` is the boolean that defines if th
 as multinetwork, `solution_processors` is the vector of the model solution processors, `pmitd_ref_extensions` is
 the array of modeling extensions, and `make_si` is the boolean that determines if the results are returned in SI or per-unit.
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
+`solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -206,6 +208,7 @@ function solve_model(
     pmitd_ref_extensions::Vector{<:Function}=Function[],
     make_si::Bool=true,
     auto_rename::Bool=false,
+    solution_model::String="eng",
     kwargs...)
 
     pmd_files = [pmd_file] # convert to vector
@@ -220,6 +223,7 @@ function solve_model(
         solution_processors=solution_processors,
         pmitd_ref_extensions=pmitd_ref_extensions,
         make_si=make_si,
+        solution_model=solution_model,
         kwargs...
     )
 end
@@ -239,6 +243,7 @@ end
         pmitd_ref_extensions::Vector{<:Function}=Function[],
         make_si::Bool=true,
         auto_rename::Bool=false,
+        solution_model::String="eng",
         kwargs...
     )
 
@@ -251,6 +256,7 @@ modeling object should be define as multinetwork,`solution_processors` is the ve
 `pmitd_ref_extensions` is the array of modeling extensions, and `make_si` is the boolean that determines
 if the results are returned in SI or per-unit.
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
+`solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -262,6 +268,7 @@ function solve_model(
     pmitd_ref_extensions::Vector{<:Function}=Function[],
     make_si::Bool=true,
     auto_rename::Bool=false,
+    solution_model::String="eng",
     kwargs...)
 
     # Read power t&d and linkage data from files.
@@ -274,6 +281,7 @@ function solve_model(
         solution_processors=solution_processors,
         pmitd_ref_extensions=pmitd_ref_extensions,
         make_si=make_si,
+        solution_model=solution_model,
         kwargs...
     )
 end
@@ -289,6 +297,7 @@ end
         solution_processors::Vector{<:Function}=Function[],
         pmitd_ref_extensions::Vector{<:Function}=Function[],
         make_si::Bool=true,
+        solution_model::String="eng",
         kwargs...
     )
 
@@ -298,7 +307,8 @@ is the integrated power transmission-distribution modeling type, `build_method` 
 problem specification being considered, `multinetwork` is the boolean that defines if the modeling object
 should be define as multinetwork`, solution_processors` is the vector of the model solution processors,
 `pmitd_ref_extensions` is the array of modeling extensions, and `make_si` is the boolean that determines
-if the results are returned in SI or per-unit.
+if the results are returned in SI or per-unit. `solution_model` is a string that determines in which model,
+ENG or MATH, the solutions are presented.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -309,6 +319,7 @@ function solve_model(
     solution_processors::Vector{<:Function}=Function[],
     pmitd_ref_extensions::Vector{<:Function}=Function[],
     make_si::Bool=true,
+    solution_model::String="eng",
     kwargs...)
 
     # Solve the model and build the result, timing both processes.
@@ -327,11 +338,11 @@ function solve_model(
      # Inform about the time for solving the problem (*change to @debug)
      @info "pmitd model solution time (instantiate + optimization): $(time() - start_time)"
 
-    # Transform solution (both T&D) - SI or per unit - MATH to ENG.
+    # Transform solution (both T&D) - SI or per unit - MATH or ENG.
     if (make_si == false)
-        _transform_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork)
+        _transform_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
     else
-        _transform_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork)
+        _transform_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
     end
 
     return result

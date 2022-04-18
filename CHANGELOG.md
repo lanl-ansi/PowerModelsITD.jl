@@ -23,6 +23,7 @@
 - Added documentation to `/docs` that explains in detail the new 'ideal' format for the boundary linking JSON files.
 - Updated documentation guides and README.
 - Added a new transformation function to `solution.jl` called `transform_pmitd_solution_to_eng!` in charge of converting the `pmitd` solution from MATH to ENG model.
+- Added option `solution_model="eng"`, `solution_model="math"` to all `solve_X` functions that allows the user to get the solution in either ENG or MATH models.
 
 ## v0.6.1
 

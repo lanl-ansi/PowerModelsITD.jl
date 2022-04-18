@@ -11,13 +11,14 @@
         pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
         make_si::Bool=true,
         auto_rename::Bool=false,
+        solution_model::String="eng",
         kwargs...
 	)
 
 Solve Integrated T&D Optimal Power Flow with minimum load delta (dmld).
 """
-function solve_dmld_opfitd(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, kwargs...)
-    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_dmld_opfitd; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, kwargs...)
+function solve_dmld_opfitd(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", kwargs...)
+    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_dmld_opfitd; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
 end
 
 
@@ -32,13 +33,14 @@ end
         pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
         make_si::Bool=true,
         auto_rename::Bool=false,
+        solution_model::String="eng",
         kwargs...
 	)
 
 Solve Multinetwork Integrated T&D Optimal Power Flow with minimum load delta (dmld continuous).
 """
-function solve_mn_dmld_opfitd_simple(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, kwargs...)
-    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_mn_dmld_opfitd_simple; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, kwargs...)
+function solve_mn_dmld_opfitd_simple(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", kwargs...)
+    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_mn_dmld_opfitd_simple; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
 end
 
 
