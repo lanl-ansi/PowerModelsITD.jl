@@ -8,7 +8,7 @@
         pmd_files = [pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1]
         pmitd_file = joinpath(dirname(bound_path), "case500_case30.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
@@ -19,7 +19,7 @@
         pmd_files = [pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1]
         pmitd_file = joinpath(dirname(bound_path), "case500_case30.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
@@ -30,7 +30,7 @@
         pmd_files = [pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1]
         pmitd_file = joinpath(dirname(bound_path), "case500_case30.json")
         pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
@@ -41,7 +41,7 @@
         pmd_files = [pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1]
         pmitd_file = joinpath(dirname(bound_path), "case500_case30.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
@@ -52,7 +52,7 @@
         pmd_files = [pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1]
         pmitd_file = joinpath(dirname(bound_path), "case500_case34.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
@@ -63,7 +63,7 @@
         pmd_files = [pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1]
         pmitd_file = joinpath(dirname(bound_path), "case500_case34.json")
         pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
@@ -74,7 +74,7 @@
         pmd_files = [pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1]
         pmitd_file = joinpath(dirname(bound_path), "case500_case34.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
@@ -85,7 +85,7 @@
         pmd_files = [pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1]
         pmitd_file = joinpath(dirname(bound_path), "case500_caseLV.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
@@ -96,7 +96,7 @@
         pmd_files = [pmd_file1, pmd_file1, pmd_file1, pmd_file1, pmd_file1]
         pmitd_file = joinpath(dirname(bound_path), "case500_caseLV.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file)
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end

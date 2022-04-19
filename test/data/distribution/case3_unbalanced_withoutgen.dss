@@ -1,5 +1,5 @@
 !Clear
-New Circuit.3Bus_example
+New Circuit.3bus_unbal_nogen
 !  define a really stiff source
 ~ basekv=230 pu=1.00 MVAsc3=200000 MVAsc1=210000
 

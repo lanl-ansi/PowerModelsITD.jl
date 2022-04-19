@@ -1,0 +1,10 @@
+[
+	{
+		"transmission_boundary": "5",
+        "distribution_boundary": "cktname.other_name.voltage_source.source"
+	},
+	{
+		"transmission_boundary": "6",
+        "distribution_boundary": "cktname.other_name.voltage_source.source"
+	}
+]

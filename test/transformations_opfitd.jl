@@ -5,7 +5,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACR-ACR - Applying voltage bounds" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_nogen.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
 
         # parse files
@@ -24,7 +24,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACR-ACR - Remove all bounds" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_nogen.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
 
         # parse files
@@ -42,7 +42,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACR-ACR - Apply Kron reduction and phase projections" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_nogen.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
 
         # parse files

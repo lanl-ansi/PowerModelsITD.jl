@@ -1,11 +1,11 @@
 [
 	{
 		"transmission_boundary": "2",
-        "distribution_boundary": "source"
+        "distribution_boundary": "voltage_source.source"
 	},
 
 	{
         "transmission_boundary": "7",
-        "distribution_boundary": "source"
+        "distribution_boundary": "voltage_source.source"
     }
 ]

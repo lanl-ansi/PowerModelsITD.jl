@@ -1,5 +1,31 @@
 # PowerModelsITD.jl Change Log
 
+## v0.7.0
+
+- Refactored the renaming function `_rename_network_components!` to rename components of a distribution system based on the name of the circuit (ckt).
+- Added new renaming structure `cktname.element`.
+- Changed names of circuits in distribution system test cases (OpenDSS files) to avoid collisions and test new renaming function.
+- Refactored function `_assign_boundary_buses` in `data.jl` such that boundary buses can be assigned using the new naming convention.
+- Added error message alerting the user that distribution system names must be unique to avoid name collisions.
+- Added option for user to allow the automatic renaming `auto_rename=true` of the circuits (for cases when the user wants PowerModelsITD.jl to handle the renaming sequentially).
+- Added new function `_check_and_rename_circuits!` that checks that the names of distribution system circuits are unique when passing multiple distribution systems. If `auto_rename=true` is not specified, an `error` will be displayed.
+- Added new function `_correct_boundary_names!` that corrects the boundary names passed in the JSON file based on the auto generated circuit names. A warning is displayed informing the user that the naming will be done sequentially (in case this may not be what the user wants).
+- Added new function `_clean_pmd_base_data!` that removes/cleans components from `pmd` dictionary for its subsequent renaming.
+- Added new function `_remove_network_components!` that performs the removal of dictionary keys needed by the `_clean_pmd_base_data!` function.
+- Added descriptive docstrings to newly added functions.
+- Refactored `parse_files` and `parse_power_distribution_file` to support new naming conventions for `pmd` data.
+- Added `auto_rename` option to all `solve_X` functions that require the option.
+- Added a new dictionary key `"belongs_to_ckt"` to every component renamed by the `_rename_network_components!` function. This will help knowing (and mapping back) to what circuit(network) each component in `pmd` belongs to.
+- Added new function `_add_file_name!` that makes sure that the file path/name of the distribution system being parsed-in is added to the "files" dictionary of "pmd".
+- Fixed issues identified by unit tests related to new naming format for JSON files.
+- Added new JSON files with specific distribution system names to `test/json` folder.
+- Added `autorename.jl` unit tests designed to test errors that must appear when the new naming convention is not followed and `auto_rename=false`.
+- Added documentation to `/docs` that explains in detail the new 'ideal' format for the boundary linking JSON files.
+- Updated documentation guides and README.
+- Added a new transformation function to `solution.jl` called `transform_pmitd_solution_to_eng!` in charge of converting the `pmitd` solution from MATH to ENG model.
+- Added option `solution_model="eng"` and `solution_model="math"` to all `solve_X` functions that allows the user to get the solution in either ENG or MATH models.
+- Refactored `examples/Beginners Guide.jl` to be compatible with the new version of PowerModelsITD.jl.
+
 ## v0.6.1
 
 - Added Pluto Notebook `Beginners Guide.jl` to Docs based on Pluto v0.15.1 (Note: Higher Pluto versions break the integration).

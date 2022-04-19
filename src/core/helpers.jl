@@ -34,156 +34,360 @@ end
 
 """
     function _rename_components!(
-        pmd_base::Dict{String,<:Any}, 
-        data::Dict{String,<:Any}, 
-        ms::Int
+        base_data::Dict{String,<:Any},
+        data::Dict{String,<:Any}
     )
 
-Renames the components given in `data` for multi-system number (`ms`), and adds the renamed components 
-to `pmd_base` dictionary structure.
+Renames the components given in `data` for new multi-system and adds the renamed components
+to `base_data` dictionary structure. cktname.element
 """
-function _rename_components!(pmd_base::Dict{String,<:Any}, data::Dict{String,<:Any}, ms::Int)
-   
-    bias = BOUNDARY_NUMBER - 1 + ms # Add bias name based on boundary number and multi-system (ms) number
+function _rename_components!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any})
 
     # Check if multinetwork
-    if haskey(pmd_base, "nw")
+    if haskey(base_data, "nw")
         for (nw, mn_data) in data["nw"]
-            _rename_network_components_network!(pmd_base["nw"][nw], mn_data, bias)
+            _rename_network_components!(base_data["nw"][nw], mn_data, data["name"])
         end
     else
-        _rename_network_components_network!(pmd_base, data, bias)
+        _rename_network_components!(base_data, data, data["name"])
     end
-       
+
+    # add file name to "files" dictionary in "pmd"
+    _add_file_name!(base_data, data)
+
 end
 
 
 """
-    function _rename_network_components_network!(
-        pmd_base::Dict{String,<:Any}, 
-        data::Dict{String,<:Any}, 
-        bias::Int
+    function _check_and_rename_circuits!(
+        base_data::Dict{String,<:Any},
+        data::Dict{String,<:Any};
+        auto_rename::Bool=false,
+        ms_num::Int=1
     )
 
-Rename specific components in single network dictionary. `pmd_base` is the dictionary where the renamed
-components are to be added, `data` is the dictionary containing the components to be renamed, and `bias` 
-is the number bias used as part of the new name of the renamed the components. 
+Checks if the name of the `data` ckt already exists, if so and `auto_rename=false`
+an error should be displayed telling the user that they must use the different ckt names
+when parsing multiple distribution systems. If `auto_rename=true`, PMITD will rename the
+repeated ckt name to `repeatedCktName_(ms_num)`. Finally, adds the ckt name of `data` to
+"ckt_names" in the `base_data` dictionary.
 """
-# rename specific components in single network dictionary
-function _rename_network_components_network!(pmd_base::Dict{String,<:Any}, data::Dict{String,<:Any}, bias::Int)
+function _check_and_rename_circuits!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any}; auto_rename::Bool=false, ms_num::Int=1)
+
+    # check that data ckt name is not repeating, throw error if it is
+    if (data["name"] in base_data["ckt_names"])
+        if (auto_rename==false)
+            @error "Distribution systems have same circuit names! Please use different names for each distribution system. (e.g., New Circuit.NameOfCkt) or use the auto_rename=true option."
+            throw(error())
+        else
+            data["name"] = data["name"] * "_" * string(ms_num)
+        end
+    end
+
+     # add circuit name to base_data["ckt_names"]
+     push!(base_data["ckt_names"], data["name"])
+
+end
+
+
+"""
+    function _correct_boundary_names!(
+        pmitd_data::Dict{String,<:Any}
+    )
+
+Corrects the names of distribution system boundary buses given in boundary linking file based on the ckt_names
+stored in the "pmd"=>"ckt_names". The correction is done sequentially, so each distribution
+boundary bus name will be assigned the specific ckt name that exists in the numerical position
+of the vector "ckt_names". This process should only be applied when users explicitly use the
+option `auto_rename=true`, and a `warning` is displayed warning the user that the boundaries may
+not be correct.
+"""
+function _correct_boundary_names!(pmitd_data::Dict{String,<:Any})
+
+    @warn "auto_rename option is true, so boundary names in 'pmitd=>' will be overwritten sequentially and may not represent the actual wanted boundary connections."
+
+    for (boundary, name) in zip(pmitd_data["it"][pmitd_it_name], pmitd_data["it"][_PMD.pmd_it_name]["ckt_names"])
+        # rearrange the name of bus if more than 1 ckts
+        old_dist_bus_name_vector = split(boundary[2]["distribution_boundary"], ".")
+        if (length(old_dist_bus_name_vector)==3)
+            boundary[2]["distribution_boundary"] = name * "." * old_dist_bus_name_vector[2] * "." * old_dist_bus_name_vector[3]
+        elseif (length(old_dist_bus_name_vector)==2)
+            boundary[2]["distribution_boundary"] = name * "." * old_dist_bus_name_vector[1] * "." * old_dist_bus_name_vector[2]
+        else
+            @error "One of the 'distribution_boundary' names given in the JSON file is in an incompatible format. Please use the 'object.name' or 'cktName.object.name' formats."
+            throw(error())
+        end
+    end
+
+end
+
+
+"""
+    function _clean_pmd_base_data!(
+        base_data::Dict{String,<:Any}
+    )
+
+Removes/Cleans components from `base_data` pmd dictionary.
+"""
+function _clean_pmd_base_data!(base_data::Dict{String,<:Any})
+
+    # Check if multinetwork
+    if haskey(base_data, "nw")
+        for (nw,_) in base_data["nw"]
+            _remove_network_components!(base_data["nw"][nw])
+        end
+    else
+        _remove_network_components!(base_data)
+    end
+
+end
+
+
+"""
+    function _remove_network_components!(
+        base_data::Dict{String,<:Any}
+    )
+
+Removes components from `base_data` dictionary.
+"""
+function _remove_network_components!(base_data::Dict{String,<:Any})
+
+    # delete keys
+    if (haskey(base_data, "bus"))
+        delete!(base_data, "bus")
+    end
+
+    if (haskey(base_data, "line"))
+        delete!(base_data, "line")
+    end
+
+    if (haskey(base_data, "switch"))
+        delete!(base_data, "switch")
+    end
+
+    if (haskey(base_data, "transformer"))
+        delete!(base_data, "transformer")
+    end
+
+    if (haskey(base_data, "load"))
+        delete!(base_data, "load")
+    end
+
+    if (haskey(base_data, "linecode"))
+        delete!(base_data, "linecode")
+    end
+
+    if (haskey(base_data, "voltage_source"))
+        delete!(base_data, "voltage_source")
+    end
+
+    if (haskey(base_data, "generator"))
+        delete!(base_data, "generator")
+    end
+
+    if (haskey(base_data, "shunt"))
+        delete!(base_data, "shunt")
+    end
+
+    if (haskey(base_data, "solar"))
+        delete!(base_data, "solar")
+    end
+
+    if (haskey(base_data, "storage"))
+        delete!(base_data, "storage")
+    end
+
+    if (haskey(base_data, "files"))
+        delete!(base_data, "files")
+    end
+
+    if (haskey(base_data, "settings"))
+        base_data["settings"]["vbases_default"] = Dict{String,Real}() # clean the vbases_default
+    end
+
+end
+
+
+"""
+    function _rename_network_components!(
+        base_data::Dict{String,<:Any},
+        data::Dict{String,<:Any},
+        ckt_name::String
+    )
+
+Rename specific components in single network dictionary. `base_data` is the dictionary where the renamed
+components are to be added, `data` is the dictionary containing the components to be renamed.
+`ckt_name` is the circuit name of `data`.
+"""
+function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any}, ckt_name::String)
 
     # loop through buses
     if (haskey(data, "bus"))
         for (key, value) in data["bus"]
-            new_key = key * "_" * string(bias)
-            pmd_base["bus"][new_key] = value
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "bus"))
+                base_data["bus"] = Dict()
+            end
+            base_data["bus"][new_key] = value
+            base_data["bus"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through lines
     if (haskey(data, "line"))
         for (key, value) in data["line"]
-            new_key = key * "_" * string(bias) 
-            pmd_base["line"][new_key] = value
-            pmd_base["line"][new_key]["source_id"] = pmd_base["line"][new_key]["source_id"] * "_" * string(bias)
-            pmd_base["line"][new_key]["f_bus"] = pmd_base["line"][new_key]["f_bus"] * "_" * string(bias)
-            pmd_base["line"][new_key]["t_bus"] = pmd_base["line"][new_key]["t_bus"] * "_" * string(bias)
-            if (haskey(pmd_base["line"][new_key], "linecode"))
-                pmd_base["line"][new_key]["linecode"] = pmd_base["line"][new_key]["linecode"] * "_" * string(bias)
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "line"))
+                base_data["line"] = Dict()
             end
+            base_data["line"][new_key] = value
+            base_data["line"][new_key]["source_id"] = ckt_name * "." * base_data["line"][new_key]["source_id"]
+            base_data["line"][new_key]["f_bus"] = ckt_name * "." * base_data["line"][new_key]["f_bus"]
+            base_data["line"][new_key]["t_bus"] = ckt_name * "." * base_data["line"][new_key]["t_bus"]
+            if (haskey(base_data["line"][new_key], "linecode"))
+                base_data["line"][new_key]["linecode"] = ckt_name * "." * base_data["line"][new_key]["linecode"]
+            end
+            base_data["line"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through switch
     if (haskey(data, "switch"))
         for (key, value) in data["switch"]
-            new_key = key * "_" * string(bias) 
-            pmd_base["switch"][new_key] = value
-            pmd_base["switch"][new_key]["source_id"] = pmd_base["switch"][new_key]["source_id"] * "_" * string(bias)
-            pmd_base["switch"][new_key]["f_bus"] = pmd_base["switch"][new_key]["f_bus"] * "_" * string(bias)
-            pmd_base["switch"][new_key]["t_bus"] = pmd_base["switch"][new_key]["t_bus"] * "_" * string(bias)
-            if (haskey(pmd_base["switch"][new_key], "linecode"))
-                pmd_base["switch"][new_key]["linecode"] = pmd_base["switch"][new_key]["linecode"] * "_" * string(bias)
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "switch"))
+                base_data["switch"] = Dict()
             end
+            base_data["switch"][new_key] = value
+            base_data["switch"][new_key]["source_id"] = ckt_name * "." * base_data["switch"][new_key]["source_id"]
+            base_data["switch"][new_key]["f_bus"] = ckt_name * "." * base_data["switch"][new_key]["f_bus"]
+            base_data["switch"][new_key]["t_bus"] = ckt_name * "." * base_data["switch"][new_key]["t_bus"]
+            if (haskey(base_data["switch"][new_key], "linecode"))
+                base_data["switch"][new_key]["linecode"] = ckt_name * "." * base_data["switch"][new_key]["linecode"]
+            end
+            base_data["switch"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
-    
+
     # loop through transformer
     if (haskey(data, "transformer"))
         for (key, value) in data["transformer"]
-            new_key = key * "_" * string(bias) 
-            pmd_base["transformer"][new_key] = value
-            pmd_base["transformer"][new_key]["source_id"] = pmd_base["transformer"][new_key]["source_id"] * "_" * string(bias)
-            pmd_base["transformer"][new_key]["bus"][1] = pmd_base["transformer"][new_key]["bus"][1] * "_" * string(bias)
-            pmd_base["transformer"][new_key]["bus"][2] = pmd_base["transformer"][new_key]["bus"][2] * "_" * string(bias)
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "transformer"))
+                base_data["transformer"] = Dict()
+            end
+            base_data["transformer"][new_key] = value
+            base_data["transformer"][new_key]["source_id"] = ckt_name * "." * base_data["transformer"][new_key]["source_id"]
+            base_data["transformer"][new_key]["bus"][1] = ckt_name * "." * base_data["transformer"][new_key]["bus"][1]
+            base_data["transformer"][new_key]["bus"][2] = ckt_name * "." * base_data["transformer"][new_key]["bus"][2]
+            base_data["transformer"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through load
     if (haskey(data, "load"))
         for (key, value) in data["load"]
-            new_key = key * "_" * string(bias) 
-            pmd_base["load"][new_key] = value
-            pmd_base["load"][new_key]["source_id"] = pmd_base["load"][new_key]["source_id"] * "_" * string(bias)
-            pmd_base["load"][new_key]["bus"] = pmd_base["load"][new_key]["bus"] * "_" * string(bias)
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "load"))
+                base_data["load"] = Dict()
+            end
+            base_data["load"][new_key] = value
+            base_data["load"][new_key]["source_id"] = ckt_name * "." * base_data["load"][new_key]["source_id"]
+            base_data["load"][new_key]["bus"] = ckt_name * "." * base_data["load"][new_key]["bus"]
+            base_data["load"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
-    
+
     # loop through linecode
     if (haskey(data, "linecode"))
         for (key, value) in data["linecode"]
-            new_key = key * "_" * string(bias) 
-            pmd_base["linecode"][new_key] = value
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "linecode"))
+                base_data["linecode"] = Dict()
+            end
+            base_data["linecode"][new_key] = value
+            base_data["linecode"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through voltage_sources
     if (haskey(data, "voltage_source"))
         for (key, value) in data["voltage_source"]
-            new_key = key * "_" * string(bias) 
-            pmd_base["voltage_source"][new_key] = value
-            pmd_base["voltage_source"][new_key]["source_id"] = pmd_base["voltage_source"][new_key]["source_id"] * "_" * string(bias)
-            pmd_base["voltage_source"][new_key]["bus"] = pmd_base["voltage_source"][new_key]["bus"] * "_" * string(bias)
+            new_key = ckt_name * "." * key
+             # if key does not exists in base_data, add an empty Dict
+             if !(haskey(base_data, "voltage_source"))
+                base_data["voltage_source"] = Dict()
+            end
+            base_data["voltage_source"][new_key] = value
+            base_data["voltage_source"][new_key]["source_id"] = ckt_name * "." * base_data["voltage_source"][new_key]["source_id"]
+            base_data["voltage_source"][new_key]["bus"] = ckt_name * "." * base_data["voltage_source"][new_key]["bus"]
+            base_data["voltage_source"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through generators
     if (haskey(data, "generator"))
         for (key, value) in data["generator"]
-            new_key = key * "_" * string(bias) 
-            pmd_base["generator"][new_key] = value
-            pmd_base["generator"][new_key]["source_id"] = pmd_base["generator"][new_key]["source_id"] * "_" * string(bias)
-            pmd_base["generator"][new_key]["bus"] = pmd_base["generator"][new_key]["bus"] * "_" * string(bias)
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "generator"))
+                base_data["generator"] = Dict()
+            end
+            base_data["generator"][new_key] = value
+            base_data["generator"][new_key]["source_id"] = ckt_name * "." * base_data["generator"][new_key]["source_id"]
+            base_data["generator"][new_key]["bus"] = ckt_name * "." * base_data["generator"][new_key]["bus"]
+            base_data["generator"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through shunts
     if (haskey(data, "shunt"))
         for (key, value) in data["shunt"]
-            new_key = key * "_" * string(bias)
-            pmd_base["shunt"][new_key] = value
-            pmd_base["shunt"][new_key]["source_id"] = pmd_base["shunt"][new_key]["source_id"] * "_" * string(bias)
-            pmd_base["shunt"][new_key]["bus"] = pmd_base["shunt"][new_key]["bus"] * "_" * string(bias)
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "shunt"))
+                base_data["shunt"] = Dict()
+            end
+            base_data["shunt"][new_key] = value
+            base_data["shunt"][new_key]["source_id"] = ckt_name * "." * base_data["shunt"][new_key]["source_id"]
+            base_data["shunt"][new_key]["bus"] = ckt_name * "." * base_data["shunt"][new_key]["bus"]
+            base_data["shunt"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through solar PV systems
     if (haskey(data, "solar"))
         for (key, value) in data["solar"]
-            new_key = key * "_" * string(bias) 
-            pmd_base["solar"][new_key] = value
-            pmd_base["solar"][new_key]["source_id"] = pmd_base["solar"][new_key]["source_id"] * "_" * string(bias)
-            pmd_base["solar"][new_key]["bus"] = pmd_base["solar"][new_key]["bus"] * "_" * string(bias)
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "solar"))
+                base_data["solar"] = Dict()
+            end
+            base_data["solar"][new_key] = value
+            base_data["solar"][new_key]["source_id"] = ckt_name * "." * base_data["solar"][new_key]["source_id"]
+            base_data["solar"][new_key]["bus"] = ckt_name * "." * base_data["solar"][new_key]["bus"]
+            base_data["solar"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
     # loop through battery storage systems
     if (haskey(data, "storage"))
         for (key, value) in data["storage"]
-            new_key = key * "_" * string(bias)
-            pmd_base["storage"][new_key] = value
-            pmd_base["storage"][new_key]["source_id"] = pmd_base["storage"][new_key]["source_id"] * "_" * string(bias)
-            pmd_base["storage"][new_key]["bus"] = pmd_base["storage"][new_key]["bus"] * "_" * string(bias)
+            new_key = ckt_name * "." * key
+            # if key does not exists in base_data, add an empty Dict
+            if !(haskey(base_data, "storage"))
+                base_data["storage"] = Dict()
+            end
+            base_data["storage"][new_key] = value
+            base_data["storage"][new_key]["source_id"] = ckt_name * "." * base_data["storage"][new_key]["source_id"]
+            base_data["storage"][new_key]["bus"] = ckt_name * "." * base_data["storage"][new_key]["bus"]
+            base_data["storage"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
 
@@ -191,8 +395,32 @@ function _rename_network_components_network!(pmd_base::Dict{String,<:Any}, data:
     # loop through settings
     if (haskey(data, "settings"))
         for (key, value) in data["settings"]["vbases_default"]
-            new_key = key * "_" * string(bias) 
-            pmd_base["settings"]["vbases_default"][new_key] = value
+            new_key = ckt_name * "." * key
+            base_data["settings"]["vbases_default"][new_key] = value
         end
     end
+
+end
+
+
+"""
+    function _add_file_name!(
+        base_data::Dict{String,<:Any},
+        data::Dict{String,<:Any}
+    )
+
+Adds filename from `data` to "files" dictionary in pmd (`base_data`).
+"""
+function _add_file_name!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any})
+
+    # add file name to "files" vector
+    if (haskey(data, "files"))
+        for file_name in data["files"]
+            if !(haskey(base_data, "files"))
+                base_data["files"] = Vector{String}()
+            end
+            push!(base_data["files"], file_name)
+        end
+    end
+
 end

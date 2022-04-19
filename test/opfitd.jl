@@ -5,7 +5,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 ACR-ACR with piecewise linear terms" begin
         pm_file = joinpath(dirname(trans_path), "case5_pwlc_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         # transform pmd to math, to change gens cost models
@@ -22,7 +22,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 ACR-ACR with polynomial nl terms" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         # transform pmd to math, to change gens cost models
@@ -48,7 +48,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACR-ACR" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_nogen.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd; make_si=true)
@@ -59,7 +59,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACR-ACR - RAW PSSE File" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.raw")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_nogen.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -70,7 +70,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case3 ACR-ACR" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -81,7 +81,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case3 Without Dist. Generator ACR-ACR" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -93,7 +93,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case13 ACR-ACR Without Dist. Generator ACR-ACR" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload_ieee13.m")
         pmd_file = joinpath(dirname(dist_path), "caseIEEE13_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case13.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case13_bal_nogen.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -104,7 +104,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 ACP-ACP" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -115,7 +115,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACP-ACP" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_nogen.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -126,7 +126,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACP-ACP - RAW PSSE File" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.raw")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_nogen.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -137,7 +137,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case3 ACP-ACP" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -148,7 +148,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case3 Without Dist. Generator ACP-ACP" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -159,7 +159,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case13 Without Dist. Generator ACP-ACP" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload_ieee13.m")
         pmd_file = joinpath(dirname(dist_path), "caseIEEE13_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case13.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case13_bal_nogen.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -170,7 +170,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 NFA-NFA" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -181,7 +181,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator NFA-NFA" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_nogen.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -192,7 +192,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case3 NFA-NFA" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -203,7 +203,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case3 Without Dist. Generator NFA-NFA" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -214,7 +214,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case13 Without Dist. Generator NFA-NFA" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload_ieee13.m")
         pmd_file = joinpath(dirname(dist_path), "caseIEEE13_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case13.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case13_bal_nogen.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -225,7 +225,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case13 Without Dist. Generator NFA-NFA" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload_ieee13.m")
         pmd_file = joinpath(dirname(dist_path), "caseIEEE13_unbalanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case13.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case13_unbal_nogen.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -236,7 +236,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator IVR-IVR" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_nogen.json")
         pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -247,7 +247,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case3 Without Dist. Generator IVR-IVR" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
         pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -259,7 +259,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 IVR-IVR with polynomial nl terms" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
         pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         # transform pmd to math, to change gens cost models
@@ -284,7 +284,7 @@
      @testset "solve_model (with network inputs): Balanced case5-case3 IVR-IVR with piecewise linear terms" begin
         pm_file = joinpath(dirname(trans_path), "case5_pwlc_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
         pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         # transform pmd to math, to change gens cost models
@@ -300,7 +300,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 With Dist. Generator SOCBF-SOCNLPUBF" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_notransformer.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_notrans.json")
         pmitd_type = BFPowerModelITD{SOCBFPowerModel, SOCNLPUBFPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -311,7 +311,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator SOCBF-SOCNLPUBF" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_notransformer_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_notrans_nogen.json")
         pmitd_type = BFPowerModelITD{SOCBFPowerModel, SOCNLPUBFPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -322,7 +322,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case3 With Dist. Generator SOCBF-SOCNLPUBF" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_notransformer.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_notrans.json")
         pmitd_type = BFPowerModelITD{SOCBFPowerModel, SOCNLPUBFPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -333,7 +333,7 @@
     @testset "solve_model (with network inputs): Unbalanced case5-case3 Without Dist. Generator SOCBF-SOCNLPUBF" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_notransformer_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_notrans_nogen.json")
         pmitd_type = BFPowerModelITD{SOCBFPowerModel, SOCNLPUBFPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
@@ -344,7 +344,7 @@
     @testset "solve_model (with network inputs): Balanced case5-case3 ACP-ACP: Per Unit Test Result" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd; make_si=false)
@@ -352,16 +352,15 @@
         @test isapprox(result["objective"], 17926.7247; atol = 1e-4)
         @test all(isapprox.(result["solution"]["it"]["pm"]["bus"]["1"]["vm"], 0.91781; atol=1e-3))
         @test all(isapprox.(result["solution"]["it"]["pm"]["gen"]["1"]["pg"], 0.4; atol=1e-3))
-        @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["primary"]["vm"][1], 0.9368; atol=1e-3))
-        @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["primary"]["va"][2], -120.7730; atol=1e-3))
-        @test all(isapprox.(result["solution"]["it"]["pmd"]["generator"]["gen1"]["pg"][1], 0.006666; atol=1e-3))
-
+        @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["3bus_bal.primary"]["vm"][1], 0.9368; atol=1e-3))
+        @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["3bus_bal.primary"]["va"][2], -120.7730; atol=1e-3))
+        @test all(isapprox.(result["solution"]["it"]["pmd"]["generator"]["3bus_bal.gen1"]["pg"][1], 0.006666; atol=1e-3))
     end
 
     @testset "solve_model (with network inputs): Balanced case5-case3 ACP-ACP: SI units Test Result" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd; make_si=true)
@@ -369,16 +368,15 @@
         @test isapprox(result["objective"], 17926.7247; atol = 1e-4)
         @test all(isapprox.(result["solution"]["it"]["pm"]["bus"]["1"]["vm"], 0.91781; atol=1e-3))
         @test all(isapprox.(result["solution"]["it"]["pm"]["gen"]["1"]["pg"], 40.0; atol=1e-3))
-        @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["primary"]["vm"][1], 7.4641984; atol=1e-3))
-        @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["primary"]["va"][2], -120.7730; atol=1e-3))
-        @test all(isapprox.(result["solution"]["it"]["pmd"]["generator"]["gen1"]["pg"][1], 666.667; atol=1e-3))
-
+        @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["3bus_bal.primary"]["vm"][1], 7.4641984; atol=1e-3))
+        @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["3bus_bal.primary"]["va"][2], -120.7730; atol=1e-3))
+        @test all(isapprox.(result["solution"]["it"]["pmd"]["generator"]["3bus_bal.gen1"]["pg"][1], 666.667; atol=1e-3))
     end
 
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator SOCBFConic-SOCConicUBF" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_notransformer_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_notrans_nogen.json")
         pmitd_type = BFPowerModelITD{SOCBFConicPowerModel, SOCConicUBFPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         result = solve_model(pmitd_data, pmitd_type, scs_solver, build_opfitd)

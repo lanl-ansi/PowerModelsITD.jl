@@ -1,0 +1,15 @@
+[
+	{
+		"transmission_boundary": "5",
+        "distribution_boundary": "3bus_bal_nogen.voltage_source.source"
+	},
+
+	{
+        "transmission_boundary": "6",
+        "distribution_boundary": "3bus_unbal_nogen.voltage_source.source"
+    },
+    {
+        "transmission_boundary": "4",
+        "distribution_boundary": "3bus_bal_nogen.voltage_source.source"
+    }
+]

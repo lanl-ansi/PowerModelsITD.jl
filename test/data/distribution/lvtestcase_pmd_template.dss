@@ -2,7 +2,7 @@
 
 Set DefaultBaseFrequency=50  ! for European system
 
-New circuit.LVTest
+New circuit.LVTest_template
 ~ BasekV=11 pu=1.05  ISC3=3000  ISC1=5
 ~ baseMVA=1
 

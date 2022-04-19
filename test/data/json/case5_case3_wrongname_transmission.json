@@ -1,6 +1,6 @@
 [
 	{
 		"transmission_boundary": "15",
-        "distribution_boundary": "source"
+        "distribution_boundary": "voltage_source.source"
 	}
 ]

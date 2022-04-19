@@ -1,6 +1,6 @@
 # Installation Guide
 
-From Julia, PowerModelsITD is installed using the built-in package manager:
+From Julia, PowerModelsITD.jl is installed using the built-in package manager:
 
 ```julia
 import Pkg
@@ -15,7 +15,7 @@ Or, within the Julia REPL:
 
 ## Installing an Optimizer
 
-PowerModelsITD depends on optimizers to solve Optimization problems, _e.g._, [`solve_opfitd`](@ref solve_opfitd). The table below lists the optimizer packages that have been tested with PowerModelsITD, and have been found to work by the team; this list is not exhaustive, there are probably more optimizers that will work.
+PowerModelsITD.jl depends on optimizers to solve Optimization problems, _e.g._, [`solve_opfitd`](@ref solve_opfitd). The table below lists the optimizer packages that have been tested with PowerModelsITD.jl, and have been found to work by the team; this list is not exhaustive, there are probably more optimizers that will work.
 
 Install an optimizer using the Julia Package Manager, _e.g._,
 

@@ -6,7 +6,7 @@
         pmitd_file = joinpath(dirname(bound_path), "case5_case3.json")
         pitd_data = parse_link_file(pmitd_file)
         @test pitd_data["it"]["pmitd"][string(BOUNDARY_NUMBER)]["transmission_boundary"] == "5"
-        @test pitd_data["it"]["pmitd"][string(BOUNDARY_NUMBER)]["distribution_boundary"] == "source"
+        @test pitd_data["it"]["pmitd"][string(BOUNDARY_NUMBER)]["distribution_boundary"] == "voltage_source.source"
     end
 
     @testset "parse_files (.m, .dss, .json)" begin
