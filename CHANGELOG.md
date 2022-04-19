@@ -1,5 +1,9 @@
 # PowerModelsITD.jl Change Log
 
+## staged
+
+- none.
+
 ## v0.7.0
 
 - Refactored the renaming function `_rename_network_components!` to rename components of a distribution system based on the name of the circuit (ckt).
