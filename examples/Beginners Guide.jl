@@ -16,7 +16,7 @@ end
 # ╔═╡ 4b293648-92aa-4ebb-9d33-a6707773f0b1
 using CodeTracking, Revise, PlutoUI
 
-# ╔═╡ ac8bd5df-5696-4bfc-88f5-01feb8b61f89
+# ╔═╡ 7592c3de-481f-4877-a362-56e0eaaf56b0
 using PowerModelsITD
 
 # ╔═╡ ea6bd476-ba83-4b1b-ad70-825b25d15135
@@ -26,7 +26,7 @@ md"""
 This Notebook was designed for the following versions:
 
 - `julia = "~1.6"`
-- `PowerModelsITD = "~0.6.0"`
+- `PowerModelsITD = "~0.7.0"`
 - `PowerModelsDistribution = "~0.14.2"`
 - `PowerModels = "~0.19.4"`
 
@@ -63,7 +63,9 @@ Let's define the optimizer to be used for the rest of this notebook (**IPOPT**).
 begin
 	import JuMP
 	import Ipopt
-	ipopt = JuMP.optimizer_with_attributes(Ipopt.Optimizer, "acceptable_tol"=>1.0e-8, "print_level"=>0, "sb"=>"yes")
+	ipopt = JuMP.optimizer_with_attributes(Ipopt.Optimizer,
+											"acceptable_tol"=>1.0e-8,
+											"print_level"=>0, "sb"=>"yes")
 end
 
 
@@ -100,34 +102,33 @@ Below, select the specific files from a few example cases included in the `PMITD
 **Case 1**: Case5-Case3 Balanced - 1 Boundary, No Generators in Dist. System.
 - _Transmission System_: "case5\_withload.m" or "case5\_withload.raw" (PSSE)
 - _Distribution System_: "case3\_balanced\_withoutgen.dss"
-- _Boundaries Linking File_: "case5\_case3.json"
+- _Boundaries Linking File_: "case5\_case3\_bal\_nogen.json"
 
 **Case 2**: Case5-Case3 Unbalanced - 1 Boundary, No Generators in Dist. System.
 - _Transmission System_: "case5\_withload.m" or "case5\_withload.raw" (PSSE)
 - _Distribution System_: "case3\_unbalanced\_withoutgen.dss"
-- _Boundaries Linking File_: "case5\_case3.json"
+- _Boundaries Linking File_: "case5\_case3\_unbal\_nogen.json"
 
 **Case 3**: Case5-Case3 Balanced - 1 Boundary, 1 Generator in Dist. System.
 - _Transmission System_: "case5\_withload.m" or "case5\_withload.raw" (PSSE)
 - _Distribution System_: "case3\_balanced.dss"
-- _Boundaries Linking File_: "case5\_case3.json"
+- _Boundaries Linking File_: "case5\_case3\_bal.json"
 
 
 **Case 4**: Case5-Case3 Unbalanced - 1 Boundary, 1 Generator in Dist. System.
 - _Transmission System_: "case5\_withload.m" or "case5\_withload.raw" (PSSE)
 - _Distribution System_: "case3\_unbalanced.dss"
-- _Boundaries Linking File_: "case5\_case3.json"
-
+- _Boundaries Linking File_: "case5\_case3\_unbal.json"
 
 **Case 5**: Case5-CaseIEEE13 Balanced - 1 Boundary, No Generators in Dist. System.
-- _Transmission System_: "case5\_withload\_ieee13.m"
+- _Transmission System_: "case5\_withload.m" or "case5\_withload.raw" (PSSE)
 - _Distribution System_: "caseIEEE13\_balanced\_withoutgen.dss"
-- _Boundaries Linking File_: "case5\_case13.json"
+- _Boundaries Linking File_: "case5\_case13\_bal\_nogen.json"
 
 **Case 6**: Case5-CaseIEEE13 Unbalanced - 1 Boundary, No Generators in Dist. System.
-- _Transmission System_: "case5\_withload\_ieee13.m"
+- _Transmission System_: "case5\_withload.m" or "case5\_withload.raw" (PSSE)
 - _Distribution System_: "caseIEEE13\_unbalanced\_withoutgen.dss"
-- _Boundaries Linking File_: "case5\_case13.json"
+- _Boundaries Linking File_: "case5\_case13\_unbal\_nogen.json"
 """
 
 # ╔═╡ e2200c7f-e434-4e38-a990-19761a2c236c
@@ -142,7 +143,6 @@ begin
 	pmitd_path = joinpath(dirname(pathof(PowerModelsITD)), "..")
 	@bind pm_file Select([
 			joinpath(pmitd_path, "test/data/transmission/case5_withload.m") => "case5_withload.m",
-			joinpath(pmitd_path, "test/data/transmission/case5_withload_ieee13.m") => "case5_withload_ieee13.m",
 			joinpath(pmitd_path, "test/data/transmission/case5_withload.raw") => "case5_withload.raw",
 		])
 end
@@ -176,8 +176,12 @@ md"""
 # ╔═╡ 99a2b324-2caa-42d4-b0e7-eee9c1942bf9
 begin
 	@bind pmitd_file Select([
-			joinpath(pmitd_path, "test/data/json/case5_case3.json") => "case5_case3.json",
-			joinpath(pmitd_path, "test/data/json/case5_case13.json") => "case5_case13.json",
+			joinpath(pmitd_path, "test/data/json/case5_case3_bal_nogen.json") => "case5_case3_bal_nogen.json",
+			joinpath(pmitd_path, "test/data/json/case5_case3_unbal_nogen.json") => "case5_case3_unbal_nogen.json",
+			joinpath(pmitd_path, "test/data/json/case5_case3_bal.json") => "case5_case3_bal.json",
+			joinpath(pmitd_path, "test/data/json/case5_case3_unbal.json") => "case5_case3_unbal.json",
+			joinpath(pmitd_path, "test/data/json/case5_case13_bal_nogen.json") => "case5_case13_bal_nogen.json",
+			joinpath(pmitd_path, "test/data/json/case5_case13_unbal_nogen.json") => "case5_case13_unbal_nogen.json",
 		])
 end
 
@@ -357,8 +361,11 @@ md"""
 
 # ╔═╡ af46ddfb-762b-461d-8d45-68eb35e136e7
 begin
-	@bind pmitd_file_other Select([
-			joinpath(pmitd_path, "test/data/json/case5_case3.json") => "case5_case3.json",
+	@bind pmitd_file_soc Select([
+			joinpath(pmitd_path, "test/data/json/case5_case3_bal_notrans_nogen.json") => "case5_case3_bal_notrans_nogen.json",
+			joinpath(pmitd_path, "test/data/json/case5_case3_bal_notrans.json") => "case5_case3_bal_notrans.json",
+			joinpath(pmitd_path, "test/data/json/case5_case3_unbal_notrans_nogen.json") => "case5_case3_unbal_notrans_nogen.json",
+			joinpath(pmitd_path, "test/data/json/case5_case3_unbal_notrans.json") => "case5_case3_unbal_notrans.json",
 		])
 end
 
@@ -399,7 +406,11 @@ if(pmitd_type_selected_soc == "SOCBF-SOCUBF")
 end
 
 # ╔═╡ 0001a753-de84-45e7-b1d3-394c34596705
-result_soc = solve_opfitd(pm_file_other, pmd_file_soc, pmitd_file_other, pmitd_type_soc, ipopt)
+result_soc = solve_opfitd(pm_file_other,
+							pmd_file_soc,
+							pmitd_file_soc,
+							pmitd_type_soc,
+							ipopt)
 
 # ╔═╡ ac80d9b0-4cde-4b04-a4f0-1346194f6b55
 result_soc["solution"]["it"]["pmitd"]
@@ -451,10 +462,12 @@ md"""
 """
 
 # ╔═╡ dfa54ef4-4571-4195-9bad-5fd6905136b4
-pmd_file1 = joinpath(pmitd_path, "test/data/distribution/case3_balanced_withoutgen.dss")
+pmd_file1 = joinpath(pmitd_path,
+						"test/data/distribution/case3_unbalanced_withoutgen.dss")
 
 # ╔═╡ 34b0b912-255c-4275-9e95-d18e67c91991
-pmd_file2 = joinpath(pmitd_path, "test/data/distribution/case3_unbalanced_withoutgen.dss")
+pmd_file2 = joinpath(pmitd_path,
+						"test/data/distribution/case3_balanced_withoutgen.dss")
 
 # ╔═╡ 21af3cf3-80dc-431a-b877-b5b65295b80e
 md"""
@@ -498,13 +511,14 @@ end
 
 # ╔═╡ 5f616149-5d33-42ec-b6a5-2271a044de95
 md"""
-##### (c) Load boundary links system (`pmitd`) files
+##### (c) Load boundary links system (`pmitd`) file
 
 **IMPORTANT**: This file must contain all the boundary links for the PMITD system.
 """
 
 # ╔═╡ 45e850da-e8b8-4b4b-983e-1ae95a381ee7
-pmitd_file_multcase = joinpath(pmitd_path, "test/data/json/case5_case3x2.json")
+pmitd_file_multcase = joinpath(pmitd_path,
+								"test/data/json/case5_case3x2_unbal_bal_nogen.json")
 
 # ╔═╡ ac629674-a504-461a-80c9-feaabcec12d5
 begin
@@ -544,7 +558,9 @@ md"""
 """
 
 # ╔═╡ 7c9244c9-b0e8-46d9-8400-673d52cf78fa
-pmitd_data_multcase = parse_files(pm_file_multcase, pmd_files_multcase, pmitd_file_multcase)
+pmitd_data_multcase = parse_files(pm_file_multcase,
+									pmd_files_multcase,
+									pmitd_file_multcase)
 
 # ╔═╡ 6039d564-1d21-4a04-9a81-69aec6eb0313
 md"""
@@ -555,7 +571,10 @@ md"""
 """
 
 # ╔═╡ 5793e46b-c702-4f38-b1a8-c3fcb7778ec0
-result_multcase = solve_model(pmitd_data_multcase, pmitd_type_multcase, ipopt, build_opfitd)
+result_multcase = solve_model(pmitd_data_multcase,
+								pmitd_type_multcase,
+								ipopt,
+								build_opfitd)
 
 # ╔═╡ 8a3156df-f4a8-4872-9eae-8453f128b642
 result_multcase["solution"]["it"]["pmitd"]
@@ -570,7 +589,7 @@ md"""
 
 # ╔═╡ 8b0dd87c-623b-4a2c-9c91-5736cd9ca993
 md"""
-# Running Multinetwork (Time-series) Multisystem (Multiple Distribution Systems) OPFITD using `PowerModelsITD`
+# Running Multinetwork (Time-series) Multisystem (Multiple Distribution Systems) OPFITD using `PowerModelsITD.jl`
 
 
 In this section, we will present how to run a **Multinetwork** OPFITD with **multiple distribution systems** connected to different transmission system buses.
@@ -592,27 +611,24 @@ To run a **multinetwork** problem, time series values can be defined inside the 
 # ╔═╡ c96945f8-4680-4b45-a6ee-b15ccb44104e
 begin
 	# load files
-	pm_file_mn = joinpath(pmitd_path, "test/data/transmission/case5_with2loads.m")
+	pm_file_mn = joinpath(pmitd_path,
+						"test/data/transmission/case5_with2loads.m")
+
 	pmd_file1_mn = joinpath(pmitd_path,
 						"test/data/distribution/case3_unbalanced_withoutgen_mn.dss")
+
 	pmitd_file_mn = joinpath(pmitd_path, "test/data/json/case5_case3x2.json")
 
-	# create a vector of distribution system files.
+	# create a vector of distribution system files
 	pmd_files_mn = [pmd_file1_mn, pmd_file1_mn]
 
 	# define the formulation type.
 	pmitd_type_mn = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
-	# pmitd_type_mn = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
-	# pmitd_type_mn = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
-	# pmitd_type_mn = NLFOTPowerModelITD{ACRPowerModel, FOTRUPowerModel}
-	# pmitd_type_mn = NLFOTPowerModelITD{ACPPowerModel, FOTPUPowerModel}
-	# pmitd_type_mn = BFPowerModelITD{SOCBFPowerModel, LinDist3FlowPowerModel}
-	# pmitd_type_mn = NLBFPowerModelITD{ACRPowerModel, FBSUBFPowerModel}
 
 
-	# run multinetwork opfitd.
+	# solve multinetwork opfitd.
 	result_mn = solve_mn_opfitd(pm_file_mn, pmd_files_mn, pmitd_file_mn,
-															pmitd_type_mn, ipopt)
+															pmitd_type_mn, ipopt; 																auto_rename=true)
 
 end
 
@@ -680,15 +696,16 @@ Below, we can observe an example where **voltage bounds** and **voltage angle di
 # ╔═╡ 69d1f6cd-4ef5-475a-9706-f55db074c942
 begin
 	# parse files
-	pmitd_data_b = parse_files(pm_file_multcase,
-							   pmd_files_multcase, 				
+	pmitd_data_vbounds = parse_files(pm_file_multcase,
+							   pmd_files_multcase,
 							   pmitd_file_multcase)
 	# apply transformations
-	apply_voltage_bounds!(pmitd_data_b; vm_lb=0.99, vm_ub=1.01)
-	apply_voltage_angle_difference_bounds!(pmitd_data_b, 1)
+	apply_voltage_bounds!(pmitd_data_vbounds; vm_lb=0.99, vm_ub=1.01)
+	apply_voltage_angle_difference_bounds!(pmitd_data_vbounds, 1)
+
 	# run opftid
-	result_opfitd_b = solve_model(pmitd_data_b, 
-								  pmitd_type_multcase, 
+	result_opfitd_b = solve_model(pmitd_data_vbounds,
+								  pmitd_type_multcase,
 								  ipopt,
 								  build_opfitd)
 end
@@ -709,8 +726,9 @@ begin
 								 pmd_files_multcase, 																 pmitd_file_multcase)
 	# apply transformations
     remove_all_bounds!(pmitd_data_rab)
+
 	# run opftid
-	result_rab = solve_model(pmitd_data_rab, 
+	result_rab = solve_model(pmitd_data_rab,
 							 pmitd_type_multcase,
 							 ipopt,
 							 build_opfitd)
@@ -733,10 +751,11 @@ begin
 								  pmitd_file_multcase)
 	# apply transformations
     apply_kron_reduction!(pmitd_data_kron)
+
 	# run opftid
-	result_kron = solve_model(pmitd_data_kron, 
+	result_kron = solve_model(pmitd_data_kron,
 							  pmitd_type_multcase,
-							  ipopt, 
+							  ipopt,
 							  build_opfitd)
 end
 
@@ -751,7 +770,7 @@ md"""
 # ╔═╡ e7de0402-98fe-459c-aa23-79639f6e3f2c
 md"""
 # Apply Solution Processors
-In this section, we will explore how to apply a `solution_processor` to the `result` obtained from `PowerModelsITD.jl`. Results in **rectangular** coordinates can be transformed to **polar** coordinates. 
+In this section, we will explore how to apply a `solution_processor` to the `result` obtained from `PowerModelsITD.jl`. Results in **rectangular** coordinates can be transformed to **polar** coordinates.
 """
 
 # ╔═╡ b004d3f4-bb7b-4087-9983-af1783c2d31a
@@ -763,16 +782,19 @@ Let's us start with an ACR-ACRU problem, where we want to analyze the results in
 begin
 	pm_file_sol = joinpath(pmitd_path, "test/data/transmission/case5_withload.m")
 	pmd_file_sol = joinpath(pmitd_path, "test/data/distribution/case3_unbalanced.dss")
-	boundary_file_sol = joinpath(pmitd_path, "test/data/json/case5_case3.json")
+	boundary_file_sol = joinpath(pmitd_path, "test/data/json/case5_case3_unbal.json")
+
+	# ACR-ACRU (rectangular coordinates)
 	pmitd_type_sol = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
-	result_polar = solve_opfitd(pm_file_sol, 
-								pmd_file_sol, 
-								boundary_file_sol, 
-								pmitd_type_sol, 
-								ipopt; 
-								make_si=false, 
+
+	result_polar = solve_opfitd(pm_file_sol,
+								pmd_file_sol,
+								boundary_file_sol,
+								pmitd_type_sol,
+								ipopt;
+								make_si=false,
 								solution_processors=[sol_data_model!])
-								
+
 end
 
 # ╔═╡ f81b870e-eec7-4342-99c0-197946e3cd34
@@ -791,10 +813,90 @@ md"""
 
 """
 
+# ╔═╡ 1c5afd45-1dc9-4a40-b4c4-8adc40eb5def
+md"""
+# Getting results in **MATH** model (instead of **ENG** default model)
+In this section, we will explore how users can obtain results in MATH model instead of ENG model.
+
+The main difference between the **MATH** and **ENG** models is the way the data is presented to the user. The **ENG** model is designed to present data in a 'human-friendly' format where components (e.g., buses, lines, etc.) can be identified by their names. On the other hand, in the **MATH** model, all components are assigned a numerical value that is needed for building and solving the optimization problem.
+
+Please refer to [PoweModelsDistribution.jl ENG data model](https://lanl-ansi.github.io/PowerModelsDistribution.jl/stable/manual/eng-data-model.html) if you want more details about the differences between the **ENG** and **MATH** models.
+
+
+**Important Note**: PowerModelsITD.jl presents parsed data using the **ENG** model. Internally, when the model is being instantiated, the data is transformed to the **MATH** model.
+
+Below, we will present two examples where results are presented in the **MATH** and **ENG**. Users have the option to select whichever model they want the results to be presented. However, the **default** is the **ENG** model since it is the one we recommend.
+
+"""
+
+# ╔═╡ c7672b28-9504-4a2e-b307-ec9671b7c267
+md"""
+## **MATH** model
+Let's start with the **MATH** model. To obtain the results using the **MATH** model, we just need to specify the optional parameter `solution_model="math"` when solving the problem. See an example below.
+
+"""
+
+# ╔═╡ afd40ab1-b079-4767-a964-78bfe6ec5241
+begin
+	pm_file_math = joinpath(pmitd_path,
+							"test/data/transmission/case5_withload.m")
+	pmd_file_math = joinpath(pmitd_path,
+							"test/data/distribution/case3_balanced_withoutgen.dss")
+	pmitd_file_math = joinpath(pmitd_path,
+							"test/data/json/case5_case3_bal_nogen.json")
+
+	pmitd_type_math = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
+
+
+	result_math = solve_opfitd(pm_file_math,
+								pmd_file_math,
+								pmitd_file_math,
+								pmitd_type_math,
+								ipopt;
+								make_si=false,
+								solution_model="math")
+end
+
+# ╔═╡ 7954e685-7545-4a09-b54d-1d9907d0efb3
+md"""
+## **ENG** model
+For comparison purposes, let's solve the same problem, with the difference that this time we will explicitly ask for the **ENG** model by adding `solution_model="eng"`. However, remember that adding the `solution_model="eng"` is **not required** since by **default**, PowerModelsITD.jl provides the result using the **ENG** model.
+
+"""
+
+# ╔═╡ 4e51edec-f81b-406c-8484-2bdeb5680522
+begin
+	pm_file_eng = joinpath(pmitd_path,
+							"test/data/transmission/case5_withload.m")
+	pmd_file_eng = joinpath(pmitd_path,
+							"test/data/distribution/case3_balanced_withoutgen.dss")
+	pmitd_file_eng = joinpath(pmitd_path,
+							"test/data/json/case5_case3_bal_nogen.json")
+
+	pmitd_type_eng = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
+
+
+	result_eng = solve_opfitd(pm_file_eng,
+								pmd_file_eng,
+								pmitd_file_eng,
+								pmitd_type_eng,
+								ipopt;
+								make_si=false,
+								solution_model="eng")
+end
+
+# ╔═╡ 311147cd-dd09-44be-9b1b-cc860ecf1894
+md"""
+
+------------------------------------------------------------------------------
+------------------------------------------------------------------------------
+
+"""
+
 # ╔═╡ 8bf07b81-107c-4b16-8d46-02bfff44e42b
 md"""
 # Development
-**PowerModelsITD** is currently subject to active, ongoing development, and is used internally by various high-profile projects, making its improvement and maintanence high priority.
+**PowerModelsITD.jl** is currently subject to active, ongoing development, and is used internally by various high-profile projects, making its improvement and maintenance a high priority.
 """
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -808,11 +910,11 @@ PowerModelsITD = "615c3f80-b0cb-4ecd-88fe-27bee056c380"
 Revise = "295af30f-e4ad-537b-8983-00126c2a3abe"
 
 [compat]
-CodeTracking = "~1.0.8"
+CodeTracking = "~1.0.9"
 Ipopt = "~1.0.2"
 JuMP = "~0.23.2"
-PlutoUI = "~0.7.37"
-PowerModelsITD = "~0.6.0"
+PlutoUI = "~0.7.38"
+PowerModelsITD = "~0.6.1"
 Revise = "~3.3.3"
 """
 
@@ -837,9 +939,9 @@ uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
 
 [[ArrayInterface]]
 deps = ["Compat", "IfElse", "LinearAlgebra", "Requires", "SparseArrays", "Static"]
-git-tree-sha1 = "6e8fada11bb015ecf9263f64b156f98b546918c7"
+git-tree-sha1 = "c933ce606f6535a7c7b98e1d86d5d1014f730596"
 uuid = "4fba245c-0d91-5ea0-9b3e-6abc04ee57a9"
-version = "5.0.5"
+version = "5.0.7"
 
 [[Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -861,9 +963,9 @@ version = "1.0.8+0"
 
 [[CSV]]
 deps = ["CodecZlib", "Dates", "FilePathsBase", "InlineStrings", "Mmap", "Parsers", "PooledArrays", "SentinelArrays", "Tables", "Unicode", "WeakRefStrings"]
-git-tree-sha1 = "9310d9495c1eb2e4fa1955dd478660e2ecab1fbb"
+git-tree-sha1 = "873fb188a4b9d76549b81465b1f75c82aaf59238"
 uuid = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
-version = "0.10.3"
+version = "0.10.4"
 
 [[Calculus]]
 deps = ["LinearAlgebra"]
@@ -885,9 +987,9 @@ version = "0.1.2"
 
 [[CodeTracking]]
 deps = ["InteractiveUtils", "UUIDs"]
-git-tree-sha1 = "9fb640864691a0936f94f89150711c36072b0e8f"
+git-tree-sha1 = "6d4fa04343a7fc9f9cb9cff9558929f3d2752717"
 uuid = "da1fd8a2-8d9e-5ec2-8556-3022fb5608a2"
-version = "1.0.8"
+version = "1.0.9"
 
 [[CodecBzip2]]
 deps = ["Bzip2_jll", "Libdl", "TranscodingStreams"]
@@ -915,9 +1017,9 @@ version = "0.3.0"
 
 [[Compat]]
 deps = ["Base64", "Dates", "DelimitedFiles", "Distributed", "InteractiveUtils", "LibGit2", "Libdl", "LinearAlgebra", "Markdown", "Mmap", "Pkg", "Printf", "REPL", "Random", "SHA", "Serialization", "SharedArrays", "Sockets", "SparseArrays", "Statistics", "Test", "UUIDs", "Unicode"]
-git-tree-sha1 = "96b0bc6c52df76506efc8a441c6cf1adcb1babc4"
+git-tree-sha1 = "b153278a25dd42c65abbf4e62344f9d22e59191b"
 uuid = "34da2185-b29b-5c13-b0c7-acf172513d20"
-version = "3.42.0"
+version = "3.43.0"
 
 [[CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1107,9 +1209,9 @@ version = "0.23.2"
 
 [[JuliaInterpreter]]
 deps = ["CodeTracking", "InteractiveUtils", "Random", "UUIDs"]
-git-tree-sha1 = "9c43a2eb47147a8776ca2ba489f15a9f6f2906f8"
+git-tree-sha1 = "52617c41d2761cc05ed81fe779804d3b7f14fff7"
 uuid = "aa1ae85d-cabe-5617-a682-6adf51b2e16a"
-version = "0.9.11"
+version = "0.9.13"
 
 [[LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
@@ -1142,9 +1244,9 @@ uuid = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 
 [[LogExpFunctions]]
 deps = ["ChainRulesCore", "ChangesOfVariables", "DocStringExtensions", "InverseFunctions", "IrrationalConstants", "LinearAlgebra"]
-git-tree-sha1 = "58f25e56b706f95125dcb796f39e1fb01d913a71"
+git-tree-sha1 = "a970d55c2ad8084ca317a4658ba6ce99b7523571"
 uuid = "2ab3a3ac-af41-5b50-aa03-7779005ae688"
-version = "0.3.10"
+version = "0.3.12"
 
 [[Logging]]
 uuid = "56ddb016-857b-54e1-b83d-db4d58db5568"
@@ -1157,9 +1259,9 @@ version = "0.4.7"
 
 [[LoweredCodeUtils]]
 deps = ["JuliaInterpreter"]
-git-tree-sha1 = "6b0440822974cab904c8b14d79743565140567f6"
+git-tree-sha1 = "dedbebe234e06e1ddad435f5c6f4b85cd8ce55f7"
 uuid = "6f1432cf-f94c-5a45-995e-cdbf5db27b0b"
-version = "2.2.1"
+version = "2.2.2"
 
 [[METIS_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1185,9 +1287,9 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
 [[MathOptInterface]]
 deps = ["BenchmarkTools", "CodecBzip2", "CodecZlib", "JSON", "LinearAlgebra", "MutableArithmetics", "OrderedCollections", "Printf", "SparseArrays", "Test", "Unicode"]
-git-tree-sha1 = "09be99195f42c601f55317bd89f3c6bbaec227dc"
+git-tree-sha1 = "779ad2ee78c4a24383887fdba177e9e5034ce207"
 uuid = "b8f27783-ece8-5eb3-8dc8-9495eed66fee"
-version = "1.1.1"
+version = "1.1.2"
 
 [[MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1260,9 +1362,9 @@ version = "0.12.3"
 
 [[Parsers]]
 deps = ["Dates"]
-git-tree-sha1 = "85b5da0fa43588c75bb1ff986493443f821c70b7"
+git-tree-sha1 = "621f4f3b4977325b9128d5fae7a8b4829a0c2222"
 uuid = "69de0a69-1ddd-5017-9359-2bf0b02dc9f0"
-version = "2.2.3"
+version = "2.2.4"
 
 [[Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
@@ -1270,9 +1372,9 @@ uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 
 [[PlutoUI]]
 deps = ["AbstractPlutoDingetjes", "Base64", "ColorTypes", "Dates", "Hyperscript", "HypertextLiteral", "IOCapture", "InteractiveUtils", "JSON", "Logging", "Markdown", "Random", "Reexport", "UUIDs"]
-git-tree-sha1 = "bf0a1121af131d9974241ba53f601211e9303a9e"
+git-tree-sha1 = "670e559e5c8e191ded66fa9ea89c97f10376bb4c"
 uuid = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
-version = "0.7.37"
+version = "0.7.38"
 
 [[PolyhedralRelaxations]]
 deps = ["DataStructures", "ForwardDiff", "JuMP", "Logging", "LoggingExtras"]
@@ -1300,9 +1402,9 @@ version = "0.14.3"
 
 [[PowerModelsITD]]
 deps = ["InfrastructureModels", "JSON", "JuMP", "LinearAlgebra", "PowerModels", "PowerModelsDistribution"]
-git-tree-sha1 = "df8da9e5fb1d89338fcbd8a398b5a62e55a96ac2"
+git-tree-sha1 = "3cc52a022abd6abb7a237d781756928a12302781"
 uuid = "615c3f80-b0cb-4ecd-88fe-27bee056c380"
-version = "0.6.0"
+version = "0.6.1"
 
 [[Preferences]]
 deps = ["TOML"]
@@ -1390,9 +1492,9 @@ uuid = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [[StatsAPI]]
 deps = ["LinearAlgebra"]
-git-tree-sha1 = "c3d8ba7f3fa0625b062b82853a7d5229cb728b6b"
+git-tree-sha1 = "8d7530a38dbd2c397be7ddd01a424e4f411dcc41"
 uuid = "82ae8749-77ed-4fe6-ae5f-f523153014b0"
-version = "1.2.1"
+version = "1.2.2"
 
 [[TOML]]
 deps = ["Dates"]
@@ -1460,7 +1562,7 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╟─36d78d29-1417-4c05-adf3-4560fbc0304e
 # ╠═4b293648-92aa-4ebb-9d33-a6707773f0b1
 # ╟─6eec60ab-d093-4230-8374-01f6d5799e8d
-# ╠═ac8bd5df-5696-4bfc-88f5-01feb8b61f89
+# ╠═7592c3de-481f-4877-a362-56e0eaaf56b0
 # ╟─cc24ea4a-656f-46aa-93db-2bc27d0e796e
 # ╠═e5c578f1-0c16-4b6c-83fb-045f8f18a8c4
 # ╟─39d43eb3-ff43-4ef6-a30d-bd6ef8a632e0
@@ -1553,6 +1655,12 @@ uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
 # ╟─f81b870e-eec7-4342-99c0-197946e3cd34
 # ╠═e3a6b84d-0170-45fd-9b9c-1e5e9ff93dfe
 # ╟─f1553ee5-083f-4264-8e80-d31c475cc269
+# ╟─1c5afd45-1dc9-4a40-b4c4-8adc40eb5def
+# ╟─c7672b28-9504-4a2e-b307-ec9671b7c267
+# ╠═afd40ab1-b079-4767-a964-78bfe6ec5241
+# ╟─7954e685-7545-4a09-b54d-1d9907d0efb3
+# ╠═4e51edec-f81b-406c-8484-2bdeb5680522
+# ╟─311147cd-dd09-44be-9b1b-cc860ecf1894
 # ╟─8bf07b81-107c-4b16-8d46-02bfff44e42b
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
