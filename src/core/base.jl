@@ -279,18 +279,13 @@ function instantiate_model_decomposition(
     pmitd_data::Dict{String,<:Any}, pmitd_type::Type, build_method::Function;
     multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
 
-    @info "I AM INSTANTIATING THE DECOMPOSITION PROBLEM!!!"
+    # extract different pmd systems
+    pmitd_struct = convert_data_dict_to_struct(pmitd_data)
 
-    # # Extract PMD model/data
-    # pmd_data = pmitd_data["it"][_PMD.pmd_it_name]
+    # Correct the network data and assign the respective boundary number values.
+    # correct_network_data!(pmitd_struct; multinetwork=multinetwork)
 
-    # # transform PMD data (only) from ENG to MATH Model
-    # if (!_PMD.ismath(pmd_data))
-    #     pmitd_data["it"][_PMD.pmd_it_name] = _PMD.transform_data_model(pmd_data; multinetwork=multinetwork)
-    # end
-
-    # # Correct the network data and assign the respective boundary number values.
-    # correct_network_data!(pmitd_data; multinetwork=multinetwork)
+    # Instantiation
 
     # pmitd = _IM.instantiate_model(
     #     pmitd_data, pmitd_type, build_method, ref_add_core!, _pmitd_global_keys;
