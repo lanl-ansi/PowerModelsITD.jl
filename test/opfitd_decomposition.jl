@@ -8,8 +8,9 @@
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
-        result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
+        # result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         # result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd_decomposition)
+        result = solve_opfitd_decomposition(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt)
         # @test result["termination_status"] == LOCALLY_SOLVED
     end
 
