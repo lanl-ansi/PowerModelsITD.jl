@@ -2,7 +2,8 @@
 
 ## staged
 
-- none.
+- Added `Issue` and `Feature` request templates to `.github`.
+- Added `Pull` request template to  `.github`.
 
 ## v0.7.0
 
