@@ -322,27 +322,55 @@ function solve_model(
     solution_model::String="eng",
     kwargs...)
 
+    # extract build_method name (string)
+    build_method_name = string(build_method)
+
     # Solve the model and build the result, timing both processes.
     start_time = time() # Start the timer.
 
-    # Instantiate the PowerModelsITD object.
-    pmitd = instantiate_model(
-        pmitd_data, pmitd_type, build_method;
-        multinetwork=multinetwork,
-        pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
+    # Solve standard ITD problem
+    if build_method_name in STANDARD_PROBLEMS
 
-    # Solve ITD Model
-    result = _IM.optimize_model!(
-        pmitd, optimizer=optimizer, solution_processors=solution_processors)
+        # Instantiate the PowerModelsITD object.
+        pmitd = instantiate_model(
+            pmitd_data, pmitd_type, build_method;
+            multinetwork=multinetwork,
+            pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 
-     # Inform about the time for solving the problem (*change to @debug)
-     @info "pmitd model solution time (instantiate + optimization): $(time() - start_time)"
+        # Solve ITD Model
+        result = _IM.optimize_model!(
+            pmitd, optimizer=optimizer, solution_processors=solution_processors)
 
-    # Transform solution (both T&D) - SI or per unit - MATH or ENG.
-    if (make_si == false)
-        _transform_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        # Inform about the time for solving the problem (*change to @debug)
+        @info "pmitd model solution time (instantiate + optimization): $(time() - start_time)"
+
+        # Transform solution (both T&D) - SI or per unit - MATH or ENG.
+        if (make_si == false)
+            _transform_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        else
+            _transform_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        end
+
+    # Solve decomposition ITD problem
+    elseif build_method_name in DECOMPOSITION_PROBLEMS
+        @info "I AM INSIDE DECOMPOSITION problems section"
+
+        # # Instantiate the Decomposition PowerModelsITD object.
+        # pmitd = instantiate_model_decomposition(
+        #     pmitd_data, pmitd_type, build_method;
+        #     multinetwork=multinetwork,
+        #     pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
+
+
+        # Solve the ITD decomposition problem (TODO)
+        ## -----------------------------------------
+        result = 1
+
+        # Inform about the time for solving the problem (*change to @debug)
+        @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
     else
-        _transform_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        @error "The problem specification (build_method) defined is not supported! Please input a supported build_method."
+        throw(error())
     end
 
     return result
