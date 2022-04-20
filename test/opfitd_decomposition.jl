@@ -2,15 +2,16 @@
 
 @testset "test/opfitd.jl" begin
 
-    @testset "solve_model (with network inputs): Balanced case5-case3 ACP-ACP" begin
-        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+    @testset "solve_model (with network inputs): Balanced case5-case3x2 ACP-ACP" begin
+        pm_file = joinpath(dirname(trans_path), "case5_with2loads.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3x2.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        pmd_files = [pmd_file, pmd_file]
+        # pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
         # result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         # result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd_decomposition)
-        result = solve_opfitd_decomposition(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt)
+        result = solve_opfitd_decomposition(pm_file, pmd_files, pmitd_file, pmitd_type, ipopt; auto_rename=true)
         # @test result["termination_status"] == LOCALLY_SOLVED
     end
 

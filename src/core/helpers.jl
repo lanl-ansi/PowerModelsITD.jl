@@ -425,3 +425,67 @@ function _add_file_name!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any}
     end
 
 end
+
+
+"""
+    function convert_data_dict_to_struct(
+        pmitd_data::Dict{String,<:Any},
+    )
+
+Converts the pmitd_data dictionary to a Struct that can be used to decompose the ITD problem.
+Returns the pmitd_data Struct.
+"""
+function convert_data_dict_to_struct(pmitd_data::Dict{String,<:Any})
+
+    # separate pmd ckts in a single dictionary
+    pmd_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name])
+
+    # create the pmitd struct
+    pmitd_data_struct = DecompositionDataStruct(pmitd_data["it"][_PM.pm_it_name], pmd_separated, pmitd_data["it"][pmitd_it_name])
+
+    return pmitd_data_struct
+
+end
+
+
+"""
+    function _separate_pmd_circuits(
+        pmd_data::Dict{String,<:Any},
+    )
+
+Separates pmd_data into their respective independent pmd circuits.
+Returns the pmd_data separated.
+"""
+# TODO: MULTINETWORK SUPPORT
+function _separate_pmd_circuits(pmd_data::Dict{String,<:Any})
+
+    # initialize Dict() to store separated ckts
+    pmd_data_separated = Dict{String,Any}()
+
+    # loop on all ckt names
+    for ckt_name in pmd_data["ckt_names"]
+
+        # initialize the ckt dictionary
+        pmd_data_separated[ckt_name] = Dict{String,Any}()
+
+        # loop over all components in the pmd data dictionary
+        for (component_name, component_data) in pmd_data
+
+            # if type of dictioary is not Dict{Any,Any, then add it directly to the ckt dict.
+            if !(typeof(component_data)==Dict{Any,Any})
+                pmd_data_separated[ckt_name][component_name] = component_data
+            else
+                # filter components that have the belongs_to_ckt==ckt_name condition
+                filtered_components = filter(x -> (x.second["belongs_to_ckt"] == ckt_name), pmd_data[component_name])
+
+                # add filtered component to respective ckt dict inside pmd_data_separated
+                pmd_data_separated[ckt_name][component_name] = filtered_components
+            end
+
+        end
+
+    end
+
+    return pmd_data_separated
+
+end
