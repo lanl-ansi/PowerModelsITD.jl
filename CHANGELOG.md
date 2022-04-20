@@ -155,6 +155,9 @@
 - Added `Pull` request template to  `.github`.
 - Fixed major bug in `transform_pmitd_solution_to_eng!` function that was causing boundary power flow values to be the same for all nw in multinetwork problems.
 - Added unit test to `opfitd_mn` (and new data files) that test that boundary power flow solution values differ when solving a multinetwork problem with different loading conditions.
+- Added new constant vectors `STANDARD_PROBLEMS` and `DECOMPOSITION_PROBLEMS` that store strings of the names of supported `build_methods` (i.e., problem specifications).
+- Added new constants to docs (`constants.md`).
+- Refactored main `solve_model(...)` function in order to distinguish between standard ITD problems and decomposition-based ITD problems.
 
 ## v0.7.0
 
