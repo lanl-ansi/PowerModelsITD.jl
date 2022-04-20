@@ -68,6 +68,7 @@ module PowerModelsITD
     include("prob/opfitd.jl")
     include("prob/opfitd_oltc.jl")
     include("prob/opfitd_dmld.jl")
+    include("prob/opfitd_decomposition.jl")
 
      # This must come last to support automated export.
     include("core/export.jl")
