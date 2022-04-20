@@ -52,6 +52,7 @@
 - Added new constants to docs (`constants.md`).
 - Refactored main `solve_model(...)` function in order to distinguish between standard ITD problems and decomposition-based ITD problems.
 - Added new `build_opfitd_decomposition(...)` problem specification in new file `opfitd_decomposition.jl`
+- Added new `instantiate_model_decomposition` functions to `base.jl` designed to instantiate the decomposition-based ITD problem.
 
 ## v0.7.0
 
