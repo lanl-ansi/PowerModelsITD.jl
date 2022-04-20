@@ -116,6 +116,7 @@
 - Added new constant vectors `STANDARD_PROBLEMS` and `DECOMPOSITION_PROBLEMS` that store strings of the names of supported `build_methods` (i.e., problem specifications).
 - Added new constants to docs (`constants.md`).
 - Refactored main `solve_model(...)` function in order to distinguish between standard ITD problems and decomposition-based ITD problems.
+- Added new `build_opfitd_decomposition(...)` problem specification in new file `opfitd_decomposition.jl`
 
 ## v0.7.0
 
