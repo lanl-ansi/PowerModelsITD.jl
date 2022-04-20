@@ -186,6 +186,122 @@ end
 
 
 """
+    function instantiate_model_decomposition(
+        pm_file::String,
+        pmd_files::Vector,
+        pmitd_file::String,
+        pmitd_type::Type,
+        build_method::Function;
+        multinetwork::Bool=false,
+        pmitd_ref_extensions::Vector{<:Function}=Function[],
+        auto_rename::Bool=false,
+        kwargs...
+    )
+
+Instantiates and returns a decomposition-based PowerModelsITD modeling object from power transmission,
+power distribution, and boundary linking input files `pm_file`, `pmd_files` vector, and `pmitd_file`,
+respectively. Here, `pmitd_type` is the integrated power transmission-distribution modeling type and
+`build_method` is the build method for the problem specification being considered.
+`multinetwork` is the boolean that defines if the modeling object should be define as multinetwork.
+`pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
+"""
+function instantiate_model_decomposition(
+    pm_file::String, pmd_files::Vector{String}, pmitd_file::String, pmitd_type::Type,
+    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
+
+    # Read power t&d and linkage data from files.
+    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
+
+    # Instantiate the PowerModelsITD object.
+    return instantiate_model_decomposition(
+        pmitd_data, pmitd_type, build_method;
+        multinetwork=multinetwork,
+        pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
+end
+
+
+"""
+    function instantiate_model_decomposition(
+        pm_file::String,
+        pmd_file::String,
+        pmitd_file::String,
+        pmitd_type::Type,
+        build_method::Function;
+        multinetwork::Bool=false,
+        pmitd_ref_extensions::Vector{<:Function}=Function[],
+        auto_rename::Bool=false,
+        kwargs...
+    )
+
+Instantiates and returns a decomposition-based PowerModelsITD modeling object from power transmission,
+power distribution, and boundary linking input files `pm_file`, `pmd_file` (one file provided), and `pmitd_file`,
+respectively. Here, `pmitd_type` is the integrated power transmission-distribution modeling type and
+`build_method` is the build method for the problem specification being considered.
+`multinetwork` is the boolean that defines if the modeling object should be define as multinetwork.
+`pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
+"""
+function instantiate_model_decomposition(
+    pm_file::String, pmd_file::String, pmitd_file::String, pmitd_type::Type,
+    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
+
+    pmd_files = [pmd_file] # convert to vector
+
+    # Read power t&d and linkage data from files.
+    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
+
+    # Instantiate the PowerModelsITD object.
+    return instantiate_model_decomposition(
+        pmitd_data, pmitd_type, build_method;
+        multinetwork=multinetwork,
+        pmitd_ref_extensions=pmitd_ref_extensions, kwargs...
+    )
+end
+
+
+"""
+    function instantiate_model_decomposition(
+        pmitd_data::Dict{String,<:Any},
+        pmitd_type::Type,
+        build_method::Function;
+        multinetwork::Bool=false,
+        pmitd_ref_extensions::Vector{<:Function}=Function[],
+        kwargs...
+    )
+
+Instantiates and returns a decomposition-based PowerModelsITD modeling object from parsed power
+transmission and distribution (PMITD) input data `pmitd_data`. Here, `pmitd_type` is the integrated
+power transmission and distribution modeling type and `build_method` is the build method for the problem
+specification being considered. `multinetwork` is the boolean that defines if the modeling object
+should be define as multinetwork. `pmitd_ref_extensions` is an array of power transmission and
+distribution modeling extensions.
+"""
+function instantiate_model_decomposition(
+    pmitd_data::Dict{String,<:Any}, pmitd_type::Type, build_method::Function;
+    multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
+
+    @info "I AM INSTANTIATING THE DECOMPOSITION PROBLEM!!!"
+
+    # # Extract PMD model/data
+    # pmd_data = pmitd_data["it"][_PMD.pmd_it_name]
+
+    # # transform PMD data (only) from ENG to MATH Model
+    # if (!_PMD.ismath(pmd_data))
+    #     pmitd_data["it"][_PMD.pmd_it_name] = _PMD.transform_data_model(pmd_data; multinetwork=multinetwork)
+    # end
+
+    # # Correct the network data and assign the respective boundary number values.
+    # correct_network_data!(pmitd_data; multinetwork=multinetwork)
+
+    # pmitd = _IM.instantiate_model(
+    #     pmitd_data, pmitd_type, build_method, ref_add_core!, _pmitd_global_keys;
+    #     ref_extensions=pmitd_ref_extensions, kwargs...
+    # )
+
+    # return pmitd
+end
+
+
+"""
     function solve_model(
         pm_file::String,
         pmd_file::String,
@@ -381,21 +497,24 @@ function solve_model(
 
     # Solve decomposition ITD problem
     elseif build_method_name in DECOMPOSITION_PROBLEMS
-        @info "I AM INSIDE DECOMPOSITION problems section"
 
-        # # Instantiate the Decomposition PowerModelsITD object.
-        # pmitd = instantiate_model_decomposition(
-        #     pmitd_data, pmitd_type, build_method;
-        #     multinetwork=multinetwork,
-        #     pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
+        # Instantiate the Decomposition PowerModelsITD object.
+        pmitd = instantiate_model_decomposition(
+            pmitd_data, pmitd_type, build_method;
+            multinetwork=multinetwork,
+            pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 
 
         # Solve the ITD decomposition problem (TODO)
-        ## -----------------------------------------
         result = 1
+        ## -----------------------------------------
 
         # Inform about the time for solving the problem (*change to @debug)
         @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
+
+        # Transform solution (both T&D) - SI or per unit - MATH or ENG.
+        ## -----------------------------------------
+
     else
         @error "The problem specification (build_method) defined is not supported! Please input a supported build_method."
         throw(error())
