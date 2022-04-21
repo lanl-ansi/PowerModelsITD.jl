@@ -120,6 +120,7 @@
 - Added new `instantiate_model_decomposition` functions to `base.jl` designed to instantiate the decomposition-based ITD problem.
 - Added new function `convert_data_dict_to_struct` to `helpers.jl` in charge of converting the `pmitd_data` dictionary into a decomposed version `struct` version, where the pmd components are separated according to their ckt names.
 - Added new function `_separate_pmd_circuits` to `helpers.jl` in charge of separating the overall `pmd` dictionary into individual dictionaries according to the ckt name (i.e., `ckt_name1`=>ckt_name1_data, `ckt_name2`=>ckt_name2_data, etc.).
+- Added new functions `assign_boundary_buses!` and `_assign_boundary_buses!` to `data.jl` that receive a `DecompositionDataStruct` (instead of a dictionary) and perform the assignments of MATH-based buses numbers to the `pmitd` dictionary.
 
 ## v0.7.0
 
