@@ -473,7 +473,7 @@ function _separate_pmd_circuits(pmd_data::Dict{String,<:Any})
 
             # if type of dictioary is not Dict{Any,Any, then add it directly to the ckt dict.
             if !(typeof(component_data)==Dict{Any,Any})
-                pmd_data_separated[ckt_name][component_name] = component_data
+                pmd_data_separated[ckt_name][component_name] = deepcopy(component_data)
             else
                 # filter components that have the belongs_to_ckt==ckt_name condition
                 filtered_components = filter(x -> (x.second["belongs_to_ckt"] == ckt_name), pmd_data[component_name])
@@ -482,8 +482,13 @@ function _separate_pmd_circuits(pmd_data::Dict{String,<:Any})
                 pmd_data_separated[ckt_name][component_name] = filtered_components
             end
 
+            # 'manually' fix the settings for individual ckts
+            if (component_name=="settings")
+                vbases_default_name = ckt_name*"."*"sourcebus"
+                empty!(pmd_data_separated[ckt_name][component_name]["vbases_default"])
+                pmd_data_separated[ckt_name][component_name]["vbases_default"][vbases_default_name] = pmd_data["settings"]["vbases_default"][vbases_default_name]
+            end
         end
-
     end
 
     return pmd_data_separated

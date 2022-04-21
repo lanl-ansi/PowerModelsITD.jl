@@ -45,6 +45,43 @@ end
 
 
 """
+    function correct_network_data!(
+        data::Dict{String,<:Any};
+        multinetwork::Bool=false
+    )
+
+Corrects and prepares the data in both pm and pmd struct dictionaries. Also, assigns the ids given
+in the boundary linking data to number buses. `data` is the pmitd struct with the dictionaries
+to be corrected and `multinetwork` is the boolean that defines if there are multinetwork boundary
+buses to be assigned.
+"""
+function correct_network_data!(data::DecompositionDataStruct; multinetwork::Bool=false)
+
+    for (ckt_name, ckt_data) in data.pmd
+        # transform PMD data (only) from ENG to MATH Model
+        if (!_PMD.ismath(ckt_data))
+            data.pmd[ckt_name] = _PMD.transform_data_model(ckt_data; multinetwork=multinetwork)
+        end
+
+        # Corrects and prepares power distribution network data.
+        _PMD.correct_network_data!(data.pmd[ckt_name])
+    end
+
+    # Corrects and prepares power transmission network data.
+    # TODO: error: _PM.correct_voltage_angle_differences! does not yet support multinetwork data.
+    if !multinetwork
+        _PM.correct_network_data!(data.pm)
+    end
+
+    _PM.simplify_network!(data.pm)
+
+    # # Corrects and prepares boundary linking data.
+    # assign_boundary_buses!(data; multinetwork=multinetwork)
+
+end
+
+
+"""
     function assign_boundary_buses!(
         data::Dict{String,<:Any};
         multinetwork::Bool=false
