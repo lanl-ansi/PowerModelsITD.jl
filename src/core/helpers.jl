@@ -443,7 +443,7 @@ function convert_data_dict_to_struct(pmitd_data::Dict{String,<:Any}; multinetwor
     pmd_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
 
     # create the pmitd struct
-    pmitd_data_struct = DecompositionDataStruct(pmitd_data["it"][_PM.pm_it_name], pmd_separated, pmitd_data["it"][pmitd_it_name])
+    pmitd_data_struct = DecompositionStruct(pmitd_data["it"][_PM.pm_it_name], pmd_separated, pmitd_data["it"][pmitd_it_name])
 
     return pmitd_data_struct
 

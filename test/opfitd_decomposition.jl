@@ -1,6 +1,6 @@
 @info "running integrated transmission-distribution optimal power flow (opfitd) tests"
 
-@testset "test/opfitd.jl" begin
+@testset "test/opfitd_decomposition.jl" begin
 
     @testset "solve_model (decomposition): Balanced case5-case3x2 ACP-ACP" begin
         pm_file = joinpath(dirname(trans_path), "case5_with2loads.m")
