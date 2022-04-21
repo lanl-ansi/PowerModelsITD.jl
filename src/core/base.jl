@@ -270,19 +270,19 @@ function instantiate_model_decomposition(
     # Correct the network data and assign the respective boundary number values.
     correct_network_data!(pmitd_struct; multinetwork=multinetwork)
 
-    # Instantiate JuMP models (TODO: WHEN DOING IT WITH Distributed.jl, the Vector MAY NOT be needed)
-    # length is equal to (pm+pmd+pmitd)-(pmd+pmitd)+(pmd1+pmd2+...)
-    pmitd_model_decomposed = Vector{}(undef, length(pmitd_data)-2+length(pmitd_struct.pmd))
+    # Instantiate JuMP models and add them to new Struct
+    pmitd_model_decomposed = DecompositionStruct(Dict(), Dict(), Dict()) # intialize struct
 
     # Instantiate PM model
-    pmitd_model_decomposed[1] = _PM.instantiate_model(pmitd_struct.pm, pmitd_type.parameters[1], build_method)
+    pmitd_model_decomposed.pm = _PM.instantiate_model(pmitd_struct.pm, pmitd_type.parameters[1], build_method)
 
     # Instantiate PMD models
-    pmitd_model_counter = 1
     for (ckt_name, ckt_data) in pmitd_struct.pmd
-        pmitd_model_counter += 1
-        pmitd_model_decomposed[pmitd_model_counter] = _PMD.instantiate_mc_model(ckt_data, pmitd_type.parameters[2], build_method)
+        pmitd_model_decomposed.pmd[ckt_name] = _PMD.instantiate_mc_model(ckt_data, pmitd_type.parameters[2], build_method)
     end
+
+    # Add PMITD boundary data info. dict to new Struct (informational purposes only)
+    pmitd_model_decomposed.pmitd = pmitd_struct.pmitd
 
     return pmitd_model_decomposed
 end
