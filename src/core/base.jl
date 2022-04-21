@@ -283,7 +283,7 @@ function instantiate_model_decomposition(
     pmitd_struct = convert_data_dict_to_struct(pmitd_data)
 
     # Correct the network data and assign the respective boundary number values.
-    # correct_network_data!(pmitd_struct; multinetwork=multinetwork)
+    correct_network_data!(pmitd_struct; multinetwork=multinetwork)
 
     # Instantiation
 
