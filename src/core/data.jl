@@ -55,7 +55,7 @@ in the boundary linking data to number buses. `data` is the pmitd struct with th
 to be corrected and `multinetwork` is the boolean that defines if there are multinetwork boundary
 buses to be assigned.
 """
-function correct_network_data!(data::DecompositionDataStruct; multinetwork::Bool=false)
+function correct_network_data!(data::DecompositionStruct; multinetwork::Bool=false)
 
     for (ckt_name, ckt_data) in data.pmd
         # transform PMD data (only) from ENG to MATH Model
@@ -112,7 +112,7 @@ end
 
 """
     function assign_boundary_buses!(
-        data::::DecompositionDataStruct;
+        data::::DecompositionStruct;
         multinetwork::Bool=false
     )
 
@@ -121,7 +121,7 @@ and distribution networks. `data` is the pmitd Struct dictionary containing the 
 `multinetwork` is the boolean that defines if there are multinetwork boundary buses to be
 assigned.
 """
-function assign_boundary_buses!(data::DecompositionDataStruct; multinetwork::Bool=false)
+function assign_boundary_buses!(data::DecompositionStruct; multinetwork::Bool=false)
     if multinetwork
         for (nw, nw_pmitd) in data.pmitd["nw"]
             for (key, conn) in nw_pmitd
@@ -150,7 +150,7 @@ end
 
 """
     function _assign_boundary_buses!(
-        data::DecompositionDataStruct,
+        data::DecompositionStruct,
         conn;
         multinetwork::Bool=false,
         nw::String="0"
@@ -160,7 +160,7 @@ Helper function for assigning boundary buses. `data` is the pmitd Struct diction
 `conn` is the boundary connection information, `multinetwork` is the boolean that defines if there are multinetwork
 boundary buses to be assigned, and `nw` is the network number.
 """
-function _assign_boundary_buses!(data::DecompositionDataStruct, conn; multinetwork::Bool=false, nw::String="0")
+function _assign_boundary_buses!(data::DecompositionStruct, conn; multinetwork::Bool=false, nw::String="0")
 
     # Get transmission and distribution boundary names
     tran_bus_name, dist_bus_name = conn["transmission_boundary"], conn["distribution_boundary"]
