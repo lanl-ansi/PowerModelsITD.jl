@@ -268,7 +268,7 @@ end
         kwargs...
     )
 
-Instantiates and returns a decomposition-based PowerModelsITD modeling object from parsed power
+Instantiates and returns a decomposition-based PowerModelsITD modeling object vector from parsed power
 transmission and distribution (PMITD) input data `pmitd_data`. Here, `pmitd_type` is the integrated
 power transmission and distribution modeling type and `build_method` is the build method for the problem
 specification being considered. `multinetwork` is the boolean that defines if the modeling object
@@ -280,19 +280,26 @@ function instantiate_model_decomposition(
     multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
 
     # extract different pmd systems
-    pmitd_struct = convert_data_dict_to_struct(pmitd_data)
+    pmitd_struct = convert_data_dict_to_struct(pmitd_data; multinetwork=multinetwork)
 
     # Correct the network data and assign the respective boundary number values.
     correct_network_data!(pmitd_struct; multinetwork=multinetwork)
 
-    # Instantiation
+    # Instantiate JuMP models (TODO: WHEN DOING IT WITH Distributed.jl, the Vector MAY NOT be needed)
+    # length is equal to (pm+pmd+pmitd)-(pmd+pmitd)+(pmd1+pmd2+...)
+    pmitd_model_decomposed = Vector{}(undef, length(pmitd_data)-2+length(pmitd_struct.pmd))
 
-    # pmitd = _IM.instantiate_model(
-    #     pmitd_data, pmitd_type, build_method, ref_add_core!, _pmitd_global_keys;
-    #     ref_extensions=pmitd_ref_extensions, kwargs...
-    # )
+    # Instantiate PM model
+    pmitd_model_decomposed[1] = _PM.instantiate_model(pmitd_struct.pm, pmitd_type.parameters[1], build_method)
 
-    # return pmitd
+    # Instantiate PMD models
+    pmitd_model_counter = 1
+    for (ckt_name, ckt_data) in pmitd_struct.pmd
+        pmitd_model_counter += 1
+        pmitd_model_decomposed[pmitd_model_counter] = _PMD.instantiate_mc_model(ckt_data, pmitd_type.parameters[2], build_method)
+    end
+
+    return pmitd_model_decomposed
 end
 
 

@@ -429,16 +429,18 @@ end
 
 """
     function convert_data_dict_to_struct(
-        pmitd_data::Dict{String,<:Any},
+        pmitd_data::Dict{String,<:Any};
+        multinetwork::Bool=false
     )
 
 Converts the pmitd_data dictionary to a Struct that can be used to decompose the ITD problem.
+`multinetwork` is the boolean that defines if the conversion should be done as multinetwork.
 Returns the pmitd_data Struct.
 """
-function convert_data_dict_to_struct(pmitd_data::Dict{String,<:Any})
+function convert_data_dict_to_struct(pmitd_data::Dict{String,<:Any}; multinetwork::Bool=false)
 
     # separate pmd ckts in a single dictionary
-    pmd_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name])
+    pmd_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
 
     # create the pmitd struct
     pmitd_data_struct = DecompositionDataStruct(pmitd_data["it"][_PM.pm_it_name], pmd_separated, pmitd_data["it"][pmitd_it_name])
@@ -450,43 +452,89 @@ end
 
 """
     function _separate_pmd_circuits(
-        pmd_data::Dict{String,<:Any},
+        pmd_data::Dict{String,<:Any};
+        multinetwork::Bool=false
     )
 
 Separates pmd_data into their respective independent pmd circuits.
+`multinetwork` is the boolean that defines if the separation must be done as multinetwork.
 Returns the pmd_data separated.
 """
-# TODO: MULTINETWORK SUPPORT
-function _separate_pmd_circuits(pmd_data::Dict{String,<:Any})
+function _separate_pmd_circuits(pmd_data::Dict{String,<:Any}; multinetwork::Bool=false)
 
     # initialize Dict() to store separated ckts
     pmd_data_separated = Dict{String,Any}()
 
-    # loop on all ckt names
-    for ckt_name in pmd_data["ckt_names"]
+    if multinetwork
+        # loop on all ckt names
+        for ckt_name in pmd_data["ckt_names"]
 
-        # initialize the ckt dictionary
-        pmd_data_separated[ckt_name] = Dict{String,Any}()
+            # initialize the ckt dictionary
+            pmd_data_separated[ckt_name] = Dict("nw" => Dict{String,Any}(), "multinetwork" => true)
 
-        # loop over all components in the pmd data dictionary
-        for (component_name, component_data) in pmd_data
-
-            # if type of dictioary is not Dict{Any,Any, then add it directly to the ckt dict.
-            if !(typeof(component_data)==Dict{Any,Any})
-                pmd_data_separated[ckt_name][component_name] = deepcopy(component_data)
-            else
-                # filter components that have the belongs_to_ckt==ckt_name condition
-                filtered_components = filter(x -> (x.second["belongs_to_ckt"] == ckt_name), pmd_data[component_name])
-
-                # add filtered component to respective ckt dict inside pmd_data_separated
-                pmd_data_separated[ckt_name][component_name] = filtered_components
+            # loop over all external components that are not in 'nw' in the pmd data dictionary
+            for (c_name, c_data) in pmd_data
+                if (c_name != "nw") && (c_name != "files") && (c_name != "ckt_names") && (c_name != "name")
+                    pmd_data_separated[ckt_name][c_name] = c_data
+                end
             end
 
-            # 'manually' fix the settings for individual ckts
-            if (component_name=="settings")
-                vbases_default_name = ckt_name*"."*"sourcebus"
-                empty!(pmd_data_separated[ckt_name][component_name]["vbases_default"])
-                pmd_data_separated[ckt_name][component_name]["vbases_default"][vbases_default_name] = pmd_data["settings"]["vbases_default"][vbases_default_name]
+            # loop through nws
+            for (nw, nw_pmd) in pmd_data["nw"]
+
+                # initialize the [ckt]["nw"][nw] dictionary
+                pmd_data_separated[ckt_name]["nw"][nw] = Dict{String,Any}()
+
+                # loop over all components in the pmd data dictionary
+                for (component_name, component_data) in nw_pmd
+
+                    # if type of dictioary is not Dict{Any,Any, then add it directly to the ckt dict.
+                    if !(typeof(component_data)==Dict{Any,Any})
+                        pmd_data_separated[ckt_name]["nw"][nw][component_name] = deepcopy(component_data)
+                    else
+                        # filter components that have the belongs_to_ckt==ckt_name condition
+                        filtered_components = filter(x -> (x.second["belongs_to_ckt"] == ckt_name), pmd_data["nw"][nw][component_name])
+
+                        # add filtered component to respective ckt dict inside pmd_data_separated
+                        pmd_data_separated[ckt_name]["nw"][nw][component_name] = filtered_components
+                    end
+
+                    # 'manually' fix the settings for individual ckts
+                    if (component_name=="settings")
+                        vbases_default_name = ckt_name*"."*"sourcebus"
+                        empty!(pmd_data_separated[ckt_name]["nw"][nw][component_name]["vbases_default"])
+                        pmd_data_separated[ckt_name]["nw"][nw][component_name]["vbases_default"][vbases_default_name] = pmd_data["nw"][nw]["settings"]["vbases_default"][vbases_default_name]
+                    end
+                end
+            end
+        end
+    else
+        # loop on all ckt names
+        for ckt_name in pmd_data["ckt_names"]
+
+            # initialize the ckt dictionary
+            pmd_data_separated[ckt_name] = Dict{String,Any}()
+
+            # loop over all components in the pmd data dictionary
+            for (component_name, component_data) in pmd_data
+
+                # if type of dictioary is not Dict{Any,Any, then add it directly to the ckt dict.
+                if !(typeof(component_data)==Dict{Any,Any})
+                    pmd_data_separated[ckt_name][component_name] = deepcopy(component_data)
+                else
+                    # filter components that have the belongs_to_ckt==ckt_name condition
+                    filtered_components = filter(x -> (x.second["belongs_to_ckt"] == ckt_name), pmd_data[component_name])
+
+                    # add filtered component to respective ckt dict inside pmd_data_separated
+                    pmd_data_separated[ckt_name][component_name] = filtered_components
+                end
+
+                # 'manually' fix the settings for individual ckts
+                if (component_name=="settings")
+                    vbases_default_name = ckt_name*"."*"sourcebus"
+                    empty!(pmd_data_separated[ckt_name][component_name]["vbases_default"])
+                    pmd_data_separated[ckt_name][component_name]["vbases_default"][vbases_default_name] = pmd_data["settings"]["vbases_default"][vbases_default_name]
+                end
             end
         end
     end
