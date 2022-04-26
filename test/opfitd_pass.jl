@@ -1,32 +1,53 @@
-@info "running integrated transmission-distribution optimal power flow (opfitd) with passthroughs tests"
+@info "running ITD eng2math_passthrough tests"
 
 @testset "test/opfitd_pass.jl" begin
 
-    @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACR-ACR" begin
+    @testset "Check that eng2math_passthrough value is being added to the instantiated model: " begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery.json")
         pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
 
-        # pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd)
-        eng2math_passthrough = Dict("storage"=>["cost", "0.25"])
+        # add cost to storages in PMD
+        for (st_name, st_data) in pmitd_data["it"]["pmd"]["storage"]
+            st_data["cost"] = 0.25
+        end
+
+        # instantiate model with eng2math_passthrough
+        eng2math_passthrough = Dict("storage"=>["cost"])
         pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd; eng2math_passthrough=eng2math_passthrough)
-        # @info "$(pmitd_inst_model)"
 
+        # get storage reference
         storage_ref = _IM.ref(pmitd_inst_model, _PMD.pmd_it_sym, nw=nw_id_default, :storage)
-        @info "$(storage_ref)"
 
-        # result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd; make_si=true)
-        # @test result["termination_status"] == LOCALLY_SOLVED
+        # test that the "cost" value in storage exists.
+        @test storage_ref[1]["cost"] == 0.25
+    end
 
+    @testset "Check that eng2math_passthrough value is being added to the instantiated model (Multinetwork): " begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
+        pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
 
-        #### PMD tests
-        pmd_parsed = _PMD.parse_file(pmd_file)
-        eng2math_passthrough = Dict("storage"=>["cost", "0.25"])
-        pmd_transformed = _PMD.transform_data_model(pmd_parsed; eng2math_passthrough=eng2math_passthrough)
-        @info "$(pmd_transformed["storage"]["cost"])"
-        # @info "$(pmd_transformed)" # passthrough not working! (ASK DAVID IF THIS IS A BUG).
+        # add cost to storages in PMD
+        for (nw_id, nw_data) in pmitd_data["it"]["pmd"]["nw"]
+            for (st_name, st_data) in nw_data["storage"]
+                st_data["cost"] = 0.25
+            end
+        end
+
+        # instantiate model with eng2math_passthrough
+        eng2math_passthrough = Dict("storage"=>["cost"])
+        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_mn_opfitd; multinetwork=true, eng2math_passthrough=eng2math_passthrough)
+
+        # get storage reference from nw=4
+        storage_ref_nw4 = _IM.ref(pmitd_inst_model, _PMD.pmd_it_sym, nw=4, :storage)
+
+        # test that the "cost" value in storage nw=4 exists.
+        @test storage_ref_nw4[1]["cost"] == 0.25
     end
 
 end
