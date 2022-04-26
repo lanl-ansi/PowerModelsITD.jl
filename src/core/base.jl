@@ -65,6 +65,7 @@ sol(pmitd::AbstractPowerModelITD, key::Symbol, idx::Any; nw::Int=nw_id_default) 
         build_method::Function;
         multinetwork::Bool=false,
         pmitd_ref_extensions::Vector{<:Function}=Function[],
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         auto_rename::Bool=false,
         kwargs...
     )
@@ -75,10 +76,12 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 `build_method` is the build method for the problem specification being considered.
 `multinetwork` is the boolean that defines if the modeling object should be define as multinetwork.
 `pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
+`eng2math_passthrough` are the passthrough vectors to be considered by the PMD MATH models.
 """
 function instantiate_model(
     pm_file::String, pmd_files::Vector{String}, pmitd_file::String, pmitd_type::Type,
-    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
+    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[],
+    eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), auto_rename::Bool=false, kwargs...)
 
     # Read power t&d and linkage data from files.
     pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
@@ -87,7 +90,9 @@ function instantiate_model(
     return instantiate_model(
         pmitd_data, pmitd_type, build_method;
         multinetwork=multinetwork,
-        pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
+        pmitd_ref_extensions=pmitd_ref_extensions,
+        eng2math_passthrough=eng2math_passthrough,
+        kwargs...)
 end
 
 
@@ -100,6 +105,7 @@ end
         build_method::Function;
         multinetwork::Bool=false,
         pmitd_ref_extensions::Vector{<:Function}=Function[],
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         auto_rename::Bool=false,
         kwargs...
     )
@@ -110,10 +116,12 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 `build_method` is the build method for the problem specification being considered.
 `multinetwork` is the boolean that defines if the modeling object should be define as multinetwork.
 `pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
+`eng2math_passthrough` are the passthrough vectors to be considered by the PMD MATH models.
 """
 function instantiate_model(
     pm_file::String, pmd_file::String, pmitd_file::String, pmitd_type::Type,
-    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
+    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[],
+    eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), auto_rename::Bool=false, kwargs...)
 
     pmd_files = [pmd_file] # convert to vector
 
@@ -124,7 +132,9 @@ function instantiate_model(
     return instantiate_model(
         pmitd_data, pmitd_type, build_method;
         multinetwork=multinetwork,
-        pmitd_ref_extensions=pmitd_ref_extensions, kwargs...
+        pmitd_ref_extensions=pmitd_ref_extensions,
+        eng2math_passthrough=eng2math_passthrough,
+        kwargs...
     )
 end
 
@@ -136,6 +146,7 @@ end
         build_method::Function;
         multinetwork::Bool=false,
         pmitd_ref_extensions::Vector{<:Function}=Function[],
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         kwargs...
     )
 
@@ -145,17 +156,21 @@ transmission and distribution modeling type and `build_method` is the build meth
 specification being considered.
 `multinetwork` is the boolean that defines if the modeling object should be define as multinetwork.
 `pmitd_ref_extensions` is an array of power transmission and distribution modeling extensions.
+`eng2math_passthrough` are the passthrough vectors to be considered by the PMD MATH models.
 """
 function instantiate_model(
     pmitd_data::Dict{String,<:Any}, pmitd_type::Type, build_method::Function;
-    multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
+    multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[],
+    eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), kwargs...)
 
     # Extract PMD model/data
     pmd_data = pmitd_data["it"][_PMD.pmd_it_name]
 
     # transform PMD data (only) from ENG to MATH Model
     if (!_PMD.ismath(pmd_data))
-        pmitd_data["it"][_PMD.pmd_it_name] = _PMD.transform_data_model(pmd_data; multinetwork=multinetwork)
+        pmitd_data["it"][_PMD.pmd_it_name] = _PMD.transform_data_model(pmd_data;
+                                                                    multinetwork=multinetwork,
+                                                                    eng2math_passthrough=eng2math_passthrough)
     end
 
     # Correct the network data and assign the respective boundary number values.
@@ -181,6 +196,7 @@ end
         multinetwork::Bool=false,
         solution_processors::Vector{<:Function}=Function[],
         pmitd_ref_extensions::Vector{<:Function}=Function[],
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         make_si::Bool=true,
         auto_rename::Bool=false,
         solution_model::String="eng",
@@ -195,6 +211,7 @@ and `pmitd_file`, respectively. Here, `pmitd_type` is the integrated power trans
 specification being considered, `multinetwork` is the boolean that defines if the modeling object should be define
 as multinetwork, `solution_processors` is the vector of the model solution processors, `pmitd_ref_extensions` is
 the array of modeling extensions, and `make_si` is the boolean that determines if the results are returned in SI or per-unit.
+`eng2math_passthrough` are the passthrough vectors to be considered by the PMD MATH models.
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 `solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
 Returns a dictionary of results.
@@ -206,6 +223,7 @@ function solve_model(
     multinetwork::Bool=false,
     solution_processors::Vector{<:Function}=Function[],
     pmitd_ref_extensions::Vector{<:Function}=Function[],
+    eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
     make_si::Bool=true,
     auto_rename::Bool=false,
     solution_model::String="eng",
@@ -222,6 +240,7 @@ function solve_model(
         multinetwork=multinetwork,
         solution_processors=solution_processors,
         pmitd_ref_extensions=pmitd_ref_extensions,
+        eng2math_passthrough=eng2math_passthrough,
         make_si=make_si,
         solution_model=solution_model,
         kwargs...
@@ -241,6 +260,7 @@ end
         multinetwork::Bool=false,
         solution_processors::Vector{<:Function}=Function[],
         pmitd_ref_extensions::Vector{<:Function}=Function[],
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         make_si::Bool=true,
         auto_rename::Bool=false,
         solution_model::String="eng",
@@ -255,6 +275,7 @@ the build method for the problem specification being considered, `multinetwork` 
 modeling object should be define as multinetwork,`solution_processors` is the vector of the model solution processors,
 `pmitd_ref_extensions` is the array of modeling extensions, and `make_si` is the boolean that determines
 if the results are returned in SI or per-unit.
+`eng2math_passthrough` are the passthrough vectors to be considered by the PMD MATH models.
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 `solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
 Returns a dictionary of results.
@@ -266,6 +287,7 @@ function solve_model(
     multinetwork::Bool=false,
     solution_processors::Vector{<:Function}=Function[],
     pmitd_ref_extensions::Vector{<:Function}=Function[],
+    eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
     make_si::Bool=true,
     auto_rename::Bool=false,
     solution_model::String="eng",
@@ -280,6 +302,7 @@ function solve_model(
         multinetwork=multinetwork,
         solution_processors=solution_processors,
         pmitd_ref_extensions=pmitd_ref_extensions,
+        eng2math_passthrough=eng2math_passthrough,
         make_si=make_si,
         solution_model=solution_model,
         kwargs...
@@ -296,6 +319,7 @@ end
         multinetwork::Bool=false,
         solution_processors::Vector{<:Function}=Function[],
         pmitd_ref_extensions::Vector{<:Function}=Function[],
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         make_si::Bool=true,
         solution_model::String="eng",
         kwargs...
@@ -307,7 +331,8 @@ is the integrated power transmission-distribution modeling type, `build_method` 
 problem specification being considered, `multinetwork` is the boolean that defines if the modeling object
 should be define as multinetwork`, solution_processors` is the vector of the model solution processors,
 `pmitd_ref_extensions` is the array of modeling extensions, and `make_si` is the boolean that determines
-if the results are returned in SI or per-unit. `solution_model` is a string that determines in which model,
+if the results are returned in SI or per-unit. `eng2math_passthrough` are the passthrough vectors to be
+considered by the PMD MATH models. `solution_model` is a string that determines in which model,
 ENG or MATH, the solutions are presented.
 Returns a dictionary of results.
 """
@@ -318,6 +343,7 @@ function solve_model(
     multinetwork::Bool=false,
     solution_processors::Vector{<:Function}=Function[],
     pmitd_ref_extensions::Vector{<:Function}=Function[],
+    eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
     make_si::Bool=true,
     solution_model::String="eng",
     kwargs...)
@@ -329,7 +355,9 @@ function solve_model(
     pmitd = instantiate_model(
         pmitd_data, pmitd_type, build_method;
         multinetwork=multinetwork,
-        pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
+        pmitd_ref_extensions=pmitd_ref_extensions,
+        eng2math_passthrough=eng2math_passthrough,
+        kwargs...)
 
     # Solve ITD Model
     result = _IM.optimize_model!(
