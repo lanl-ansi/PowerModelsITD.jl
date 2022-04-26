@@ -178,7 +178,7 @@ function build_opfitd_storage(pmitd::AbstractPowerModelITD)
 
     # -------------------------------------------------
     # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost(pmitd)
+    objective_itd_min_fuel_cost_storage(pmitd)
 
 end
 
@@ -299,7 +299,7 @@ function build_opfitd_storage(pmitd::AbstractIVRPowerModelITD)
 
     # -------------------------------------------------
     # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost(pmitd)
+    objective_itd_min_fuel_cost_storage(pmitd)
 
 end
 
@@ -441,7 +441,7 @@ function build_opfitd_storage(pmitd::AbstractBFPowerModelITD)
 
     # -------------------------------------------------
     # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost(pmitd)
+    objective_itd_min_fuel_cost_storage(pmitd)
 
 end
 
@@ -580,7 +580,7 @@ function build_opfitd_storage(pmitd::AbstractLNLBFPowerModelITD)
 
     # -------------------------------------------------
     # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost(pmitd)
+    objective_itd_min_fuel_cost_storage(pmitd)
 
 end
 
@@ -762,7 +762,7 @@ function build_mn_opfitd_storage(pmitd::AbstractPowerModelITD)
 
     # -------------------------------------------------
     # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost(pmitd)
+    objective_itd_min_fuel_cost_storage(pmitd)
 
 end
 
@@ -931,7 +931,7 @@ function build_mn_opfitd_storage(pmitd::AbstractIVRPowerModelITD)
 
     # -------------------------------------------------
     # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost(pmitd)
+    objective_itd_min_fuel_cost_storage(pmitd)
 
 end
 
@@ -1109,7 +1109,7 @@ function build_mn_opfitd_storage(pmitd::AbstractBFPowerModelITD)
 
     # -------------------------------------------------
     # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost(pmitd)
+    objective_itd_min_fuel_cost_storage(pmitd)
 
 end
 
@@ -1286,5 +1286,5 @@ function build_mn_opfitd_storage(pmitd::AbstractLNLBFPowerModelITD)
 
     # -------------------------------------------------
     # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost(pmitd)
+    objective_itd_min_fuel_cost_storage(pmitd)
 end
