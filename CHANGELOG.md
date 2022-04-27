@@ -86,6 +86,19 @@
 - Refactored SOCWRConic-SOCConicUBF voltage and angle boundary constraints.
 - Refactored SDPWRM-SOCConicUBF voltage and angle boundary constraints.
 
+## staged Decomposition
+
+- Added new constant vectors `STANDARD_PROBLEMS` and `DECOMPOSITION_PROBLEMS` that store strings of the names of supported `build_methods` (i.e., problem specifications).
+- Added new constants to docs (`constants.md`).
+- Refactored main `solve_model(...)` function in order to distinguish between standard ITD problems and decomposition-based ITD problems.
+- Added new `build_opfitd_decomposition(...)` problem specification in new file `opfitd_decomposition.jl`
+- Added new `instantiate_model_decomposition` functions to `base.jl` designed to instantiate the decomposition-based ITD problem.
+- Added new function `convert_data_dict_to_struct` to `helpers.jl` in charge of converting the `pmitd_data` dictionary into a decomposed version `struct` version, where the pmd components are separated according to their ckt names.
+- Added new function `_separate_pmd_circuits` to `helpers.jl` in charge of separating the overall `pmd` dictionary into individual dictionaries according to the ckt name (i.e., `ckt_name1`=>ckt_name1_data, `ckt_name2`=>ckt_name2_data, etc.).
+- Added new functions `assign_boundary_buses!` and `_assign_boundary_buses!` to `data.jl` that receive a `DecompositionStruct` (instead of a dictionary) and perform the assignments of MATH-based buses numbers to the `pmitd` dictionary.
+- Added new `build_opfitd_decomposition(...)` and `solve_mn_opfitd_decomposition(...)` functions that support the building and solving the multinetwork decomposition-based opfitd.
+- Refactored main `instantiate_model_decomposition` function to return a `DecompositionStruct` with the JuMP models of `pm` and `pmd` in the respective `.pm` and `.pmd[ckt_name]` attributes.
+
 ## v0.7.5
 
 - Fixed issue that caused `crbound_fr`, `cibound_fr`, `cibound_to`, and `crbound_to` values to not be shown in the `results["solution"]["it"]["pmitd"]` dictionary.(Issue: #8)
@@ -113,16 +126,6 @@
 - Added `Pull` request template to  `.github`.
 - Fixed major bug in `transform_pmitd_solution_to_eng!` function that was causing boundary power flow values to be the same for all nw in multinetwork problems.
 - Added unit test to `opfitd_mn` (and new data files) that test that boundary power flow solution values differ when solving a multinetwork problem with different loading conditions.
-- Added new constant vectors `STANDARD_PROBLEMS` and `DECOMPOSITION_PROBLEMS` that store strings of the names of supported `build_methods` (i.e., problem specifications).
-- Added new constants to docs (`constants.md`).
-- Refactored main `solve_model(...)` function in order to distinguish between standard ITD problems and decomposition-based ITD problems.
-- Added new `build_opfitd_decomposition(...)` problem specification in new file `opfitd_decomposition.jl`
-- Added new `instantiate_model_decomposition` functions to `base.jl` designed to instantiate the decomposition-based ITD problem.
-- Added new function `convert_data_dict_to_struct` to `helpers.jl` in charge of converting the `pmitd_data` dictionary into a decomposed version `struct` version, where the pmd components are separated according to their ckt names.
-- Added new function `_separate_pmd_circuits` to `helpers.jl` in charge of separating the overall `pmd` dictionary into individual dictionaries according to the ckt name (i.e., `ckt_name1`=>ckt_name1_data, `ckt_name2`=>ckt_name2_data, etc.).
-- Added new functions `assign_boundary_buses!` and `_assign_boundary_buses!` to `data.jl` that receive a `DecompositionStruct` (instead of a dictionary) and perform the assignments of MATH-based buses numbers to the `pmitd` dictionary.
-- Added new `build_opfitd_decomposition(...)` and `solve_mn_opfitd_decomposition(...)` functions that support the building and solving the multinetwork decomposition-based opfitd.
-- Refactored main `instantiate_model_decomposition` function to return a `DecompositionStruct` with the JuMP models of `pm` and `pmd` in the respective `.pm` and `.pmd[ckt_name]` attributes.
 
 ## v0.7.0
 
