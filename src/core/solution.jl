@@ -260,6 +260,9 @@ function transform_pmitd_solution_to_eng!(result::Dict{String,<:Any}, pmitd_data
 
         # replace ["boundary"] dict in solution
         nw_sol_data["boundary"] = pmitd_sol_boundary_eng
+
+        # add data to replace to result
+        pmitd_sol_data[string(nw)] = deepcopy(nw_sol_data)
     end
 
 end
