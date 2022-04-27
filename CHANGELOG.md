@@ -1,5 +1,14 @@
 # PowerModelsITD.jl Change Log
 
+## staged LAAExperimental
+
+- Added `eng2math_passthrough` parameter to all `instantiate_model(..)` and `solve_X(...)` functions.
+- Added unit tests to `opftid_pass.jl` that test the correct operation of the `eng2math_passthrough` both in single network and multinetwork applications.
+- Added test cases files for the `opftid_pass.jl` unit tests.
+- Added new problem specifications `build_opfitd_storage` and `build_mn_opfitd_storage` to `prob/opfitd_storage.jl` that perform opf optimization taking into account storage costs.
+- Added new objective functions to `objective_storage.jl` that consider energy storage costs in the objective function for the opf optimization.
+- Added unit tests to `opftid_pass.jl` that test the new costs functions with energy storage costs added.
+
 ## staged
 
 - none.
@@ -65,12 +74,6 @@
 - Added `Pull` request template to  `.github`.
 - Fixed major bug in `transform_pmitd_solution_to_eng!` function that was causing boundary power flow values to be the same for all nw in multinetwork problems.
 - Added unit test to `opfitd_mn` (and new data files) that test that boundary power flow solution values differ when solving a multinetwork problem with different loading conditions.
-- Added `eng2math_passthrough` parameter to all `instantiate_model(..)` and `solve_X(...)` functions.
-- Added unit tests to `opftid_pass.jl` that test the correct operation of the `eng2math_passthrough` both in single network and multinetwork applications.
-- Added test cases files for the `opftid_pass.jl` unit tests.
-- Added new problem specifications `build_opfitd_storage` and `build_mn_opfitd_storage` to `prob/opfitd_storage.jl` that perform opf optimization taking into account storage costs.
-- Added new objective functions to `objective_storage.jl` that consider energy storage costs in the objective function for the opf optimization.
-- Added unit tests to `opftid_pass.jl` that test the new costs functions with energy storage costs added.
 
 ## v0.7.0
 
