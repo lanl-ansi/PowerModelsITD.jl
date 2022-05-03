@@ -58,6 +58,7 @@
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
 
         # cost to assing to energy storage
+        # Units $/pu, to convert from your wanted $/MWh just multiply by MVABase (e.g., 2.5 $/MWh x 100 MWh/1pu = 250 $/pu)
         strg_cost = 250
 
         # add cost to storages in PMD
@@ -82,6 +83,7 @@
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
 
         # cost to assing to energy storage
+        # Units $/pu, to convert from your wanted $/MWh just multiply by MVABase (e.g., 2.5 $/MWh x 100 MWh/1pu = 250 $/pu)
         strg_cost = 250
 
         # add cost to storages in PMD
