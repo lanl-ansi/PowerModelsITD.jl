@@ -2,7 +2,7 @@
 
 ## staged
 
-- none.
+- Fixed issue in function `_rename_network_components!(...)` that was not allowing problems where transformers have multiple windings connections to be solved. (Issue: #6)
 
 ## v0.7.1
 

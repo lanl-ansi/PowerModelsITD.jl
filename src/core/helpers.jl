@@ -282,8 +282,9 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             end
             base_data["transformer"][new_key] = value
             base_data["transformer"][new_key]["source_id"] = ckt_name * "." * base_data["transformer"][new_key]["source_id"]
-            base_data["transformer"][new_key]["bus"][1] = ckt_name * "." * base_data["transformer"][new_key]["bus"][1]
-            base_data["transformer"][new_key]["bus"][2] = ckt_name * "." * base_data["transformer"][new_key]["bus"][2]
+            for t in 1:1:length(base_data["transformer"][new_key]["bus"])
+                base_data["transformer"][new_key]["bus"][t] = ckt_name * "." * base_data["transformer"][new_key]["bus"][t]
+            end
             base_data["transformer"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
         end
     end
