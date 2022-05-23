@@ -9,6 +9,7 @@
 - Fixed issue in function `_rename_network_components!(...)` that was not allowing problems where transformers have multiple windings connections to be solved. (Issue: #6)
 - Updated `PowerModels`, `PowerModelsDistribution`, and `InfrastructureModels` dependencies versions.
 - Disabled large scale unit test case due to the test failing in CI nightly windows-latest run (ipopt memory fail: Problem with integer stack size).
+- Updated `PowerModelsITD.jl` version in `Beginners Guide.jl` Pluto notebook available in `/examples`
 
 ## v0.7.1
 
