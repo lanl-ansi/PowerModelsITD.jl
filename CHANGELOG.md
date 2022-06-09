@@ -1,6 +1,6 @@
 # PowerModelsITD.jl Change Log
 
-## staged
+## staged Decomposition
 
 - none.
 
@@ -33,6 +33,10 @@
 - Added new functions `assign_boundary_buses!` and `_assign_boundary_buses!` to `data.jl` that receive a `DecompositionStruct` (instead of a dictionary) and perform the assignments of MATH-based buses numbers to the `pmitd` dictionary.
 - Added new `build_opfitd_decomposition(...)` and `solve_mn_opfitd_decomposition(...)` functions that support the building and solving the multinetwork decomposition-based opfitd.
 - Refactored main `instantiate_model_decomposition` function to return a `DecompositionStruct` with the JuMP models of `pm` and `pmd` in the respective `.pm` and `.pmd[ckt_name]` attributes.
+
+## staged
+
+- none.
 
 ## v0.7.5
 
