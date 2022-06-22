@@ -1,3 +1,5 @@
+![PowerModelsITD Logo](assets/logo.svg)
+===
 
 ```@meta
 CurrentModule = PowerModelsITD

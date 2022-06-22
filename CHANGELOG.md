@@ -2,7 +2,8 @@
 
 ## staged
 
-- none.
+- Added `PowerModelsITD` logo.
+- Revised `README.md`.
 
 ## v0.7.2
 
