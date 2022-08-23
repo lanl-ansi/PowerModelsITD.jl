@@ -254,7 +254,7 @@ function _objective_itd_min_fuel_polynomial_nl_distribution_load_setpoint_delta(
     w = Dict(n => Dict(i => 10*get(load, "weight", 1.0) for (i,load) in _PMD.ref(pmd, n, :load)) for n in _PMD.nw_ids(pmd))
 
     # ITD (Combined objective)
-    return JuMP.@NLobjective(pmitd.model, Min,
+    return JuMP.@objective(pmitd.model, Min,
         sum(
             sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
         for (n, nw_ref) in _PM.nws(pm))
