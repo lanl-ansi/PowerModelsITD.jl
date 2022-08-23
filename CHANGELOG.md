@@ -2,7 +2,11 @@
 
 ## staged
 
-- Fix issue caused by JuMP+ v1.2.1 where non-linear (NL) objectives in `objective_dmld.jl` and `objective_dmld_simple.jl` were causing a major error. Changed to `@objective`.
+- none.
+
+## v0.7.4
+
+- Fixed issue caused by JuMP+ v1.2.1 where non-linear (NL) objectives in `objective_dmld.jl` and `objective_dmld_simple.jl` were causing a major error. Changed to `@objective`.
 
 ## v0.7.3
 
