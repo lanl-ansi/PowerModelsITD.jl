@@ -7,6 +7,7 @@ version = "0.10.0"
 [deps]
 Distributed = "8ba89e20-285c-5b6f-9357-94700520ee1b"
 InfrastructureModels = "2030c09a-7f63-5d83-885d-db604e0e9cc0"
+IpoptDecomposition = "6b7f5ccb-1a75-42de-b5f3-d93534753244"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 JuMP = "4076af6c-e467-56ae-b986-b466b2749572"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
