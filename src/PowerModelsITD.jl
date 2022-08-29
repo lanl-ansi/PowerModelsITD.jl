@@ -4,6 +4,8 @@ module PowerModelsITD
     import PowerModels as _PM
     import PowerModelsDistribution as _PMD
 
+    import IpoptDecomposition as _IDEC
+
     import JuMP
 
     import JSON

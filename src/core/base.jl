@@ -506,6 +506,7 @@ function solve_model(
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 
+        result = _IDEC.optimize_decomposition!(pmitd.pm, pmitd.pmd, pmitd.pmitd)
 
         # Solve the ITD decomposition problem (TODO)
         result = 1
