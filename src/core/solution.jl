@@ -166,6 +166,18 @@ function _transform_pmitd_solution_to_si!(result::Dict{String,<:Any})
                 if haskey(boundary, "qbound_to")
                     boundary["qbound_to"] = boundary["qbound_to"].*pmd_sbase
                 end
+                if haskey(boundary, "crbound_fr")
+                    boundary["crbound_fr"] = boundary["crbound_fr"]*pmd_sbase
+                end
+                if haskey(boundary, "cibound_fr")
+                    boundary["cibound_fr"] = boundary["cibound_fr"]*pmd_sbase
+                end
+                if haskey(boundary, "crbound_to")
+                    boundary["crbound_to"] = boundary["crbound_to"].*pmd_sbase
+                end
+                if haskey(boundary, "cibound_to")
+                    boundary["cibound_to"] = boundary["cibound_to"].*pmd_sbase
+                end
             end
         end
     end
@@ -234,7 +246,7 @@ function transform_pmitd_solution_to_eng!(result::Dict{String,<:Any}, pmitd_data
             boundary_num = eval(Meta.parse(boundary_num))
 
             # transmission
-            if (haskey(boundary_data, "pbound_fr"))
+            if (haskey(boundary_data, "pbound_fr") || haskey(boundary_data, "crbound_fr"))
                 tran_bus = tran_buses[findfirst(x -> boundary_num[2] == x["bus_i"], tran_buses)]
                 tran_bus_name = tran_bus["source_id"][2]
 
@@ -246,7 +258,7 @@ function transform_pmitd_solution_to_eng!(result::Dict{String,<:Any}, pmitd_data
             end
 
             # distribution
-            if (haskey(boundary_data, "pbound_to"))
+            if (haskey(boundary_data, "pbound_to") || haskey(boundary_data, "crbound_to"))
                 dist_bus = dist_buses[findfirst(x -> boundary_num[2] == x["bus_i"], dist_buses)]
                 dist_bus_name = dist_bus["source_id"]
 
