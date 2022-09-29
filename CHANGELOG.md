@@ -2,7 +2,12 @@
 
 ## staged
 
+- none.
+
+## v0.7.5
+
 - Fixed issue that caused `crbound_fr`, `cibound_fr`, `cibound_to`, and `crbound_to` values to not be shown in the `results["solution"]["it"]["pmitd"]` dictionary.(Issue: #8)
+- Updated `PowerModels` and `InfrastructureModels` dependencies versions.
 
 ## v0.7.4
 

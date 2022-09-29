@@ -2,7 +2,7 @@ name = "PowerModelsITD"
 uuid = "615c3f80-b0cb-4ecd-88fe-27bee056c380"
 authors = ["Juan Ospina", "David M Fobes"]
 repo = "https://github.com/lanl-ansi/PowerModelsITD.jl.git"
-version = "0.7.4"
+version = "0.7.5"
 
 [deps]
 InfrastructureModels = "2030c09a-7f63-5d83-885d-db604e0e9cc0"
@@ -13,11 +13,11 @@ PowerModels = "c36e90e8-916a-50a6-bd94-075b64ef4655"
 PowerModelsDistribution = "d7431456-977f-11e9-2de3-97ff7677985e"
 
 [compat]
-InfrastructureModels = "0.7.4"
+InfrastructureModels = "0.7.5"
 Ipopt = "0.9, 1.0.2"
 JSON = "~0.18, ~0.19, ~0.20, ~0.21"
 JuMP = "~0.22, ~0.23, 1"
-PowerModels = "0.19.5"
+PowerModels = "0.19.6"
 PowerModelsDistribution = "0.14.4"
 SCS = "~1.0, ~1.1"
 julia = "1.6"
