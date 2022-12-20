@@ -157,3 +157,25 @@ often be achieved by building application specific methods of building multinetw
 function replicate(sn_data::Dict{String,<:Any}, count::Int; global_keys::Set{String}=Set{String}())
     return _IM.replicate(sn_data, count, union(global_keys, _pmitd_global_keys))
 end
+
+
+"""
+    function calc_transmission_branch_flow_ac!(
+        result::Dict{String,<:Any},
+        pmitd_data::Dict{String,<:Any};
+    )
+
+Assumes a valid ac solution is included in the result and computes the branch flow values.
+Returns the pf solution inside the `pmitd_data` dictionary (not the `result` dictionary).
+Replicates the _PM function but compatible with PMITD dicitionary.
+"""
+function calc_transmission_branch_flow_ac!(result::Dict{String,<:Any}, pmitd_data::Dict{String,<:Any})
+    # updates network data with solution data
+    _IM.update_data!(pmitd_data, result["solution"])
+
+    # calculates the transmission power flows
+    flows = _PM._calc_branch_flow_ac(pmitd_data["it"]["pm"])
+
+    # updates the network data with transmission power flows calculated
+    _IM.update_data!(pmitd_data["it"]["pm"], flows)
+end
