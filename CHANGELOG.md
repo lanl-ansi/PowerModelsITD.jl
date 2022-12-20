@@ -2,7 +2,7 @@
 
 ## staged
 
-- none.
+- Refactored SOCBF-SOCNLUBF voltage and angle boundary constraints.
 
 ## v0.7.5
 

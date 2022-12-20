@@ -171,13 +171,13 @@ SOCBF-SOCNLUBF boundary bus voltage magnitude (W variables) constraints.
 function constraint_boundary_voltage_magnitude(pm::_PM.AbstractSOCBFModel, pmd::_PMD.SOCNLPUBFPowerModel, i::Int, f_idx::Tuple{Int,Int,Int}, f_connections::Vector{Int}, t_connections::Vector{Int}; nw::Int = nw_id_default)
     i, f_bus, t_bus = f_idx
 
-    W_fr = _PM.var(pm, nw, :w, f_bus)
-    Wr_to = LinearAlgebra.diag(_PMD.var(pmd, nw, :Wr, t_bus))
-    Wi_to = LinearAlgebra.diag(_PMD.var(pmd, nw, :Wi, t_bus))
+    w_fr = _PM.var(pm, nw, :w, f_bus)
+    wr_to = _PMD.var(pmd, nw, :w, t_bus)
 
-    JuMP.@constraint(pm.model, W_fr^2 == Wr_to[1]^2+Wi_to[1]^2)
-    JuMP.@constraint(pm.model, Wr_to[2]^2+Wi_to[2]^2 == Wr_to[1]^2+Wi_to[1]^2)
-    JuMP.@constraint(pm.model, Wr_to[3]^2+Wi_to[3]^2 == Wr_to[1]^2+Wi_to[1]^2)
+    JuMP.@constraint(pm.model, w_fr == wr_to[1])
+    JuMP.@constraint(pm.model, wr_to[1] == wr_to[2])
+    JuMP.@constraint(pm.model, wr_to[1] == wr_to[3])
+
 end
 
 
@@ -195,6 +195,18 @@ end
 SOCBF-SOCNLUBF boundary bus voltage angle constraints.
 """
 function constraint_boundary_voltage_angle(pm::_PM.AbstractSOCBFModel, pmd::_PMD.SOCNLPUBFPowerModel, i::Int, f_idx::Tuple{Int,Int,Int}, f_connections::Vector{Int}, t_connections::Vector{Int}; nw::Int = nw_id_default)
+    i, f_bus, t_bus = f_idx
+
+    Wr_to = _PMD.var(pmd, nw, :Wr, t_bus)
+    Wi_to = _PMD.var(pmd, nw, :Wi, t_bus)
+
+    shift_120degs_rad = deg2rad(120)
+
+    # These constraints assume angles at the T&D boundary are 0, -120, 120.
+    JuMP.@constraint(pm.model, Wi_to[1,2] == (Wr_to[1,2]*tan(shift_120degs_rad)))
+    JuMP.@constraint(pm.model, Wi_to[1,3] == (Wr_to[1,3]*tan(-shift_120degs_rad)))
+    JuMP.@constraint(pm.model, Wi_to[2,3] == (Wr_to[2,3]*tan(shift_120degs_rad)))
+
 end
 
 
