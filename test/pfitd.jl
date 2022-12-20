@@ -86,7 +86,7 @@
         @test result["termination_status"] == LOCALLY_SOLVED
     end
 
-    @testset "solve_pfitd ann calculate branch power flows in transmission: Unbalanced case5-case3 ACP-ACP" begin
+    @testset "solve_pfitd and calculate branch power flows in transmission: Unbalanced case5-case3 ACP-ACP" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal.json")
