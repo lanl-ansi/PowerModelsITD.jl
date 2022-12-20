@@ -85,4 +85,19 @@
         result = solve_pfitd(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
+
+    @testset "solve_pfitd and calculate branch power flows in transmission: Unbalanced case5-case3 ACP-ACP" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal.json")
+        pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        result = solve_model(pmitd_data, pmitd_type, ipopt, build_pfitd)
+        @test result["termination_status"] == LOCALLY_SOLVED
+        calc_transmission_branch_flow_ac!(result, pmitd_data)
+        @test isapprox(pmitd_data["it"]["pm"]["branch"]["4"]["pt"], 39.217319; atol = 1e-4)
+        @test isapprox(pmitd_data["it"]["pm"]["branch"]["2"]["pt"], 2.7339504; atol = 1e-4)
+        @test isapprox(pmitd_data["it"]["pm"]["branch"]["4"]["qf"], 9.3407320; atol = 1e-4)
+        @test isapprox(pmitd_data["it"]["pm"]["branch"]["2"]["qf"], 74.407839; atol = 1e-4)
+    end
 end

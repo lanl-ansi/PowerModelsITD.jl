@@ -2,7 +2,11 @@
 
 ## staged
 
-- none.
+- Added new function `calc_transmission_branch_flow_ac!` to `data.jl` that computes the branch power flows for transmission system when solving PFITD.
+- Refactored SOCBF-SOCNLUBF voltage and angle boundary constraints.
+- Refactored SOCBFConic-SOCUBFConic voltage and angle boundary constraints.
+- Refactored SOCWRConic-SOCConicUBF voltage and angle boundary constraints.
+- Refactored SDPWRM-SOCConicUBF voltage and angle boundary constraints.
 
 ## v0.7.5
 
