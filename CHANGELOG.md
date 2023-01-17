@@ -2,6 +2,10 @@
 
 ## staged
 
+- none.
+
+## v0.7.6
+
 - Bumped PMITD compatibility of `PMD` and `PM` to the latest versions (i.e., v0.14.5, and v0.19.8).
 - Added new unit tests that test SOC-based formulations with transformers (SOC transformers constraints were added to `PMD`).
 - Added new function `calc_transmission_branch_flow_ac!` to `data.jl` that computes the branch power flows for transmission system when solving PFITD.
