@@ -382,4 +382,54 @@
         result = solve_model(pmitd_data, pmitd_type, scs_solver, build_opfitd)
         @test result["termination_status"] == OPTIMAL
     end
+
+    @testset "solve_model (with network inputs): Unbalanced case5-case3 SOCBF-SOCNLPUBF w/ transformers" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal.json")
+        pmitd_type = BFPowerModelITD{SOCBFPowerModel, SOCNLPUBFPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
+        @test result["termination_status"] == LOCALLY_SOLVED
+    end
+
+    @testset "solve_model (with network inputs): Unbalanced case5-case3 Without Dist. Generator SOCBF-SOCNLPUBF w/ transformers" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
+        pmitd_type = BFPowerModelITD{SOCBFPowerModel, SOCNLPUBFPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
+        @test result["termination_status"] == LOCALLY_SOLVED
+    end
+
+    @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator SOCBFConic-SOCConicUBF w/ transformers" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
+        pmitd_type = BFPowerModelITD{SOCBFConicPowerModel, SOCConicUBFPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        result = solve_model(pmitd_data, pmitd_type, scs_solver, build_opfitd)
+        @test result["termination_status"] == OPTIMAL || result["termination_status"] == ALMOST_OPTIMAL
+    end
+
+    @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator SOCWRConic-SOCConicUBF w/ transformers" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
+        pmitd_type = WRBFPowerModelITD{SOCWRConicPowerModel, SOCConicUBFPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        result = solve_model(pmitd_data, pmitd_type, scs_solver, build_opfitd)
+        @test result["termination_status"] == OPTIMAL
+    end
+
+    @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator SDPWRM-SOCConicUBF w/ transformers" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
+        pmitd_type = WRBFPowerModelITD{SDPWRMPowerModel, SOCConicUBFPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        result = solve_model(pmitd_data, pmitd_type, scs_solver, build_opfitd)
+        @test result["termination_status"] == OPTIMAL || result["termination_status"] == ALMOST_OPTIMAL
+    end
 end
