@@ -2,7 +2,7 @@
 
 ## staged
 
-- none.
+- Bumped PMITD compatibility of `PMD` to the latest versions (i.e., v0.14.6).
 
 ## v0.7.6
 
