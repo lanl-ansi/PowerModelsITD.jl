@@ -2,7 +2,9 @@
 
 ## staged
 
-- Bumped PMITD compatibility of `PMD` to the latest versions (i.e., v0.14.6).
+- Bumped PMITD compatibility of `PMD` to the latest versions (i.e., v0.14.7).
+- Added journal citing information to `README.md`.
+- Added journal citing information to `index` in docs.
 
 ## v0.7.6
 

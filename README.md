@@ -58,6 +58,22 @@ See [CONTRIBUTING.md] for code contribution guidelines.
 
 This code has been developed with the support of the Grant: "Optimized Resilience for Distribution and Transmission Systems" funded by the U.S. Department of Energy (DOE) Office of Electricity (OE) Advanced Grid Modeling (AGM) Research Program under program manager Ali Ghassemian. The research work conducted at Los Alamos National Laboratory is done under the auspices of the National Nuclear Security Administration of the U.S. Department of Energy under Contract No. 89233218CNA000001. The primary developers are Juan Ospina (@juanjospina) and David Fobes (@pseudocubic).
 
+## Citing PowerModelsITD
+
+If you find `PowerModelsITD` useful for your work, we kindly request that you cite the following [publication](https://doi.org/10.1109/TPWRS.2023.3234725):
+
+```bibtex
+@article{ospina2023modeling,
+  author={Ospina, Juan and Fobes, David M. and Bent, Russell and Wächter, Andreas},
+  journal={IEEE Transactions on Power Systems},
+  title={Modeling and Rapid Prototyping of Integrated Transmission-Distribution OPF Formulations with PowerModelsITD.jl},
+  year={2023},
+  volume={},
+  number={},
+  pages={1-14},
+  doi={10.1109/TPWRS.2023.3234725}}
+```
+
 ## License
 
 This code is provided under a BSD license as part of the Multi-Infrastructure Control and Optimization Toolkit (MICOT) project, LA-CC-13-108.
