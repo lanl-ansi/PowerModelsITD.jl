@@ -24,6 +24,7 @@ makedocs(
         "Manual" => [
             "Getting Started" => "manual/quickguide.md",
             "File Formats" => "manual/fileformat.md",
+            "Formulations" => "manual/formulations.md",
         ],
         "Tutorials" => [
             "Beginners Guide" => "tutorials/Beginners Guide.md",

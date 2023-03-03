@@ -5,6 +5,7 @@
 - Bumped PMITD compatibility of `PMD` to the latest versions (i.e., v0.14.7).
 - Added journal citing information to `README.md`.
 - Added journal citing information to `index` in docs.
+- Added ITD boundary network mathematical formulations to `docs`.
 
 ## v0.7.6
 
