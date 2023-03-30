@@ -264,27 +264,37 @@ function instantiate_model_decomposition(
     pmitd_data::Dict{String,<:Any}, pmitd_type::Type, build_method::Function;
     multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
 
-    # extract different pmd systems
-    pmitd_struct = convert_data_dict_to_struct(pmitd_data; multinetwork=multinetwork)
+    # separate pmd ckts in a single dictionary to multiple dict entries
+    pmd_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
+    pmitd_data["it"][_PMD.pmd_it_name] = pmd_separated
 
     # Correct the network data and assign the respective boundary number values.
-    correct_network_data!(pmitd_struct; multinetwork=multinetwork)
+    correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
 
-    # Instantiate JuMP models and add them to new Struct
-    pmitd_model_decomposed = DecompositionStruct(Dict(), Dict(), Dict()) # intialize struct
+    # ----- IpoptDecomposition Optimizer ------
+    pmitd_model_optimizer =  _IDEC.MetaOptimizer()
 
-    # Instantiate PM model
-    pmitd_model_decomposed.pm = _PM.instantiate_model(pmitd_struct.pm, pmitd_type.parameters[1], build_method)
+    # Instantiate PM models
+    pm_inst_model = _PM.instantiate_model(pmitd_data["it"][_PM.pm_it_name], pmitd_type.parameters[1], build_method)
+    pmitd_model_optimizer.master = pm_inst_model.model
+    JuMP.set_optimizer(pmitd_model_optimizer.master, _IDEC.Optimizer; add_bridges = false) # add IDEC optimizer
 
     # Instantiate PMD models
-    for (ckt_name, ckt_data) in pmitd_struct.pmd
-        pmitd_model_decomposed.pmd[ckt_name] = _PMD.instantiate_mc_model(ckt_data, pmitd_type.parameters[2], build_method)
+    pmd_inst_models = []
+    for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+        pmd_inst_model = _PMD.instantiate_mc_model(ckt_data, pmitd_type.parameters[2], build_method)
+        pmd_JuMP_model = pmd_inst_model.model
+        JuMP.set_optimizer(pmd_JuMP_model, _IDEC.Optimizer; add_bridges = false) # add IDEC optimizer
+        push!(pmd_inst_models, pmd_JuMP_model)
     end
+    pmitd_model_optimizer.subproblems = pmd_inst_models
 
-    # Add PMITD boundary data info. dict to new Struct (informational purposes only)
-    pmitd_model_decomposed.pmitd = pmitd_struct.pmitd
+    # TODO: Linking vars
+    # pmitd_model_optimizer.list_linking_vars = [[[x1_master, x2_master],[x1_sub1, x2_sub1]]]
 
-    return pmitd_model_decomposed
+    breaking_point
+
+    return pmitd_model_optimizer
 end
 
 
@@ -478,7 +488,8 @@ function solve_model(
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 
-        result = _IDEC.optimize_decomposition!(pmitd.pm, pmitd.pmd, pmitd.pmitd)
+        # calls the _IDEC optimize!(..) function
+        result = _IDEC.optimize!(pmitd)
 
         # Solve the ITD decomposition problem (TODO)
         result = 1

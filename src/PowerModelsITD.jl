@@ -41,13 +41,6 @@ module PowerModelsITD
     "DECOMPOSITION_PROBLEMS constant vector that contains the different types of ITD decomposition problems supported."
     const DECOMPOSITION_PROBLEMS = ["build_opfitd_decomposition", "build_mn_opfitd_decomposition"]
 
-    # mutable struct to store pmitd data/JuMP models for decomposition applications.
-    mutable struct DecompositionStruct
-        pm
-        pmd
-        pmitd
-    end
-
     # Files to include in module
     include("io/common.jl")
     include("core/base.jl")
