@@ -427,28 +427,6 @@ function _add_file_name!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any}
 end
 
 
-"""
-    function convert_data_dict_to_struct(
-        pmitd_data::Dict{String,<:Any};
-        multinetwork::Bool=false
-    )
-
-Converts the pmitd_data dictionary to a Struct that can be used to decompose the ITD problem.
-`multinetwork` is the boolean that defines if the conversion should be done as multinetwork.
-Returns the pmitd_data Struct.
-"""
-function convert_data_dict_to_struct(pmitd_data::Dict{String,<:Any}; multinetwork::Bool=false)
-
-    # separate pmd ckts in a single dictionary
-    pmd_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
-
-    # create the pmitd struct
-    pmitd_data_struct = DecompositionStruct(pmitd_data["it"][_PM.pm_it_name], pmd_separated, pmitd_data["it"][pmitd_it_name])
-
-    return pmitd_data_struct
-
-end
-
 
 """
     function _separate_pmd_circuits(
