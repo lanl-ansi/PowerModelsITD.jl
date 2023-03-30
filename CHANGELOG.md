@@ -88,6 +88,7 @@
 
 ## staged Decomposition
 
+- Important: Refactored decomposition process to remove `DecompositionStruct`. a `Dict` is to maintain coeherence with non-decomposed version.
 - Added new constant vectors `STANDARD_PROBLEMS` and `DECOMPOSITION_PROBLEMS` that store strings of the names of supported `build_methods` (i.e., problem specifications).
 - Added new constants to docs (`constants.md`).
 - Refactored main `solve_model(...)` function in order to distinguish between standard ITD problems and decomposition-based ITD problems.

@@ -45,41 +45,42 @@ end
 
 
 """
-    function correct_network_data!(
+    function correct_network_data_decomposition!(
         data::Dict{String,<:Any};
         multinetwork::Bool=false
     )
 
-Corrects and prepares the data in both pm and pmd struct dictionaries. Also, assigns the ids given
-in the boundary linking data to number buses. `data` is the pmitd struct with the dictionaries
+Corrects and prepares the data in both pm and pmd dictionaries. Also, assigns the ids given
+in the boundary linking data to number buses. `data` is the pmitd dicitionary with the dictionaries
 to be corrected and `multinetwork` is the boolean that defines if there are multinetwork boundary
 buses to be assigned.
 """
-function correct_network_data!(data::DecompositionStruct; multinetwork::Bool=false)
-
-    for (ckt_name, ckt_data) in data.pmd
-        # transform PMD data (only) from ENG to MATH Model
-        if (!_PMD.ismath(ckt_data))
-            data.pmd[ckt_name] = _PMD.transform_data_model(ckt_data; multinetwork=multinetwork)
-        end
-
-        # Corrects and prepares power distribution network data.
-        _PMD.correct_network_data!(data.pmd[ckt_name])
-    end
+function correct_network_data_decomposition!(data::Dict{String,<:Any}; multinetwork::Bool=false)
 
     # Corrects and prepares power transmission network data.
     # TODO: error: _PM.correct_voltage_angle_differences! does not yet support multinetwork data.
     if !multinetwork
-        _PM.correct_network_data!(data.pm)
+        _PM.correct_network_data!(data["it"][_PM.pm_it_name])
     end
 
-    _PM.simplify_network!(data.pm)
+    _PM.simplify_network!(data["it"][_PM.pm_it_name])
+
+    # Corrects and prepares power distribution network data (for each ckt).
+    for (ckt_name, ckt_data) in data["it"][_PMD.pmd_it_name]
+        # transform PMD data (only) from ENG to MATH Model
+        if (!_PMD.ismath(ckt_data))
+            data["it"][_PMD.pmd_it_name][ckt_name] = _PMD.transform_data_model(ckt_data; multinetwork=multinetwork)
+        end
+
+        # Corrects and prepares power distribution network data.
+        _PMD.correct_network_data!(data["it"][_PMD.pmd_it_name][ckt_name])
+    end
 
     # Corrects and prepares boundary linking data.
     # NOTE: TODO
     # When using the same distribution system case, assignments may get the same MATH bus number
     # making it very hard to distinguish which bus belongs to which network.
-    assign_boundary_buses!(data; multinetwork=multinetwork)
+    assign_boundary_buses_decomposition!(data; multinetwork=multinetwork)
 
 end
 
@@ -105,105 +106,6 @@ function assign_boundary_buses!(data::Dict{String,<:Any}; multinetwork::Bool=fal
     else
         for (key, conn) in data["it"][pmitd_it_name]
             _assign_boundary_buses!(data, conn)
-        end
-    end
-end
-
-
-"""
-    function assign_boundary_buses!(
-        data::::DecompositionStruct;
-        multinetwork::Bool=false
-    )
-
-Assigns the names given in the boundary linking data to number buses in corresponding transmission
-and distribution networks. `data` is the pmitd Struct dictionary containing the boundary information and
-`multinetwork` is the boolean that defines if there are multinetwork boundary buses to be
-assigned.
-"""
-function assign_boundary_buses!(data::DecompositionStruct; multinetwork::Bool=false)
-    if multinetwork
-        for (nw, nw_pmitd) in data.pmitd["nw"]
-            for (key, conn) in nw_pmitd
-                _assign_boundary_buses!(data, conn; multinetwork=multinetwork, nw=nw)
-
-                # check if the assignment failed
-                if (typeof(conn["distribution_boundary"]) != Int)
-                    @error "The distribution bus/source specified in the JSON file does not exists. Please input an existing bus/source!"
-                    throw(error())
-                end
-            end
-        end
-    else
-        for (key, conn) in data.pmitd
-            _assign_boundary_buses!(data, conn)
-
-            # check if the assignment failed
-            if (typeof(conn["distribution_boundary"]) != Int)
-                @error "The distribution bus/source specified in the JSON file does not exists. Please input an existing bus/source!"
-                throw(error())
-            end
-        end
-    end
-end
-
-
-"""
-    function _assign_boundary_buses!(
-        data::DecompositionStruct,
-        conn;
-        multinetwork::Bool=false,
-        nw::String="0"
-    )
-
-Helper function for assigning boundary buses. `data` is the pmitd Struct dictionary containing the boundary information,
-`conn` is the boundary connection information, `multinetwork` is the boolean that defines if there are multinetwork
-boundary buses to be assigned, and `nw` is the network number.
-"""
-function _assign_boundary_buses!(data::DecompositionStruct, conn; multinetwork::Bool=false, nw::String="0")
-
-    # Get transmission and distribution boundary names
-    tran_bus_name, dist_bus_name = conn["transmission_boundary"], conn["distribution_boundary"]
-
-    # Transmission part
-    if multinetwork
-        tran_buses = data.pm["nw"][nw]["bus"]
-    else
-        tran_buses = data.pm["bus"]
-    end
-
-    tran_bus_name = typeof(tran_bus_name) == String ? tran_bus_name : string(tran_bus_name)
-
-    try
-        tran_bus = tran_buses[findfirst(x -> tran_bus_name == string(x["source_id"][2]), tran_buses)]
-        conn["transmission_boundary"] = tran_bus["bus_i"]
-    catch e
-        @error "The transmission bus specified in the JSON file does not exists. Please input an existing bus!"
-        throw(error())
-    end
-
-    # Distribution part
-    dist_bus_name = typeof(dist_bus_name) == String ? dist_bus_name : string(dist_bus_name)
-
-    # rearrange the name of ditro. bus: cktname.voltage_source.source -> voltage_source.cktname.source (PMD MATH model format)
-    dist_bus_name_vector = split(dist_bus_name, ".")
-    if (length(dist_bus_name_vector)>2)
-        dist_bus_name = dist_bus_name_vector[2] * "." * dist_bus_name_vector[1] * "." * dist_bus_name_vector[3]
-    end
-
-    for (ckt_name, ckt_data) in data.pmd
-        if multinetwork
-            dist_buses = ckt_data["nw"][nw]["bus"]
-        else
-            dist_buses = ckt_data["bus"]
-        end
-
-        # not fail, if search is unsuccesful.
-        try
-            dist_bus = dist_buses[findfirst(x -> dist_bus_name == x["source_id"], dist_buses)]
-            conn["distribution_boundary"] = dist_bus["bus_i"]
-        catch
-            # do nothing
         end
     end
 end
@@ -254,6 +156,105 @@ function _assign_boundary_buses!(data::Dict{String,<:Any}, conn; multinetwork::B
     catch e
         @error "The distribution bus/source specified in the JSON file does not exists. Please input an existing bus/source!"
         throw(error())
+    end
+end
+
+
+"""
+    function assign_boundary_buses_decomposition!(
+        data::Dict{String,<:Any};
+        multinetwork::Bool=false
+    )
+
+Assigns the names given in the boundary linking data to number buses in corresponding transmission
+and distribution networks. `data` is the pmitd dictionary containing the boundary information and
+`multinetwork` is the boolean that defines if there are multinetwork boundary buses to be
+assigned.
+"""
+function assign_boundary_buses_decomposition!(data::Dict{String,<:Any}; multinetwork::Bool=false)
+    if multinetwork
+        for (nw, nw_pmitd) in data["it"][pmitd_it_name]["nw"]
+            for (key, conn) in nw_pmitd
+                _assign_boundary_buses_decomposition!(data, conn; multinetwork=multinetwork, nw=nw)
+
+                # check if the assignment failed
+                if (typeof(conn["distribution_boundary"]) != Int)
+                    @error "The distribution bus/source specified in the JSON file does not exists. Please input an existing bus/source!"
+                    throw(error())
+                end
+            end
+        end
+    else
+        for (key, conn) in data["it"][pmitd_it_name]
+            _assign_boundary_buses_decomposition!(data, conn)
+
+            # check if the assignment failed
+            if (typeof(conn["distribution_boundary"]) != Int)
+                @error "The distribution bus/source specified in the JSON file does not exists. Please input an existing bus/source!"
+                throw(error())
+            end
+        end
+    end
+end
+
+
+"""
+    function _assign_boundary_buses_decomposition!(
+        data::Dict{String,<:Any},
+        conn;
+        multinetwork::Bool=false,
+        nw::String="0"
+    )
+
+Helper function for assigning boundary buses. `data` is the pmitd Struct dictionary containing the boundary information,
+`conn` is the boundary connection information, `multinetwork` is the boolean that defines if there are multinetwork
+boundary buses to be assigned, and `nw` is the network number.
+"""
+function _assign_boundary_buses_decomposition!(data::Dict{String,<:Any}, conn; multinetwork::Bool=false, nw::String="0")
+
+    # Get transmission and distribution boundary names
+    tran_bus_name, dist_bus_name = conn["transmission_boundary"], conn["distribution_boundary"]
+
+    # Transmission part
+    if multinetwork
+        tran_buses = data["it"][_PM.pm_it_name]["nw"][nw]["bus"]
+    else
+        tran_buses = data["it"][_PM.pm_it_name]["bus"]
+    end
+
+    tran_bus_name = typeof(tran_bus_name) == String ? tran_bus_name : string(tran_bus_name)
+
+    try
+        tran_bus = tran_buses[findfirst(x -> tran_bus_name == string(x["source_id"][2]), tran_buses)]
+        conn["transmission_boundary"] = tran_bus["bus_i"]
+    catch e
+        @error "The transmission bus specified in the JSON file does not exists. Please input an existing bus!"
+        throw(error())
+    end
+
+    # Distribution part
+    dist_bus_name = typeof(dist_bus_name) == String ? dist_bus_name : string(dist_bus_name)
+
+    # rearrange the name of ditro. bus: cktname.voltage_source.source -> voltage_source.cktname.source (PMD MATH model format)
+    dist_bus_name_vector = split(dist_bus_name, ".")
+    if (length(dist_bus_name_vector)>2)
+        dist_bus_name = dist_bus_name_vector[2] * "." * dist_bus_name_vector[1] * "." * dist_bus_name_vector[3]
+    end
+
+    for (ckt_name, ckt_data) in data["it"][_PMD.pmd_it_name]
+        if multinetwork
+            dist_buses = ckt_data["nw"][nw]["bus"]
+        else
+            dist_buses = ckt_data["bus"]
+        end
+
+        # not fail, if search is unsuccesful.
+        try
+            dist_bus = dist_buses[findfirst(x -> dist_bus_name == x["source_id"], dist_buses)]
+            conn["distribution_boundary"] = dist_bus["bus_i"]
+        catch
+            # do nothing
+        end
     end
 end
 
