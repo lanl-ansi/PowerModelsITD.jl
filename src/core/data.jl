@@ -206,7 +206,7 @@ end
         nw::String="0"
     )
 
-Helper function for assigning boundary buses. `data` is the pmitd Struct dictionary containing the boundary information,
+Helper function for assigning boundary buses. `data` is the pmitd dictionary containing the boundary information,
 `conn` is the boundary connection information, `multinetwork` is the boolean that defines if there are multinetwork
 boundary buses to be assigned, and `nw` is the network number.
 """
@@ -256,6 +256,10 @@ function _assign_boundary_buses_decomposition!(data::Dict{String,<:Any}, conn; m
             # do nothing
         end
     end
+
+    # add ckt_name info (very important for ref_add_core_decomposition_distribution).
+    conn["ckt_name"] = dist_bus_name_vector[1]
+
 end
 
 
