@@ -275,14 +275,27 @@ function instantiate_model_decomposition(
     pmitd_model_optimizer =  _IDEC.MetaOptimizer()
 
     # Instantiate PM models
-    pm_inst_model = _PM.instantiate_model(pmitd_data["it"][_PM.pm_it_name], pmitd_type.parameters[1], build_method)
+
+    pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"]["pmitd"] # add pmitd(boundary) info. to pm ref
+
+    pm_inst_model = _IM.instantiate_model(pmitd_data["it"][_PM.pm_it_name],
+            pmitd_type.parameters[1], build_method, ref_add_core_decomposition_transmission!, _PM._pm_global_keys,
+            _PM.pm_it_sym; kwargs...)
+
     pmitd_model_optimizer.master = pm_inst_model.model
     JuMP.set_optimizer(pmitd_model_optimizer.master, _IDEC.Optimizer; add_bridges = false) # add IDEC optimizer
 
     # Instantiate PMD models
     pmd_inst_models = []
     for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-        pmd_inst_model = _PMD.instantiate_mc_model(ckt_data, pmitd_type.parameters[2], build_method)
+
+        boundary_info = pmitd_data["it"][pmitd_it_name]
+        boundary_for_ckt = boundary_info[findfirst(x -> ckt_name == x["ckt_name"], boundary_info)]
+        ckt_data[pmitd_it_name] = boundary_for_ckt  # add pmitd(boundary) info. to pmd ref
+
+        pmd_inst_model = _IM.instantiate_model(ckt_data,  pmitd_type.parameters[2],
+                build_method, ref_add_core_decomposition_distribution!, _PMD._pmd_global_keys, _PMD.pmd_it_sym; kwargs...)
+
         pmd_JuMP_model = pmd_inst_model.model
         JuMP.set_optimizer(pmd_JuMP_model, _IDEC.Optimizer; add_bridges = false) # add IDEC optimizer
         push!(pmd_inst_models, pmd_JuMP_model)
