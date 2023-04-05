@@ -23,8 +23,9 @@
 
 ## staged Decomposition
 
-- Added `variable_decomposition.jl` empty file.
-- Added `src/form_decomposition/...` empty files.
+- Decomposition variables and constraints added are related to the `ACPU`, `LinDist3Flow`, and `NFAU` formulations only.
+- Added constraints related to the decomposition process for the distribution systems in `src/form_decomposition/...`.
+- Added `Paux` and `Qaux` variables in `variable_decomposition.jl`.
 - Added `ckt_name` field to `pmitd` information to be used in `ref_add_core_decomposition_...`
 - Added the `ref_add_core_decomposition_transmission!` and the `ref_add_core_decomposition_distribution!`
 - Important: Refactored decomposition process to remove `DecompositionStruct`. a `Dict` is to maintain coeherence with non-decomposed version.

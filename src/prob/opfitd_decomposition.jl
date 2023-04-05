@@ -59,7 +59,7 @@ function build_opfitd_decomposition(pm_model::_PM.AbstractPowerModel)
     # --- PM(Transmission) Constraints ---
     _PM.constraint_model_voltage(pm_model)
 
-    # reference buses (this only needs to happen for pm(transmission))
+    # reference buses for transmission
     for i in _PM.ids(pm_model, :ref_buses)
         _PM.constraint_theta_ref(pm_model, i)
     end
@@ -80,9 +80,13 @@ function build_opfitd_decomposition(pm_model::_PM.AbstractPowerModel)
         _PM.constraint_dcline_power_losses(pm_model, i)
     end
 
-    # TODO: Add boundary and normal node power balance
-    # TODO: Add decomposition Constraints
-    # TODO: Add decomposition cost function
+    # PM bus power balance
+    for i in _PM.ids(pm_model, :bus)
+        _PM.constraint_power_balance(pm_model, i)
+    end
+
+    # PM cost function
+    _PM.objective_min_fuel_and_flow_cost(pm_model)
 
 end
 
@@ -95,7 +99,6 @@ Constructor for Distribution Integrated T&D Decomposition-based Optimal Power Fl
 """
 function build_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel)
 
-
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model)
     _PMD.variable_mc_branch_power(pmd_model)
@@ -105,9 +108,17 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel
     _PMD.variable_mc_load_power(pmd_model)
     _PMD.variable_mc_storage_power(pmd_model)
 
+    # Decomposition-related vars
+    variable_boundary_power(pmd_model)
+
     # -------------------------------------------------
     # --- PMD(Distribution) Constraints ---
     _PMD.constraint_mc_model_voltage(pmd_model)
+
+    # 0 angle ref for reference bus
+    for i in _PMD.ids(pmd_model, :ref_buses)
+        _PMD.constraint_mc_theta_ref(pmd_model, i)
+    end
 
     # generators should be constrained before KCL, or Pd/Qd undefined
     for id in _PMD.ids(pmd_model, :gen)
@@ -117,6 +128,11 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel
     # loads should be constrained before KCL, or Pd/Qd undefined
     for id in _PMD.ids(pmd_model, :load)
         _PMD.constraint_mc_load_power(pmd_model, id)
+    end
+
+    # Power balance for PMD buses.
+    for i in _PMD.ids(pmd_model, :bus)
+        _PMD.constraint_mc_power_balance(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :storage)
@@ -148,10 +164,14 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel
         _PMD.constraint_mc_transformer_power(pmd_model, i)
     end
 
+    # Boundary constraints
+    for i in _PMD.ids(pmd_model, :boundary)
+        constraint_boundary_power(pmd_model, i)
+        constraint_boundary_voltage_magnitude(pmd_model, i)
+    end
 
-    # TODO: Add boundary and normal node power balance
-    # TODO: Add decomposition Constraints
-    # TODO: Add decomposition cost function
+    # PMD objective
+    _PMD.objective_mc_min_fuel_cost(pmd_model)
 
 end
 

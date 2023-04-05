@@ -290,7 +290,8 @@ function instantiate_model_decomposition(
     for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
 
         boundary_info = pmitd_data["it"][pmitd_it_name]
-        boundary_for_ckt = boundary_info[findfirst(x -> ckt_name == x["ckt_name"], boundary_info)]
+        boundary_number = findfirst(x -> ckt_name == x["ckt_name"], boundary_info)
+        boundary_for_ckt = Dict(boundary_number => boundary_info[boundary_number])
         ckt_data[pmitd_it_name] = boundary_for_ckt  # add pmitd(boundary) info. to pmd ref
 
         pmd_inst_model = _IM.instantiate_model(ckt_data,  pmitd_type.parameters[2],
@@ -304,6 +305,9 @@ function instantiate_model_decomposition(
 
     # TODO: Linking vars
     # pmitd_model_optimizer.list_linking_vars = [[[x1_master, x2_master],[x1_sub1, x2_sub1]]]
+
+    # TODO: IMPORTANT -> I MAY WANT TO CREATE A FUNCTION THAT RECEIVES THE INSTANTIATED MODELS AND BASED ON THEIR TYPES, CREATES THE LINKING VARS STRUCT
+    # BECAUSE FOR EXAMPLE, ACP (POLAR VERSIONS), MAP/LINK P,Q,Vm, but ACR (RECTANGULAR VERSIONS) MAP/LINK P_REAL, P_IMAG, Q_REAL, Q_IMAG, V_REAL, V_IMAG
 
     breaking_point
 
