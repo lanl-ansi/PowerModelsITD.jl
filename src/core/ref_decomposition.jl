@@ -77,20 +77,25 @@ function _ref_filter_distribution_slack_generators_decomposition!(ref::Dict{Symb
 
         # Modify v_min and v_max, remove va and vm, and change bus type for reference bus
         boundary = nw_ref[:pmitd]   # boundary info.
-        nw_ref[:bus][boundary["distribution_boundary"]]["vmin"] = [0.0, 0.0, 0.0]
-        nw_ref[:bus][boundary["distribution_boundary"]]["vmax"] = [Inf, Inf, Inf]
-        # nw_ref[:bus][boundary["distribution_boundary"]]["bus_type"] = 1 # 3: slack, 1: load, 2: bus
+
+        # get boundary number
+        boundary_keys = collect(keys(boundary))
+        boundary_number = boundary_keys[1]
+        boundary_data = boundary[boundary_number]
+
+        nw_ref[:bus][boundary_data["distribution_boundary"]]["vmin"] = [0.0, 0.0, 0.0]
+        nw_ref[:bus][boundary_data["distribution_boundary"]]["vmax"] = [Inf, Inf, Inf]
+        # nw_ref[:bus][boundary_data["distribution_boundary"]]["bus_type"] = 1 # 3: slack, 1: load, 2: bus
 
         # Modify slack gen cost & other parameters.
         for (gen_indx, gen_data) in  nw_ref[:gen]
-            if (gen_data["gen_bus"] == boundary["distribution_boundary"])
+            if (gen_data["gen_bus"] == boundary_data["distribution_boundary"])
                 cost_length = length(gen_data["cost"])
                 gen_data["cost"] = zeros(cost_length)
                 # gen_data["control_mode"] = 0 # TODO: this may be needed.
             end
         end
     end
-
 end
 
 
@@ -196,7 +201,10 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
 
         # boundary info.
         boundaries = nw_ref[:pmitd]
-        boundary_number = BOUNDARY_NUMBER # boundary number index (this number is maintained for compatibility. It is not correct but it should not matter, since it is only one boundary always)
+
+        # get boundary number
+        boundary_keys = collect(keys(boundaries))
+        boundary_number = parse(Int64, boundary_keys[1])
 
         # create :boundary structure if does not exists; inserts to dictionary if it already exists
         if !haskey(nw_ref, :boundary)
@@ -206,15 +214,15 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
         end
 
         # modify default values with actual values coming from linking file information
-        nw_ref[:boundary][boundary_number]["f_bus"] = boundaries["transmission_boundary"]
-        nw_ref[:boundary][boundary_number]["t_bus"] = boundaries["distribution_boundary"]
+        nw_ref[:boundary][boundary_number]["f_bus"] = boundaries[string(boundary_number)]["transmission_boundary"]
+        nw_ref[:boundary][boundary_number]["t_bus"] = boundaries[string(boundary_number)]["distribution_boundary"]
         nw_ref[:boundary][boundary_number]["index"] = boundary_number
-        nw_ref[:boundary][boundary_number]["ckt_name"] = boundaries["ckt_name"]
+        nw_ref[:boundary][boundary_number]["ckt_name"] = boundaries[string(boundary_number)]["ckt_name"]
         nw_ref[:boundary][boundary_number]["name"] = "_itd_boundary_$boundary_number"
 
         # Add bus reference from transmission (pm)
         # The dictionary represents Dict(original bus_index => boundary # that belongs to)
-        trans_bus = boundaries["transmission_boundary"]
+        trans_bus = boundaries[string(boundary_number)]["transmission_boundary"]
         if !haskey(nw_ref, :boundary_bus_from)
             nw_ref[:boundary_bus_from] = Dict(trans_bus => Dict("boundary" => boundary_number))
         else
@@ -223,7 +231,7 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
 
         # Add bus reference from distribution (pmd)
         # The dictionary represents Dict(original bus_index => boundary # that belongs to)
-        dist_bus = boundaries["distribution_boundary"]
+        dist_bus = boundaries[string(boundary_number)]["distribution_boundary"]
         if !haskey(nw_ref, :boundary_bus_to)
             nw_ref[:boundary_bus_to] = Dict(dist_bus => Dict("boundary" => boundary_number))
         else
