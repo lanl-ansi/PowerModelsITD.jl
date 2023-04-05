@@ -88,6 +88,10 @@
 
 ## staged Decomposition
 
+- Added `variable_decomposition.jl` empty file.
+- Added `src/form_decomposition/...` empty files.
+- Added `ckt_name` field to `pmitd` information to be used in `ref_add_core_decomposition_...`
+- Added the `ref_add_core_decomposition_transmission!` and the `ref_add_core_decomposition_distribution!`
 - Important: Refactored decomposition process to remove `DecompositionStruct`. a `Dict` is to maintain coeherence with non-decomposed version.
 - Added new constant vectors `STANDARD_PROBLEMS` and `DECOMPOSITION_PROBLEMS` that store strings of the names of supported `build_methods` (i.e., problem specifications).
 - Added new constants to docs (`constants.md`).

@@ -49,9 +49,14 @@ module PowerModelsITD
     include("core/data.jl")
     include("core/types.jl")
     include("core/ref.jl")
+    include("core/ref_decomposition.jl")
     include("core/helpers.jl")
     include("core/variable.jl")
+<<<<<<< HEAD
     include("core/objective_helpers.jl")
+=======
+    include("core/variable_decomposition.jl")
+>>>>>>> ADD: new ref_add_core_decomposition funcs for both Transmission and Distribution systems.
     include("core/objective.jl")
     include("core/objective_dmld.jl")
     include("core/objective_dmld_simple.jl")
@@ -71,6 +76,10 @@ module PowerModelsITD
     include("form/fotr.jl")
     include("form/fotp.jl")
     include("form/lindist3flow.jl")
+
+    include("form_decomposition/acp.jl")
+    include("form_decomposition/linear.jl")
+    include("form_decomposition/lindist3flow.jl")
 
     include("prob/pfitd.jl")
     include("prob/opfitd.jl")

@@ -1,4 +1,4 @@
-@info "running integrated transmission-distribution optimal power flow (opfitd) tests"
+@info "running integrated transmission-distribution optimal power flow (opfitd) decomposition tests"
 
 @testset "test/opfitd_decomposition.jl" begin
 
