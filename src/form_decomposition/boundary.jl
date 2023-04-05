@@ -65,7 +65,7 @@ end
 
 """
     function constraint_boundary_voltage_magnitude(
-        pmitd::_PMD.AbstractUnbalancedPowerModel,
+        pmd::_PMD.AbstractUnbalancedPowerModel,
         i::Int;
         nw::Int=nw_id_default
     )
