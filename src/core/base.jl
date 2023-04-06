@@ -548,6 +548,7 @@ function solve_model(
 
 
         @info "PMITD Type: $(typeof(pmitd))"
+        breaking_point
 
         # Calls the _IDEC optimize!(..) function
         result = _IDEC.optimize!(pmitd)

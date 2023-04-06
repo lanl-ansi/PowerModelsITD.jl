@@ -1,5 +1,11 @@
 # Boundary power variables for decomposition problem formulation
 
+"Boundary power flow variables - DC/NFA cases (P-only)"
+function variable_boundary_power(pm::_PM.AbstractActivePowerModel; nw::Int=nw_id_default, report::Bool=true)
+    variable_boundary_power_real_load(pm; nw, report)
+end
+
+
 "Boundary power flow variables in Transmission - AC cases (P and Q)"
 function variable_boundary_power(pm::_PM.AbstractPowerModel; nw::Int=nw_id_default, report::Bool=true)
     variable_boundary_power_real_load(pm; nw, report)
@@ -44,6 +50,12 @@ function variable_boundary_power_imaginary_load(pm::_PM.AbstractPowerModel; nw::
 
     report && _IM.sol_component_value(pm, _PM.pm_it_sym, nw, :boundary, :qbound_load, _PM.ref(pm, nw, :arcs_boundary_from), qbound_load)
 
+end
+
+
+"Boundary power flow variables in Distribution - Linear Active cases (P-only)"
+function variable_boundary_power(pmd::_PMD.AbstractUnbalancedActivePowerModel; nw::Int=nw_id_default, report::Bool=true)
+    variable_boundary_power_real_aux(pmd; nw, report)
 end
 
 
