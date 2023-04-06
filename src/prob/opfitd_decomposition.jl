@@ -185,6 +185,153 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel
 end
 
 
+
+"""
+	function build_opfitd_decomposition(
+		pm_model::_PM.AbstractWModels
+	)
+Constructor for Transmission Integrated T&D Decomposition-based Optimal Power Flow.
+"""
+function build_opfitd_decomposition(pm_model::_PM.AbstractWModels)
+
+    # PM(Transmission) Variables
+    _PM.variable_bus_voltage(pm_model)
+    _PM.variable_gen_power(pm_model)
+    _PM.variable_branch_power(pm_model)
+    _PM.variable_branch_current(pm_model)
+    _PM.variable_dcline_power(pm_model)
+
+    # Decomposition-related vars
+    variable_boundary_power(pm_model)
+
+    # --- PM(Transmission) Constraints ---
+    _PM.constraint_model_current(pm_model)
+
+    # reference buses for transmission
+    for i in _PM.ids(pm_model, :ref_buses)
+        _PM.constraint_theta_ref(pm_model, i)
+    end
+
+    # PM branches
+    for i in _PM.ids(pm_model, :branch)
+        _PM.constraint_power_losses(pm_model, i)
+        _PM.constraint_voltage_magnitude_difference(pm_model, i)
+
+        _PM.constraint_voltage_angle_difference(pm_model, i)
+
+        _PM.constraint_thermal_limit_from(pm_model, i)
+        _PM.constraint_thermal_limit_to(pm_model, i)
+    end
+
+    # PM DC lines
+    for i in _PM.ids(pm_model, :dcline)
+        _PM.constraint_dcline_power_losses(pm_model, i)
+    end
+
+    # # ---- Transmission Power Balance ---
+    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+    for i in _PM.ids(pm_model, :bus)
+        for j in _PM.ids(pm_model, :boundary)
+            constraint_transmission_power_balance_boundary(pm_model, i, j, boundary_buses)
+        end
+        if !(i in boundary_buses)
+            _PM.constraint_power_balance(pm_model, i)
+        end
+    end
+
+    # PM cost function
+    _PM.objective_min_fuel_and_flow_cost(pm_model)
+
+end
+
+
+
+"""
+	function build_opfitd_decomposition(
+		pmd_model::_PMD.AbstractUBFModels
+	)
+Constructor for Distribution Integrated T&D Decomposition-based Optimal Power Flow.
+"""
+function build_opfitd_decomposition(pmd_model::_PMD.AbstractUBFModels)
+
+    # PMD(Distribution) Variables
+    _PMD.variable_mc_bus_voltage(pmd_model)
+    _PMD.variable_mc_branch_current(pmd_model)
+    _PMD.variable_mc_branch_power(pmd_model)
+    _PMD.variable_mc_transformer_power(pmd_model)
+    _PMD.variable_mc_switch_power(pmd_model)
+    _PMD.variable_mc_generator_power(pmd_model)
+    _PMD.variable_mc_load_power(pmd_model)
+    _PMD.variable_mc_storage_power(pmd_model)
+
+    # Decomposition-related vars
+    variable_boundary_power(pmd_model)
+
+    # -------------------------------------------------
+    # --- PMD(Distribution) Constraints ---
+    _PMD.constraint_mc_model_current(pmd_model)
+
+    # 0 angle ref for reference bus
+    for i in _PMD.ids(pmd_model, :ref_buses)
+        _PMD.constraint_mc_theta_ref(pmd_model, i)
+    end
+
+    # generators should be constrained before KCL, or Pd/Qd undefined
+    for id in _PMD.ids(pmd_model, :gen)
+        _PMD.constraint_mc_generator_power(pmd_model, id)
+    end
+
+    # loads should be constrained before KCL, or Pd/Qd undefined
+    for id in _PMD.ids(pmd_model, :load)
+        _PMD.constraint_mc_load_power(pmd_model, id)
+    end
+
+    # Power balance for PMD buses.
+    for i in _PMD.ids(pmd_model, :bus)
+        _PMD.constraint_mc_power_balance(pmd_model, i)
+    end
+
+    for i in _PMD.ids(pmd_model, :storage)
+        _PMD.constraint_storage_state(pmd_model, i)
+        _PMD.constraint_storage_complementarity_nl(pmd_model, i)
+        _PMD.constraint_mc_storage_losses(pmd_model, i)
+        _PMD.constraint_mc_storage_thermal_limit(pmd_model, i)
+    end
+
+    for i in _PMD.ids(pmd_model, :branch)
+        _PMD.constraint_mc_power_losses(pmd_model, i)
+        _PMD.constraint_mc_model_voltage_magnitude_difference(pmd_model, i)
+
+        _PMD.constraint_mc_voltage_angle_difference(pmd_model, i)
+
+        _PMD.constraint_mc_thermal_limit_from(pmd_model, i)
+        _PMD.constraint_mc_thermal_limit_to(pmd_model, i)
+        _PMD.constraint_mc_ampacity_from(pmd_model, i)
+        _PMD.constraint_mc_ampacity_to(pmd_model, i)
+    end
+
+    for i in _PMD.ids(pmd_model, :switch)
+        _PMD.constraint_mc_switch_state(pmd_model, i)
+        _PMD.constraint_mc_switch_thermal_limit(pmd_model, i)
+        _PMD.constraint_mc_switch_ampacity(pmd_model, i)
+    end
+
+    for i in _PMD.ids(pmd_model, :transformer)
+        _PMD.constraint_mc_transformer_power(pmd_model, i)
+    end
+
+    # Boundary constraints
+    for i in _PMD.ids(pmd_model, :boundary)
+        constraint_boundary_power(pmd_model, i)
+        constraint_boundary_voltage_magnitude(pmd_model, i)
+    end
+
+    # PMD objective
+    _PMD.objective_mc_min_fuel_cost(pmd_model)
+
+end
+
+
 # ----------------------------------------------------------------------------------------
 # --- Multinetwork OPFITD Problem Specifications
 # ----------------------------------------------------------------------------------------
