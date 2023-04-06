@@ -19,11 +19,40 @@ function ref_add_core_decomposition_transmission!(ref::Dict{Symbol,<:Any})
     # Populate the PowerModels portion of the `ref` dictionary.
     _PM.ref_add_core!(ref)
 
+    # Truncate load at transmission system refs.
+    _ref_filter_transmission_integration_loads_decomposition!(ref)
+
     # Create a virtual boundary ref that connects the transmission load bus with distribution slack generator bus.
     _ref_connect_transmission_distribution_decomposition!(ref)
 
 end
 
+
+"""
+    function _ref_filter_transmission_integration_loads_decomposition!(
+        ref::Dict{Symbol,<:Any}
+    )
+
+Removes/filters-out the loads at buses (i.e., boundary buses) where distribution systems are going to be integrated/connected.
+"""
+function _ref_filter_transmission_integration_loads_decomposition!(ref::Dict{Symbol,<:Any})
+    # Loops over all T-D pmitd available
+    for (nw, nw_ref) in ref[:it][:pm][:nw]
+
+        # boundary info.
+        boundaries = nw_ref[:pmitd]
+
+        # Filters only the ones that have the "transmission_boundary" key
+        for (i, conn) in filter(x -> "transmission_boundary" in keys(x.second), boundaries)
+            # Filters out only the loads connected to the transmission-boundary bus
+            for (nw, nw_ref) in ref[:it][:pm][:nw]
+                nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
+                nw_ref[:bus_loads][conn["transmission_boundary"]] = []
+            end
+
+        end
+    end
+end
 
 
 """
