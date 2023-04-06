@@ -88,6 +88,8 @@
 
 ## staged Decomposition
 
+- Added variables, contraints, and `build_opfitd_decomposition(..)` funcs for BFA-LinDist3Flow formulations for the decomposition process.
+- Added needed variables and constraints for the `NFA-NFAU` formulation type decomposition problem.
 - Added new functions `constraint_transmission_power_balance_boundary(..)` and `constraint_transmission_power_balance(..)` to `form_decomposition/boundary.jl` and `form_decomposition/acp.jl` for decomposition process.
 - Added new function `generate_boundary_linking_vars(..)` designed to generate the boundary linking vars vector to be used in the Optimizer.
 - Added Decomposition boundary variables related to the `Pload` and `Qload` values in `variable_decomposition.jl`.
