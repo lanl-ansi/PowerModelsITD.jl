@@ -98,8 +98,8 @@ function constraint_transmission_power_balance(pm::_PM.AbstractACPModel, n::Int,
     end
 
     if _IM.report_duals(pm)
-        sol(pm, n, :bus, i)[:lam_kcl_r] = cstr_p
-        sol(pm, n, :bus, i)[:lam_kcl_i] = cstr_q
+        _PM.sol(pm, n, :bus, i)[:lam_kcl_r] = cstr_p
+        _PM.sol(pm, n, :bus, i)[:lam_kcl_i] = cstr_q
     end
 
 end

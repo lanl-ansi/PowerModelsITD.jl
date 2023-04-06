@@ -73,6 +73,7 @@ module PowerModelsITD
     include("form_decomposition/acp.jl")
     include("form_decomposition/linear.jl")
     include("form_decomposition/lindist3flow.jl")
+    include("form_decomposition/wmodels.jl")
 
     include("prob/pfitd.jl")
     include("prob/opfitd.jl")
