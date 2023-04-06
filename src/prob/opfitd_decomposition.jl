@@ -56,6 +56,9 @@ function build_opfitd_decomposition(pm_model::_PM.AbstractPowerModel)
     _PM.variable_branch_power(pm_model)
     _PM.variable_dcline_power(pm_model)
 
+    # Decomposition-related vars
+    variable_boundary_power(pm_model)
+
     # --- PM(Transmission) Constraints ---
     _PM.constraint_model_voltage(pm_model)
 
@@ -80,9 +83,15 @@ function build_opfitd_decomposition(pm_model::_PM.AbstractPowerModel)
         _PM.constraint_dcline_power_losses(pm_model, i)
     end
 
-    # PM bus power balance
+    # # ---- Transmission Power Balance ---
+    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
     for i in _PM.ids(pm_model, :bus)
-        _PM.constraint_power_balance(pm_model, i)
+        for j in _PM.ids(pm_model, :boundary)
+            constraint_transmission_power_balance_boundary(pm_model, i, j, boundary_buses)
+        end
+        if !(i in boundary_buses)
+            _PM.constraint_power_balance(pm_model, i)
+        end
     end
 
     # PM cost function
