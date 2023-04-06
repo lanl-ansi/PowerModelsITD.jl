@@ -264,7 +264,7 @@ function instantiate_model_decomposition(
     pmitd_data::Dict{String,<:Any}, pmitd_type::Type, build_method::Function;
     multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
 
-    # separate pmd ckts in a single dictionary to multiple dict entries
+    # Separate pmd ckts in a single dictionary to multiple dict entries
     pmd_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
     pmitd_data["it"][_PMD.pmd_it_name] = pmd_separated
 
@@ -274,44 +274,57 @@ function instantiate_model_decomposition(
     # ----- IpoptDecomposition Optimizer ------
     pmitd_model_optimizer =  _IDEC.MetaOptimizer()
 
-    # Instantiate PM models
+    # PM models
+    pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"]["pmitd"]         # add pmitd(boundary) info. to pm ref
 
-    pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"]["pmitd"] # add pmitd(boundary) info. to pm ref
-
+    # Instantiate the PM model
     pm_inst_model = _IM.instantiate_model(pmitd_data["it"][_PM.pm_it_name],
-            pmitd_type.parameters[1], build_method, ref_add_core_decomposition_transmission!, _PM._pm_global_keys,
-            _PM.pm_it_sym; kwargs...)
+                                    pmitd_type.parameters[1],
+                                    build_method,
+                                    ref_add_core_decomposition_transmission!,
+                                    _PM._pm_global_keys,
+                                    _PM.pm_it_sym; kwargs...)
 
-    pmitd_model_optimizer.master = pm_inst_model.model
-    JuMP.set_optimizer(pmitd_model_optimizer.master, _IDEC.Optimizer; add_bridges = false) # add IDEC optimizer
+    pmitd_model_optimizer.master = pm_inst_model.model                                      # Add pm model to master
+    JuMP.set_optimizer(pmitd_model_optimizer.master, _IDEC.Optimizer; add_bridges = false)  # Set the IDEC optimizer to the model
 
-    # Instantiate PMD models
+    # PMD models & Boundary linking vars
     pmd_inst_models = []
+    boundary_vars_vect = []
     for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
 
+        # Obtain ckt boundary data
         boundary_info = pmitd_data["it"][pmitd_it_name]
         boundary_number = findfirst(x -> ckt_name == x["ckt_name"], boundary_info)
         boundary_for_ckt = Dict(boundary_number => boundary_info[boundary_number])
-        ckt_data[pmitd_it_name] = boundary_for_ckt  # add pmitd(boundary) info. to pmd ref
+        ckt_data[pmitd_it_name] = boundary_for_ckt                                  # add pmitd(boundary) info. to pmd ref
 
-        pmd_inst_model = _IM.instantiate_model(ckt_data,  pmitd_type.parameters[2],
-                build_method, ref_add_core_decomposition_distribution!, _PMD._pmd_global_keys, _PMD.pmd_it_sym; kwargs...)
+        # Instantiate the PMD model
+        pmd_inst_model = _IM.instantiate_model(ckt_data,
+                                        pmitd_type.parameters[2],
+                                        build_method,
+                                        ref_add_core_decomposition_distribution!,
+                                        _PMD._pmd_global_keys,
+                                        _PMD.pmd_it_sym; kwargs...)
 
-        pmd_JuMP_model = pmd_inst_model.model
-        JuMP.set_optimizer(pmd_JuMP_model, _IDEC.Optimizer; add_bridges = false) # add IDEC optimizer
-        push!(pmd_inst_models, pmd_JuMP_model)
+        pmd_JuMP_model = pmd_inst_model.model                                       # Add pmd model to subproblem
+        JuMP.set_optimizer(pmd_JuMP_model, _IDEC.Optimizer; add_bridges = false)    # Set the IDEC optimizer to the model
+        push!(pmd_inst_models, pmd_JuMP_model)                                      # push the subproblem model into the vector of subproblems
+
+        # Boundary linking vars.
+        linking_vars_vect = generate_boundary_linking_vars(pm_inst_model, pmd_inst_model, boundary_number)  # generates the respective (ACP, ACR, etc.) boundary linking vars vector.
+        push!(boundary_vars_vect, linking_vars_vect)                                                        # Add linking vars vector to vector containing all vectors of linking vars.
+
     end
+
+    # Add all pmd models (i.e., vector) as subproblems to Optimizer
     pmitd_model_optimizer.subproblems = pmd_inst_models
 
-    # TODO: Linking vars
-    # pmitd_model_optimizer.list_linking_vars = [[[x1_master, x2_master],[x1_sub1, x2_sub1]]]
-
-    # TODO: IMPORTANT -> I MAY WANT TO CREATE A FUNCTION THAT RECEIVES THE INSTANTIATED MODELS AND BASED ON THEIR TYPES, CREATES THE LINKING VARS STRUCT
-    # BECAUSE FOR EXAMPLE, ACP (POLAR VERSIONS), MAP/LINK P,Q,Vm, but ACR (RECTANGULAR VERSIONS) MAP/LINK P_REAL, P_IMAG, Q_REAL, Q_IMAG, V_REAL, V_IMAG
-
-    breaking_point
+    # Boundary Linking vars
+    pmitd_model_optimizer.list_linking_vars = boundary_vars_vect
 
     return pmitd_model_optimizer
+
 end
 
 
@@ -505,12 +518,13 @@ function solve_model(
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 
-        # calls the _IDEC optimize!(..) function
+
+        @info "PMITD Type: $(typeof(pmitd))"
+
+        # Calls the _IDEC optimize!(..) function
         result = _IDEC.optimize!(pmitd)
 
-        # Solve the ITD decomposition problem (TODO)
         result = 1
-        ## -----------------------------------------
 
         # Inform about the time for solving the problem (*change to @debug)
         @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
