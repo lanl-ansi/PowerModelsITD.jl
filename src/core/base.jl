@@ -206,7 +206,7 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 `pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
 """
 function instantiate_model_decomposition(
-    pm_file::String, pmd_files::Vector{String}, pmitd_file::String, pmitd_type::Type,
+    pm_file::String, pmd_files::Vector{String}, pmitd_file::String, pmitd_type::Type, optimizer,
     build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
 
     # Read power t&d and linkage data from files.
@@ -214,7 +214,7 @@ function instantiate_model_decomposition(
 
     # Instantiate the PowerModelsITD object.
     return instantiate_model_decomposition(
-        pmitd_data, pmitd_type, build_method;
+        pmitd_data, pmitd_type, optimizer, build_method;
         multinetwork=multinetwork,
         pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 end
@@ -241,7 +241,7 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 `pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
 """
 function instantiate_model_decomposition(
-    pm_file::String, pmd_file::String, pmitd_file::String, pmitd_type::Type,
+    pm_file::String, pmd_file::String, pmitd_file::String, pmitd_type::Type, optimizer,
     build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
 
     pmd_files = [pmd_file] # convert to vector
@@ -251,7 +251,7 @@ function instantiate_model_decomposition(
 
     # Instantiate the PowerModelsITD object.
     return instantiate_model_decomposition(
-        pmitd_data, pmitd_type, build_method;
+        pmitd_data, pmitd_type, optimizer, build_method;
         multinetwork=multinetwork,
         pmitd_ref_extensions=pmitd_ref_extensions, kwargs...
     )
@@ -262,6 +262,7 @@ end
     function instantiate_model_decomposition(
         pmitd_data::Dict{String,<:Any},
         pmitd_type::Type,
+        optimizer,
         build_method::Function;
         multinetwork::Bool=false,
         pmitd_ref_extensions::Vector{<:Function}=Function[],
@@ -276,7 +277,7 @@ should be define as multinetwork. `pmitd_ref_extensions` is an array of power tr
 distribution modeling extensions.
 """
 function instantiate_model_decomposition(
-    pmitd_data::Dict{String,<:Any}, pmitd_type::Type, build_method::Function;
+    pmitd_data::Dict{String,<:Any}, pmitd_type::Type, optimizer, build_method::Function;
     multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
 
     # Separate pmd ckts in a single dictionary to multiple dict entries
@@ -287,7 +288,6 @@ function instantiate_model_decomposition(
     correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
 
     # ----- IpoptDecomposition Optimizer ------
-    pmitd_model_optimizer =  _IDEC.MetaOptimizer()
 
     # PM models
     pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"]["pmitd"]         # add pmitd(boundary) info. to pm ref
@@ -300,8 +300,8 @@ function instantiate_model_decomposition(
                                     _PM._pm_global_keys,
                                     _PM.pm_it_sym; kwargs...)
 
-    pmitd_model_optimizer.master = pm_inst_model.model                                      # Add pm model to master
-    JuMP.set_optimizer(pmitd_model_optimizer.master, _IDEC.Optimizer; add_bridges = false)  # Set the IDEC optimizer to the model
+    optimizer.master = pm_inst_model.model                                      # Add pm model to master
+    JuMP.set_optimizer(optimizer.master, _IDEC.Optimizer; add_bridges = true)   # Set optimizer
 
     # PMD models & Boundary linking vars
     pmd_inst_models = []
@@ -323,7 +323,7 @@ function instantiate_model_decomposition(
                                         _PMD.pmd_it_sym; kwargs...)
 
         pmd_JuMP_model = pmd_inst_model.model                                       # Add pmd model to subproblem
-        JuMP.set_optimizer(pmd_JuMP_model, _IDEC.Optimizer; add_bridges = false)    # Set the IDEC optimizer to the model
+        JuMP.set_optimizer(pmd_JuMP_model, _IDEC.Optimizer; add_bridges = true)    # Set the IDEC optimizer to the model
         push!(pmd_inst_models, pmd_JuMP_model)                                      # push the subproblem model into the vector of subproblems
 
         # Boundary linking vars.
@@ -333,12 +333,12 @@ function instantiate_model_decomposition(
     end
 
     # Add all pmd models (i.e., vector) as subproblems to Optimizer
-    pmitd_model_optimizer.subproblems = pmd_inst_models
+    optimizer.subproblems = pmd_inst_models
 
     # Boundary Linking vars
-    pmitd_model_optimizer.list_linking_vars = boundary_vars_vect
+    optimizer.list_linking_vars = boundary_vars_vect
 
-    return pmitd_model_optimizer
+    return optimizer
 
 end
 
@@ -513,7 +513,7 @@ function solve_model(
     start_time = time() # Start the timer.
 
     # Solve standard ITD problem
-    if build_method_name in STANDARD_PROBLEMS
+    if (typeof(optimizer) == JuMP.MOI.OptimizerWithAttributes)
 
     # Instantiate the PowerModelsITD object.
     pmitd = instantiate_model(
@@ -538,31 +538,27 @@ function solve_model(
         end
 
     # Solve decomposition ITD problem
-    elseif build_method_name in DECOMPOSITION_PROBLEMS
+    elseif (typeof(optimizer) == _IDEC.MetaOptimizer)
 
         # Instantiate the Decomposition PowerModelsITD object.
         pmitd = instantiate_model_decomposition(
-            pmitd_data, pmitd_type, build_method;
+            pmitd_data, pmitd_type, optimizer, build_method;
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 
-
-        @info "PMITD Type: $(typeof(pmitd))"
-        breaking_point
-
         # Calls the _IDEC optimize!(..) function
-        result = _IDEC.optimize!(pmitd)
+        # result = _IDEC.optimize!(pmitd)   #TODO: works but core dumped when solving any problem (NL, L).
 
         result = 1
 
         # Inform about the time for solving the problem (*change to @debug)
         @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
 
-        # Transform solution (both T&D) - SI or per unit - MATH or ENG.
+        # TODO: Transform solution (both T&D) - SI or per unit - MATH or ENG.
         ## -----------------------------------------
 
     else
-        @error "The problem specification (build_method) defined is not supported! Please input a supported build_method."
+        @error "The problem specification (build_method) or optimizer defined is not supported! Please use a supported optimizer or build_method."
         throw(error())
     end
 

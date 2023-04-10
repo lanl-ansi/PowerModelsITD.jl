@@ -88,6 +88,7 @@
 
 ## staged Decomposition
 
+- Removed constant vectors `STANDARD_PROBLEMS` and `DECOMPOSITION_PROBLEMS` that store strings of the names of supported `build_methods` (i.e., problem specifications). Replaced with type of optimizers.
 - Added variables, contraints, and `build_opfitd_decomposition(..)` funcs for BFA-LinDist3Flow formulations for the decomposition process.
 - Added needed variables and constraints for the `NFA-NFAU` formulation type decomposition problem.
 - Added new functions `constraint_transmission_power_balance_boundary(..)` and `constraint_transmission_power_balance(..)` to `form_decomposition/boundary.jl` and `form_decomposition/acp.jl` for decomposition process.
