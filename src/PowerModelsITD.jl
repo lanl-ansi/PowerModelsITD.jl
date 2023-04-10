@@ -34,13 +34,6 @@ module PowerModelsITD
     "BOUNDARY_NUMBER constant that determines the starting counter for the boundaries defined."
     const BOUNDARY_NUMBER = 100001
 
-    # const vectors with strings build function names availables.
-    "STANDARD_PROBLEMS constant vector that contains the different types of ITD problems supported."
-    const STANDARD_PROBLEMS = ["build_opfitd", "build_mn_opfitd", "build_pfitd", "build_mn_opfitd_oltc", "build_opfitd_oltc", "build_dmld_opfitd", "build_mn_dmld_opfitd_simple"]
-
-    "DECOMPOSITION_PROBLEMS constant vector that contains the different types of ITD decomposition problems supported."
-    const DECOMPOSITION_PROBLEMS = ["build_opfitd_decomposition", "build_mn_opfitd_decomposition"]
-
     # Files to include in module
     include("io/common.jl")
     include("core/base.jl")

@@ -331,7 +331,7 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUBFModels)
 
 end
 
-
+# TODO: Multinetwork specs.
 # ----------------------------------------------------------------------------------------
 # --- Multinetwork OPFITD Problem Specifications
 # ----------------------------------------------------------------------------------------
@@ -399,10 +399,6 @@ function build_mn_opfitd_decomposition(pm_model::_PM.AbstractPowerModel)
         end
         n_1_pm = n_2_pm
     end
-
-    # TODO: Add boundary and normal node power balance
-    # TODO: Add decomposition Constraints
-    # TODO: Add decomposition cost function
 
 end
 
@@ -486,9 +482,5 @@ function build_mn_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerMo
 
         n_1_pmd = n_2_pmd
     end
-
-    # TODO: Add boundary and normal node power balance
-    # TODO: Add decomposition Constraints
-    # TODO: Add decomposition cost function
 
 end
