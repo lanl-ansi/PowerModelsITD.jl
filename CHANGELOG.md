@@ -88,6 +88,8 @@
 
 ## staged Decomposition
 
+- Added a function, `_compute_boundary_power_start_values_distribution!`, that computes the summation of all the loads in the distribution system to be used as warstart for `pbound_aux` and `qbound_aux`
+- Added `start` values (warmstart) to the shared/boundary variables `pbound_load`, `qbound_load`, `pbound_aux`, and `qbound_aux` used in the decompostion process. `ref` decomposition has been modified respectively.
 - Removed constant vectors `STANDARD_PROBLEMS` and `DECOMPOSITION_PROBLEMS` that store strings of the names of supported `build_methods` (i.e., problem specifications). Replaced with type of optimizers.
 - Added variables, contraints, and `build_opfitd_decomposition(..)` funcs for BFA-LinDist3Flow formulations for the decomposition process.
 - Added needed variables and constraints for the `NFA-NFAU` formulation type decomposition problem.
