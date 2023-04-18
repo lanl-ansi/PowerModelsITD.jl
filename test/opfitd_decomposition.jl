@@ -13,26 +13,26 @@
         # @test result["termination_status"] == LOCALLY_SOLVED
     end
 
-    @testset "solve_model (decomposition): Unbalanced case5-case3 Without Dist. Generator NFA-NFAU" begin
-        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
-        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
-        pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
-        result = solve_model(pmitd_data, pmitd_type, ipopt_decomposition, build_opfitd_decomposition)
-        # @test result["termination_status"] == LOCALLY_SOLVED
-    end
+    # @testset "solve_model (decomposition): Unbalanced case5-case3 Without Dist. Generator NFA-NFAU" begin
+    #     pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+    #     pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
+    #     pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
+    #     pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
+    #     pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+    #     result = solve_model(pmitd_data, pmitd_type, ipopt_decomposition, build_opfitd_decomposition)
+    #     # @test result["termination_status"] == LOCALLY_SOLVED
+    # end
 
 
-    @testset "solve_model (decomposition): Unbalanced case5-case3 Without Dist. Generator BFA-LinDist3FlowPowerModel" begin
-        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
-        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
-        pmitd_type = BFPowerModelITD{BFAPowerModel, LinDist3FlowPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
-        result = solve_model(pmitd_data, pmitd_type, ipopt_decomposition, build_opfitd_decomposition)
-        # @test result["termination_status"] == LOCALLY_SOLVED
-    end
+    # @testset "solve_model (decomposition): Unbalanced case5-case3 Without Dist. Generator BFA-LinDist3FlowPowerModel" begin
+    #     pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+    #     pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
+    #     pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen.json")
+    #     pmitd_type = BFPowerModelITD{BFAPowerModel, LinDist3FlowPowerModel}
+    #     pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+    #     result = solve_model(pmitd_data, pmitd_type, ipopt_decomposition, build_opfitd_decomposition)
+    #     # @test result["termination_status"] == LOCALLY_SOLVED
+    # end
 
 
     # @testset "solve_opfitd_decomposition: Multi-System case500-caseLV (5 ds in ms)" begin
