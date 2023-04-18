@@ -154,8 +154,8 @@ Creates the boundary `refs` that integrate/connect the transmission and distribu
 """
 function _ref_connect_transmission_distribution_decomposition!(ref::Dict{Symbol,<:Any})
 
-    boundary_keys = ["f_bus", "t_bus", "index", "name", "f_connections", "t_connections", 
-                        "ckt_name", "pbound_load_start", "qbound_load_start", "base_conv_factor", 
+    boundary_keys = ["f_bus", "t_bus", "index", "name", "f_connections", "t_connections",
+                        "ckt_name", "pbound_load_start", "qbound_load_start", "base_conv_factor",
                         "pbound_load_scaled_start", "qbound_load_scaled_start"
     ]
     boundary_defaults = [0, 0, 0, "empty", [1], [1, 2, 3], "empty", 0, 0, 0, 0, 0]
@@ -273,15 +273,15 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
 
         if !haskey(nw_ref, :boundary)
             nw_ref[:boundary] = Dict(boundary_number => Dict(
-                "f_bus" => 0, "t_bus" => 0, "index" => boundary_number, 
-                "name" => "empty", "f_connections" => [1], 
-                "t_connections" => [1, 2, 3], "ckt_name" => "empty", 
+                "f_bus" => 0, "t_bus" => 0, "index" => boundary_number,
+                "name" => "empty", "f_connections" => [1],
+                "t_connections" => [1, 2, 3], "ckt_name" => "empty",
                 "pbound_aux_start" => 0, "qbound_aux_start" => 0))
         else
             nw_ref[:boundary][boundary_number] = Dict(
-                "f_bus" => 0, "t_bus" => 0, "index" => boundary_number, 
-                "name" => "empty", "f_connections" => [1], 
-                "t_connections" => [1, 2, 3], "ckt_name" => "empty", 
+                "f_bus" => 0, "t_bus" => 0, "index" => boundary_number,
+                "name" => "empty", "f_connections" => [1],
+                "t_connections" => [1, 2, 3], "ckt_name" => "empty",
                 "pbound_aux_start" => 0, "qbound_aux_start" => 0)
         end
 
