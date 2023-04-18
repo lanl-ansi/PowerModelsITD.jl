@@ -46,6 +46,10 @@ function _ref_filter_transmission_integration_loads_decomposition!(ref::Dict{Sym
         for (i, conn) in filter(x -> "transmission_boundary" in keys(x.second), boundaries)
             # Filters out only the loads connected to the transmission-boundary bus
             for (nw, nw_ref) in ref[:it][:pm][:nw]
+                # Get init (start) values before deleting the boundary load info.
+                conn["pbound_load_start"] = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
+                conn["qbound_load_start"] = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
+
                 nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
                 nw_ref[:bus_loads][conn["transmission_boundary"]] = []
             end
@@ -114,7 +118,7 @@ function _ref_filter_distribution_slack_generators_decomposition!(ref::Dict{Symb
 
         nw_ref[:bus][boundary_data["distribution_boundary"]]["vmin"] = [0.0, 0.0, 0.0]
         nw_ref[:bus][boundary_data["distribution_boundary"]]["vmax"] = [Inf, Inf, Inf]
-        # nw_ref[:bus][boundary_data["distribution_boundary"]]["bus_type"] = 1 # 3: slack, 1: load, 2: bus
+        # nw_ref[:bus][boundary_data["distribution_boundary"]]["bus_type"] = 1 # 3: slack, 1: load, 2: gen. bus
 
         # Modify slack gen cost & other parameters.
         for (gen_indx, gen_data) in  nw_ref[:gen]
@@ -148,9 +152,9 @@ function _ref_connect_transmission_distribution_decomposition!(ref::Dict{Symbol,
 
             # create :boundary structure if does not exists; inserts to dictionary if it already exists
             if !haskey(nw_ref, :boundary)
-                nw_ref[:boundary] = Dict(boundary_number => Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty"))
+                nw_ref[:boundary] = Dict(boundary_number => Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_load_start" => 0, "qbound_load_start" => 0))
             else
-                nw_ref[:boundary][boundary_number] = Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty")
+                nw_ref[:boundary][boundary_number] = Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_load_start" => 0, "qbound_load_start" => 0)
             end
 
             # modify default values with actual values coming from linking file information
@@ -159,6 +163,8 @@ function _ref_connect_transmission_distribution_decomposition!(ref::Dict{Symbol,
             nw_ref[:boundary][boundary_number]["index"] = boundary_number
             nw_ref[:boundary][boundary_number]["ckt_name"] = boundaries[boundary_number]["ckt_name"]
             nw_ref[:boundary][boundary_number]["name"] = "_itd_boundary_$boundary_number"
+            nw_ref[:boundary][boundary_number]["pbound_load_start"] = boundaries[boundary_number]["pbound_load_start"]
+            nw_ref[:boundary][boundary_number]["qbound_load_start"] = boundaries[boundary_number]["qbound_load_start"]
 
             # Add bus reference from transmission (pm)
             # The dictionary represents Dict(original bus_index => boundary # that belongs to)
@@ -225,6 +231,9 @@ Creates the boundary `refs` that integrate/connect the distribution system bus w
 """
 function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,<:Any})
 
+    # Compute pbound_aux and qbound_aux start values and adds them to [:pmitd]
+    _compute_boundary_power_start_values_distribution!(ref)
+
     # Loops over all T-D pmitd available
     for (nw, nw_ref) in ref[:it][:pmd][:nw]
 
@@ -237,9 +246,9 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
 
         # create :boundary structure if does not exists; inserts to dictionary if it already exists
         if !haskey(nw_ref, :boundary)
-            nw_ref[:boundary] = Dict(boundary_number => Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty"))
+            nw_ref[:boundary] = Dict(boundary_number => Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_aux_start" => 0, "qbound_aux_start" => 0))
         else
-            nw_ref[:boundary][boundary_number] = Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty")
+            nw_ref[:boundary][boundary_number] = Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_aux_start" => 0, "qbound_aux_start" => 0)
         end
 
         # modify default values with actual values coming from linking file information
@@ -248,6 +257,8 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
         nw_ref[:boundary][boundary_number]["index"] = boundary_number
         nw_ref[:boundary][boundary_number]["ckt_name"] = boundaries[string(boundary_number)]["ckt_name"]
         nw_ref[:boundary][boundary_number]["name"] = "_itd_boundary_$boundary_number"
+        nw_ref[:boundary][boundary_number]["pbound_aux_start"] = boundaries[string(boundary_number)]["pbound_aux_start"]
+        nw_ref[:boundary][boundary_number]["qbound_aux_start"] = boundaries[string(boundary_number)]["qbound_aux_start"]
 
         # Add bus reference from transmission (pm)
         # The dictionary represents Dict(original bus_index => boundary # that belongs to)
@@ -302,4 +313,38 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
         nw_ref[Symbol("bus_arcs_conns_$(type)_to")] = conns_to
 
     end
+end
+
+
+"""
+    function _compute_boundary_power_start_values_distribution!(
+        ref::Dict{Symbol,<:Any}
+    )
+
+Computes the starting values for `pbound_aux` and `qbound_aux` variables and adds them to `ref`.
+"""
+function _compute_boundary_power_start_values_distribution!(ref::Dict{Symbol,<:Any})
+
+    # Loop thorugh all nws
+    for (nw, nw_ref) in ref[:it][:pmd][:nw]
+
+        # Vars to store summation of load
+        pload_total = 0
+        qload_total = 0
+
+        # loop thorugh all loads to add them up.
+        for (_, load) in nw_ref[:load]
+            pload_total = pload_total + sum(load["pd"])
+            qload_total = qload_total + sum(load["qd"])
+        end
+
+        boundaries = nw_ref[:pmitd]   # boundary info.
+        # Filters only the ones that have the "distribution_boundary" key
+        for (_, conn) in filter(x -> "distribution_boundary" in keys(x.second), boundaries)
+            # Get init (start) values before deleting the boundary load info.
+            conn["pbound_aux_start"] = round(pload_total; digits=5)
+            conn["qbound_aux_start"] = round(qload_total; digits=5)
+        end
+    end
+
 end
