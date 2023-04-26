@@ -2,7 +2,7 @@
 
 ## staged
 
-- none.
+- Fixed implementation of polynomial nl costs above quadratic in `objective.jl`.
 
 ## v0.7.7
 

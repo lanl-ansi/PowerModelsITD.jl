@@ -44,6 +44,45 @@
         @test result["termination_status"] == LOCALLY_SOLVED
     end
 
+    @testset "solve_model (with network inputs): Balanced case5-case3 ACR-ACR with polynomial nl terms above quadratic" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
+        pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        # transform pmd to math, to change gens cost models
+        pmitd_data["it"]["pmd"] = _PMD.transform_data_model(pmitd_data["it"]["pmd"])
+        # Modify (internally) all gens (both T&D) costs so that polynomial nl terms are used.
+        pmitd_data["it"]["pmd"]["gen"]["1"]["cost"] = [20.0, 35.0, 110.0, 140.0, 1.0] # modify dist. system gen.
+        pmitd_data["it"]["pmd"]["gen"]["1"]["ncost"] = 5
+        pmitd_data["it"]["pm"]["gen"]["4"]["cost"] = [25.0, 1.0]  # modify trans. system gen.
+        pmitd_data["it"]["pm"]["gen"]["1"]["cost"] = [30.0, 1.0]     # modify trans. system gen.
+        pmitd_data["it"]["pm"]["gen"]["5"]["cost"] = [10.0, 100.0, 300.0, 1400.0, 1.0] # modify trans. system gen.
+        pmitd_data["it"]["pm"]["gen"]["5"]["ncost"] = 5
+        result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
+        @test result["termination_status"] == LOCALLY_SOLVED
+        @test isapprox(result["objective"], 18941.9443; atol = 1e-4)
+    end
+
+    @testset "solve_model (with network inputs): Balanced case5-case3 IVR-IVR with polynomial nl terms above quadratic" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")
+        pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        # transform pmd to math, to change gens cost models
+        pmitd_data["it"]["pmd"] = _PMD.transform_data_model(pmitd_data["it"]["pmd"])
+        # Modify (internally) all gens (both T&D) costs so that polynomial nl terms are used.
+        pmitd_data["it"]["pmd"]["gen"]["1"]["cost"] = [20.0, 35.0, 110.0, 140.0, 1.0] # modify dist. system gen.
+        pmitd_data["it"]["pmd"]["gen"]["1"]["ncost"] = 5
+        pmitd_data["it"]["pm"]["gen"]["4"]["cost"] = [25.0, 1.0]  # modify trans. system gen.
+        pmitd_data["it"]["pm"]["gen"]["1"]["cost"] = [30.0, 1.0]     # modify trans. system gen.
+        pmitd_data["it"]["pm"]["gen"]["5"]["cost"] = [10.0, 100.0, 300.0, 1400.0, 1.0] # modify trans. system gen.
+        pmitd_data["it"]["pm"]["gen"]["5"]["ncost"] = 5
+        result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
+        @test result["termination_status"] == LOCALLY_SOLVED
+        @test isapprox(result["objective"], 18941.9443; atol = 1e-4)
+    end
 
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACR-ACR" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
