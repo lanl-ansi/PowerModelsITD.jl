@@ -1,0 +1,224 @@
+!Version based on:
+! Khan, Maman Ahmad; Hayes, Barry (2021): A Reduced Electrically-Equivalent Model of the IEEE European
+! Low Voltage Test Feeder. TechRxiv. Preprint. https://doi.org/10.36227/techrxiv.16785832.v1
+
+Set DefaultBaseFrequency=50  ! for European system
+
+New circuit.lv_138kv_10kw_3dgs
+!  define a really stiff source
+~ BasekV=138 pu=1.05 MVAsc3=200000 MVAsc1=210000
+
+! Substation Transformer
+New Transformer.SubXF Phases=3 Windings=2 Xhl=0.01
+~ wdg=1 bus=sourcebus conn=wye kv=138   kva=25000    %r=0.0005
+~ wdg=2 bus=Substation   conn=wye kv=11  kva=25000   %r=0.0005
+
+!~ BasekV=11 pu=1.05  ISC3=3000  ISC1=5
+!~ baseMVA=1
+
+!LineCode.txt
+!#######################
+New LineCode.2c_.0225 nphases=3 R1=1.257 X1=0.085 R0=1.257 X0=0.085 C1=0 C0=0 Units=km
+New LineCode.2c_16 nphases=3 R1=1.15 X1=0.088 R0=1.2 X0=0.088 C1=0 C0=0 Units=km
+New LineCode.35_SAC_XSC nphases=3 R1=0.868 X1=0.092 R0=0.76 X0=0.092 C1=0 C0=0 Units=km
+New LineCode.4c_.06 nphases=3 R1=0.469 X1=0.075 R0=1.581 X0=0.091 C1=0 C0=0 Units=km
+New LineCode.4c_.1 nphases=3 R1=0.274 X1=0.073 R0=0.959 X0=0.079 C1=0 C0=0 Units=km
+New LineCode.4c_.35 nphases=3 R1=0.089 X1=0.0675 R0=0.319 X0=0.076 C1=0 C0=0 Units=km
+New LineCode.4c_70 nphases=3 R1=0.446 X1=0.071 R0=1.505 X0=0.083 C1=0 C0=0 Units=km
+New LineCode.4c_95_SAC_XC nphases=3 R1=0.322 X1=0.074 R0=0.804 X0=0.093 C1=0 C0=0 Units=km
+!#######################
+
+!Transformers.txt
+!#######################
+New Transformer.TR1 Buses=[Substation 1] Conns=[Delta Wye] kVs=[11 0.416] kVAs=[800 800] XHL=4 %r=0.4 sub=y
+!#######################
+
+!Loads.txt
+!#######################
+New Load.LOAD1 Phases=1 Bus1=5.1 kV=0.23 kw=6 PF=0.95 Model=1
+New Load.LOAD2 Phases=1 Bus1=7.2 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD3 Phases=1 Bus1=10.1 kV=0.23 kw=11 PF=0.95 Model=1
+New Load.LOAD4 Phases=1 Bus1=11.1 kV=0.23 kw=8 PF=0.95 Model=1
+New Load.LOAD5 Phases=1 Bus1=12.1 kV=0.23 kw=15 PF=0.95 Model=1
+New Load.LOAD6 Phases=1 Bus1=13.2 kV=0.23 kw=11 PF=0.95 Model=1
+New Load.LOAD7 Phases=1 Bus1=21.2 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD8 Phases=1 Bus1=25.3 kV=0.23 kw=8 PF=0.95 Model=1
+New Load.LOAD9 Phases=1 Bus1=26.1 kV=0.23 kw=7 PF=0.95 Model=1
+New Load.LOAD10 Phases=1 Bus1=29.2 kV=0.23 kw=14 PF=0.95 Model=1
+New Load.LOAD11 Phases=1 Bus1=30.2 kV=0.23 kw=13 PF=0.95 Model=1
+New Load.LOAD12 Phases=1 Bus1=33.3 kV=0.23 kw=18 PF=0.95 Model=1
+New Load.LOAD13 Phases=1 Bus1=34.2 kV=0.23 kw=9 PF=0.95 Model=1
+New Load.LOAD14 Phases=1 Bus1=37.1 kV=0.23 kw=6.5 PF=0.95 Model=1
+New Load.LOAD15 Phases=1 Bus1=39.2 kV=0.23 kw=15 PF=0.95 Model=1
+New Load.LOAD16 Phases=1 Bus1=40.3 kV=0.23 kw=12 PF=0.95 Model=1
+New Load.LOAD17 Phases=1 Bus1=42.3 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD18 Phases=1 Bus1=45.3 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD19 Phases=1 Bus1=46.3 kV=0.23 kw=12 PF=0.95 Model=1
+New Load.LOAD20 Phases=1 Bus1=47.1 kV=0.23 kw=18 PF=0.95 Model=1
+New Load.LOAD21 Phases=1 Bus1=49.1 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD22 Phases=1 Bus1=50.1 kV=0.23 kw=14 PF=0.95 Model=1
+New Load.LOAD23 Phases=1 Bus1=52.2 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD24 Phases=1 Bus1=54.3 kV=0.23 kw=12 PF=0.95 Model=1
+New Load.LOAD25 Phases=1 Bus1=57.1 kV=0.23 kw=13 PF=0.95 Model=1
+New Load.LOAD26 Phases=1 Bus1=60.2 kV=0.23 kw=11 PF=0.95 Model=1
+New Load.LOAD27 Phases=1 Bus1=62.3 kV=0.23 kw=9 PF=0.95 Model=1
+New Load.LOAD28 Phases=1 Bus1=64.3 kV=0.23 kw=8 PF=0.95 Model=1
+New Load.LOAD29 Phases=1 Bus1=66.1 kV=0.23 kw=9 PF=0.95 Model=1
+New Load.LOAD30 Phases=1 Bus1=67.1 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD31 Phases=1 Bus1=72.1 kV=0.23 kw=12 PF=0.95 Model=1
+New Load.LOAD32 Phases=1 Bus1=73.3 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD33 Phases=1 Bus1=75.3 kV=0.23 kw=15 PF=0.95 Model=1
+New Load.LOAD34 Phases=1 Bus1=76.1 kV=0.23 kw=6 PF=0.95 Model=1
+New Load.LOAD35 Phases=1 Bus1=77.2 kV=0.23 kw=9 PF=0.95 Model=1
+New Load.LOAD36 Phases=1 Bus1=80.2 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD37 Phases=1 Bus1=81.2 kV=0.23 kw=8.6 PF=0.95 Model=1
+New Load.LOAD38 Phases=1 Bus1=83.2 kV=0.23 kw=9.2 PF=0.95 Model=1
+New Load.LOAD39 Phases=1 Bus1=87.3 kV=0.23 kw=13 PF=0.95 Model=1
+New Load.LOAD40 Phases=1 Bus1=88.2 kV=0.23 kw=15 PF=0.95 Model=1
+New Load.LOAD41 Phases=1 Bus1=93.2 kV=0.23 kw=14 PF=0.95 Model=1
+New Load.LOAD42 Phases=1 Bus1=95.3 kV=0.23 kw=11 PF=0.95 Model=1
+New Load.LOAD43 Phases=1 Bus1=96.3 kV=0.23 kw=8 PF=0.95 Model=1
+New Load.LOAD44 Phases=1 Bus1=97.2 kV=0.23 kw=13 PF=0.95 Model=1
+New Load.LOAD45 Phases=1 Bus1=102.2 kV=0.23 kw=11 PF=0.95 Model=1
+New Load.LOAD46 Phases=1 Bus1=103.1 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD47 Phases=1 Bus1=104.3 kV=0.23 kw=10 PF=0.95 Model=1
+New Load.LOAD48 Phases=1 Bus1=106.1 kV=0.23 kw=9 PF=0.95 Model=1
+New Load.LOAD49 Phases=1 Bus1=107.1 kV=0.23 kw=8 PF=0.95 Model=1
+New Load.LOAD50 Phases=1 Bus1=110.2 kV=0.23 kw=12 PF=0.95 Model=1
+New Load.LOAD51 Phases=1 Bus1=112.1 kV=0.23 kw=14 PF=0.95 Model=1
+New Load.LOAD52 Phases=1 Bus1=113.1 kV=0.23 kw=7 PF=0.95 Model=1
+New Load.LOAD53 Phases=1 Bus1=114.2 kV=0.23 kw=9 PF=0.95 Model=1
+New Load.LOAD54 Phases=1 Bus1=115.1 kV=0.23 kw=15 PF=0.95 Model=1
+New Load.LOAD55 Phases=1 Bus1=116.1 kV=0.23 kw=14 PF=0.95 Model=1
+!#######################
+
+!Lines.txt
+!#######################
+New Line.LINE1 Bus1=1 Bus2=2 phases=3 Linecode=4c_70 Length=21.867341 Units=m normamps=6000 emergamps=6000
+New Line.LINE2 Bus1=2 Bus2=3 phases=3 Linecode=2c_16 Length=5.9049 Units=m normamps=6000 emergamps=6000
+New Line.LINE3 Bus1=2 Bus2=4 phases=3 Linecode=4c_70 Length=12.6224 Units=m normamps=6000 emergamps=6000
+New Line.LINE4 Bus1=3 Bus2=5 phases=3 Linecode=2c_16 Length=5.3513 Units=m normamps=6000 emergamps=6000
+New Line.LINE5 Bus1=3 Bus2=10 phases=3 Linecode=2c_16 Length=6.747143 Units=m normamps=6000 emergamps=6000
+New Line.LINE6 Bus1=4 Bus2=6 phases=3 Linecode=2c_16 Length=5.7265 Units=m normamps=6000 emergamps=6000
+New Line.LINE7 Bus1=4 Bus2=8 phases=3 Linecode=4c_70 Length=21.15538 Units=m normamps=6000 emergamps=6000
+New Line.LINE8 Bus1=6 Bus2=7 phases=3 Linecode=2c_16 Length=6.1526 Units=m normamps=6000 emergamps=6000
+New Line.LINE9 Bus1=6 Bus2=13 phases=3 Linecode=2c_16 Length=6.44409 Units=m normamps=6000 emergamps=6000
+New Line.LINE10 Bus1=8 Bus2=9 phases=3 Linecode=2c_16 Length=8.2583 Units=m normamps=6000 emergamps=6000
+New Line.LINE11 Bus1=8 Bus2=14 phases=3 Linecode=4c_70 Length=13.37622 Units=m normamps=6000 emergamps=6000
+New Line.LINE12 Bus1=9 Bus2=11 phases=3 Linecode=2c_16 Length=4.0366 Units=m normamps=6000 emergamps=6000
+New Line.LINE13 Bus1=9 Bus2=12 phases=3 Linecode=2c_16 Length=4.0366 Units=m normamps=6000 emergamps=6000
+New Line.LINE14 Bus1=14 Bus2=15 phases=3 Linecode=4c_70 Length=8.79792 Units=m normamps=6000 emergamps=6000
+New Line.LINE15 Bus1=14 Bus2=19 phases=3 Linecode=4c_.35 Length=14.67517 Units=m normamps=6000 emergamps=6000
+New Line.LINE16 Bus1=15 Bus2=16 phases=3 Linecode=4c_.35 Length=4.17271 Units=m normamps=6000 emergamps=6000
+New Line.LINE17 Bus1=15 Bus2=28 phases=3 Linecode=4c_.1 Length=28.18684 Units=m normamps=6000 emergamps=6000
+New Line.LINE18 Bus1=16 Bus2=17 phases=3 Linecode=4c_.35 Length=16.0946 Units=m normamps=6000 emergamps=6000
+New Line.LINE19 Bus1=16 Bus2=37 phases=3 Linecode=2c_16 Length=14.34716 Units=m normamps=6000 emergamps=6000
+New Line.LINE20 Bus1=17 Bus2=31 phases=3 Linecode=2c_16 Length=11.18521 Units=m normamps=6000 emergamps=6000
+New Line.LINE21 Bus1=17 Bus2=18 phases=3 Linecode=4c_.35 Length=16.3325 Units=m normamps=6000 emergamps=6000
+New Line.LINE22 Bus1=18 Bus2=36 phases=3 Linecode=2c_16 Length=10.40682 Units=m normamps=6000 emergamps=6000
+New Line.LINE23 Bus1=31 Bus2=34 phases=3 Linecode=2c_16 Length=6.8846 Units=m normamps=6000 emergamps=6000
+New Line.LINE24 Bus1=31 Bus2=39 phases=3 Linecode=2c_16 Length=4.80218 Units=m normamps=6000 emergamps=6000
+New Line.LINE25 Bus1=36 Bus2=40 phases=3 Linecode=2c_16 Length=7.11685 Units=m normamps=6000 emergamps=6000
+New Line.LINE26 Bus1=36 Bus2=42 phases=3 Linecode=2c_16 Length=3.324801 Units=m normamps=6000 emergamps=6000
+New Line.LINE27 Bus1=19 Bus2=20 phases=3 Linecode=4c_.35 Length=12.3 Units=m normamps=6000 emergamps=6000
+New Line.LINE28 Bus1=19 Bus2=21 phases=3 Linecode=2c_16 Length=18.5373 Units=m normamps=6000 emergamps=6000
+New Line.LINE29 Bus1=20 Bus2=22 phases=3 Linecode=2c_16 Length=12.4482 Units=m normamps=6000 emergamps=6000
+New Line.LINE30 Bus1=20 Bus2=23 phases=3 Linecode=4c_.35 Length=14.1361 Units=m normamps=6000 emergamps=6000
+New Line.LINE31 Bus1=22 Bus2=25 phases=3 Linecode=2c_16 Length=6.9136 Units=m normamps=6000 emergamps=6000
+New Line.LINE32 Bus1=22 Bus2=33 phases=3 Linecode=2c_16 Length=8.2381 Units=m normamps=6000 emergamps=6000
+New Line.LINE33 Bus1=23 Bus2=26 phases=3 Linecode=2c_16 Length=18.4592 Units=m normamps=6000 emergamps=6000
+New Line.LINE34 Bus1=23 Bus2=24 phases=3 Linecode=4c_.35 Length=7.3714 Units=m normamps=6000 emergamps=6000
+New Line.LINE35 Bus1=24 Bus2=27 phases=3 Linecode=2c_16 Length=13.6223 Units=m normamps=6000 emergamps=6000
+New Line.LINE36 Bus1=27 Bus2=29 phases=3 Linecode=2c_16 Length=5.3022 Units=m normamps=6000 emergamps=6000
+New Line.LINE37 Bus1=27 Bus2=30 phases=3 Linecode=2c_16 Length=5.3022 Units=m normamps=6000 emergamps=6000
+New Line.LINE38 Bus1=28 Bus2=32 phases=3 Linecode=4c_.1 Length=4.06958 Units=m normamps=6000 emergamps=6000
+New Line.LINE39 Bus1=28 Bus2=49 phases=3 Linecode=2c_16 Length=14.523658 Units=m normamps=6000 emergamps=6000
+New Line.LINE40 Bus1=32 Bus2=35 phases=3 Linecode=4c_.1 Length=4.9913 Units=m normamps=6000 emergamps=6000
+New Line.LINE41 Bus1=32 Bus2=46 phases=3 Linecode=2c_16 Length=14.96775 Units=m normamps=6000 emergamps=6000
+New Line.LINE42 Bus1=35 Bus2=38 phases=3 Linecode=4c_.06 Length=8.23019 Units=m normamps=6000 emergamps=6000
+New Line.LINE43 Bus1=35 Bus2=48 phases=3 Linecode=4c_.1 Length=7.301714 Units=m normamps=6000 emergamps=6000
+New Line.LINE44 Bus1=38 Bus2=41 phases=3 Linecode=4c_.06 Length=10.6794 Units=m normamps=6000 emergamps=6000
+New Line.LINE45 Bus1=38 Bus2=44 phases=3 Linecode=2c_16 Length=7.69863 Units=m normamps=6000 emergamps=6000
+New Line.LINE46 Bus1=44 Bus2=47 phases=3 Linecode=2c_16 Length=5.1973 Units=m normamps=6000 emergamps=6000
+New Line.LINE47 Bus1=44 Bus2=50 phases=3 Linecode=2c_16 Length=8.52385 Units=m normamps=6000 emergamps=6000
+New Line.LINE48 Bus1=41 Bus2=43 phases=3 Linecode=4c_.06 Length=6.6729 Units=m normamps=6000 emergamps=6000
+New Line.LINE49 Bus1=41 Bus2=45 phases=3 Linecode=2c_16 Length=12.7504 Units=m normamps=6000 emergamps=6000
+New Line.LINE50 Bus1=43 Bus2=52 phases=3 Linecode=2c_16 Length=15.785302 Units=m normamps=6000 emergamps=6000
+New Line.LINE51 Bus1=43 Bus2=53 phases=3 Linecode=4c_.06 Length=37.66329 Units=m normamps=6000 emergamps=6000
+New Line.LINE52 Bus1=48 Bus2=51 phases=3 Linecode=4c_.1 Length=7.37111 Units=m normamps=6000 emergamps=6000
+New Line.LINE53 Bus1=48 Bus2=54 phases=3 Linecode=2c_16 Length=21.23445 Units=m normamps=6000 emergamps=6000
+New Line.LINE54 Bus1=51 Bus2=58 phases=3 Linecode=4c_.1 Length=26.309 Units=m normamps=6000 emergamps=6000
+New Line.LINE55 Bus1=51 Bus2=61 phases=3 Linecode=2c_16 Length=10.680624 Units=m normamps=6000 emergamps=6000
+New Line.LINE56 Bus1=61 Bus2=62 phases=3 Linecode=2c_16 Length=5.5837 Units=m normamps=6000 emergamps=6000
+New Line.LINE57 Bus1=61 Bus2=64 phases=3 Linecode=2c_16 Length=9.8006 Units=m normamps=6000 emergamps=6000
+New Line.LINE58 Bus1=58 Bus2=60 phases=3 Linecode=2c_16 Length=10.4722 Units=m normamps=6000 emergamps=6000
+New Line.LINE59 Bus1=58 Bus2=68 phases=3 Linecode=4c_.1 Length=2.936771 Units=m normamps=6000 emergamps=6000
+New Line.LINE60 Bus1=53 Bus2=55 phases=3 Linecode=4c_.06 Length=13.5743 Units=m normamps=6000 emergamps=6000
+New Line.LINE61 Bus1=53 Bus2=76 phases=3 Linecode=2c_16 Length=16.52655 Units=m normamps=6000 emergamps=6000
+New Line.LINE62 Bus1=55 Bus2=56 phases=3 Linecode=2c_16 Length=10.2769 Units=m normamps=6000 emergamps=6000
+New Line.LINE63 Bus1=55 Bus2=59 phases=3 Linecode=4c_.06 Length=16.05858 Units=m normamps=6000 emergamps=6000
+New Line.LINE64 Bus1=56 Bus2=57 phases=3 Linecode=2c_16 Length=6.6786 Units=m normamps=6000 emergamps=6000
+New Line.LINE65 Bus1=56 Bus2=67 phases=3 Linecode=2c_16 Length=5.54817 Units=m normamps=6000 emergamps=6000
+New Line.LINE66 Bus1=59 Bus2=63 phases=3 Linecode=2c_16 Length=10.65842 Units=m normamps=6000 emergamps=6000
+New Line.LINE67 Bus1=59 Bus2=65 phases=3 Linecode=4c_.06 Length=12.9494 Units=m normamps=6000 emergamps=6000
+New Line.LINE68 Bus1=63 Bus2=66 phases=3 Linecode=2c_16 Length=6.6554 Units=m normamps=6000 emergamps=6000
+New Line.LINE69 Bus1=63 Bus2=72 phases=3 Linecode=2c_16 Length=6.37701 Units=m normamps=6000 emergamps=6000
+New Line.LINE70 Bus1=65 Bus2=69 phases=3 Linecode=4c_.06 Length=7.30091 Units=m normamps=6000 emergamps=6000
+New Line.LINE71 Bus1=65 Bus2=78 phases=3 Linecode=2c_16 Length=13.71347 Units=m normamps=6000 emergamps=6000
+New Line.LINE72 Bus1=78 Bus2=80 phases=3 Linecode=2c_16 Length=5.34659 Units=m normamps=6000 emergamps=6000
+New Line.LINE73 Bus1=78 Bus2=81 phases=3 Linecode=2c_16 Length=6.02494 Units=m normamps=6000 emergamps=6000
+New Line.LINE74 Bus1=69 Bus2=75 phases=3 Linecode=2c_16 Length=15.05198 Units=m normamps=6000 emergamps=6000
+New Line.LINE75 Bus1=69 Bus2=70 phases=3 Linecode=4c_.06 Length=10.2425 Units=m normamps=6000 emergamps=6000
+New Line.LINE76 Bus1=70 Bus2=77 phases=3 Linecode=2c_.0225 Length=16.0515 Units=m normamps=6000 emergamps=6000
+New Line.LINE77 Bus1=68 Bus2=71 phases=3 Linecode=4c_.1 Length=4.77453 Units=m normamps=6000 emergamps=6000
+New Line.LINE78 Bus1=68 Bus2=97 phases=3 Linecode=2c_16 Length=15.715408 Units=m normamps=6000 emergamps=6000
+New Line.LINE79 Bus1=71 Bus2=73 phases=3 Linecode=2c_16 Length=14.0043 Units=m normamps=6000 emergamps=6000
+New Line.LINE80 Bus1=71 Bus2=74 phases=3 Linecode=4c_.1 Length=9.089 Units=m normamps=6000 emergamps=6000
+New Line.LINE81 Bus1=74 Bus2=79 phases=3 Linecode=4c_.1 Length=2.70115 Units=m normamps=6000 emergamps=6000
+New Line.LINE82 Bus1=74 Bus2=83 phases=3 Linecode=2c_16 Length=13.76873 Units=m normamps=6000 emergamps=6000
+New Line.LINE83 Bus1=79 Bus2=82 phases=3 Linecode=4c_.1 Length=9.62961 Units=m normamps=6000 emergamps=6000
+New Line.LINE84 Bus1=79 Bus2=98 phases=3 Linecode=2c_16 Length=15.18983 Units=m normamps=6000 emergamps=6000
+New Line.LINE85 Bus1=98 Bus2=103 phases=3 Linecode=2c_16 Length=9.7761 Units=m normamps=6000 emergamps=6000
+New Line.LINE86 Bus1=98 Bus2=105 phases=3 Linecode=2c_16 Length=2.29182 Units=m normamps=6000 emergamps=6000
+New Line.LINE87 Bus1=105 Bus2=106 phases=3 Linecode=2c_16 Length=2.82 Units=m normamps=6000 emergamps=6000
+New Line.LINE88 Bus1=105 Bus2=107 phases=3 Linecode=2c_16 Length=7.5091 Units=m normamps=6000 emergamps=6000
+New Line.LINE89 Bus1=82 Bus2=84 phases=3 Linecode=2c_16 Length=8.1445 Units=m normamps=6000 emergamps=6000
+New Line.LINE90 Bus1=82 Bus2=85 phases=3 Linecode=4c_.1 Length=10.5254 Units=m normamps=6000 emergamps=6000
+New Line.LINE91 Bus1=84 Bus2=87 phases=3 Linecode=2c_16 Length=6.4573 Units=m normamps=6000 emergamps=6000
+New Line.LINE92 Bus1=84 Bus2=95 phases=3 Linecode=2c_16 Length=7.35786 Units=m normamps=6000 emergamps=6000
+New Line.LINE93 Bus1=85 Bus2=88 phases=3 Linecode=2c_16 Length=14.9747 Units=m normamps=6000 emergamps=6000
+New Line.LINE94 Bus1=85 Bus2=86 phases=3 Linecode=4c_.1 Length=2.1907 Units=m normamps=6000 emergamps=6000
+New Line.LINE95 Bus1=86 Bus2=89 phases=3 Linecode=4c_.06 Length=8.7308 Units=m normamps=6000 emergamps=6000
+New Line.LINE96 Bus1=89 Bus2=90 phases=3 Linecode=4c_.06 Length=15.2459 Units=m normamps=6000 emergamps=6000
+New Line.LINE97 Bus1=89 Bus2=111 phases=3 Linecode=2c_16 Length=12.748019 Units=m normamps=6000 emergamps=6000
+New Line.LINE98 Bus1=111 Bus2=112 phases=3 Linecode=2c_16 Length=3.2587 Units=m normamps=6000 emergamps=6000
+New Line.LINE99 Bus1=111 Bus2=115 phases=3 Linecode=2c_16 Length=9.6933 Units=m normamps=6000 emergamps=6000
+New Line.LINE100 Bus1=90 Bus2=91 phases=3 Linecode=2c_16 Length=11.26017 Units=m normamps=6000 emergamps=6000
+New Line.LINE101 Bus1=90 Bus2=92 phases=3 Linecode=4c_.06 Length=17.0068 Units=m normamps=6000 emergamps=6000
+New Line.LINE102 Bus1=91 Bus2=93 phases=3 Linecode=2c_16 Length=6.7778 Units=m normamps=6000 emergamps=6000
+New Line.LINE103 Bus1=91 Bus2=102 phases=3 Linecode=2c_16 Length=5.756153 Units=m normamps=6000 emergamps=6000
+New Line.LINE104 Bus1=92 Bus2=94 phases=3 Linecode=2c_16 Length=10.8733 Units=m normamps=6000 emergamps=6000
+New Line.LINE105 Bus1=92 Bus2=99 phases=3 Linecode=4c_.06 Length=19.4603 Units=m normamps=6000 emergamps=6000
+New Line.LINE106 Bus1=94 Bus2=96 phases=3 Linecode=2c_16 Length=7.129 Units=m normamps=6000 emergamps=6000
+New Line.LINE107 Bus1=94 Bus2=104 phases=3 Linecode=2c_16 Length=5.65812 Units=m normamps=6000 emergamps=6000
+New Line.LINE108 Bus1=99 Bus2=100 phases=3 Linecode=4C_95_SAC_XC Length=2.8031 Units=m normamps=6000 emergamps=6000
+New Line.LINE109 Bus1=100 Bus2=101 phases=3 Linecode=4c_.06 Length=13.1431 Units=m normamps=6000 emergamps=6000
+New Line.LINE110 Bus1=101 Bus2=108 phases=3 Linecode=2c_.0225 Length=10.12454 Units=m normamps=6000 emergamps=6000
+New Line.LINE111 Bus1=99 Bus2=109 phases=3 Linecode=2c_16 Length=10.77222 Units=m normamps=6000 emergamps=6000
+New Line.LINE112 Bus1=108 Bus2=110 phases=3 Linecode=2c_.0225 Length=7.50839 Units=m normamps=6000 emergamps=6000
+New Line.LINE113 Bus1=108 Bus2=114 phases=3 Linecode=2c_.0225 Length=9.33893 Units=m normamps=6000 emergamps=6000
+New Line.LINE114 Bus1=109 Bus2=113 phases=3 Linecode=35_SAC_XSC Length=10.3363 Units=m normamps=6000 emergamps=6000
+New Line.LINE115 Bus1=109 Bus2=116 phases=3 Linecode=2c_16 Length=8.09168 Units=m normamps=6000 emergamps=6000
+!#######################
+
+! Generators
+New generator.gen1 Bus1=104.1.2.3 Phases=3 kV=( 0.416 3 sqrt / )  kW=100 pf=1 conn=wye Model=3
+New generator.gen2 Bus1=62.1.2.3 Phases=3 kV=( 0.416 3 sqrt / )  kW=100 pf=1 conn=wye Model=3
+New generator.gen3 Bus1=75.1.2.3 Phases=3 kV=( 0.416 3 sqrt / )  kW=100 pf=1 conn=wye Model=3
+
+
+Set Tolerance=0.000001
+
+Set voltagebases=[138, 11, .416]
+!Calcvoltagebases
+!solve
