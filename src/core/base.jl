@@ -518,10 +518,10 @@ function solve_model(
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 
-        @info "PMITD master: $(pmitd.master)"
-        @info "PMITD subproblems: $(pmitd.subproblems)"
-        @info "PMITD subproblem # 1: $(pmitd.subproblems[1])"
-        @info "PMITD Linking Vars.: $(pmitd.list_linking_vars)"
+        # @info "PMITD master: $(pmitd.master)"
+        # @info "PMITD subproblems: $(pmitd.subproblems)"
+        # @info "PMITD subproblem # 1: $(pmitd.subproblems[1])"
+        # @info "PMITD Linking Vars.: $(pmitd.list_linking_vars)"
 
         # Calls the _IDEC optimize!(..) function
         result = _IDEC.optimize!(pmitd)   #TODO: works but core dumped when solving any problem (NL, L).
