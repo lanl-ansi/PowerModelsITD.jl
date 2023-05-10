@@ -16,7 +16,7 @@ trans_path = joinpath(dirname(pathof(PowerModelsITD)), "../test/data/transmissio
 dist_path = joinpath(dirname(pathof(PowerModelsITD)), "../test/data/distribution/")
 bound_path = joinpath(dirname(pathof(PowerModelsITD)), "../test/data/json/")
 
-ipopt = optimizer_with_attributes(Ipopt.Optimizer, "acceptable_tol"=>1.0e-8, "print_level"=>0, "sb"=>"yes")
+ipopt = optimizer_with_attributes(Ipopt.Optimizer, "acceptable_tol"=>1.0e-8, "print_level"=>5, "sb"=>"yes")
 scs_solver = optimizer_with_attributes(SCS.Optimizer, "verbose"=>0)
 ipopt_decomposition =  _IDEC.MetaOptimizer()    # decomposition optimizer
 
