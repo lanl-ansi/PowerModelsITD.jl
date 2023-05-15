@@ -35,7 +35,7 @@ function constraint_transmission_power_balance(pm::_PM.AbstractActivePowerModel,
         sum(p[a] for a in bus_arcs)
         + sum(p_dc[a_dc] for a_dc in bus_arcs_dc)
         + sum(psw[a_sw] for a_sw in bus_arcs_sw)
-        + sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)
+        - sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)
         ==
         sum(pg[g] for g in bus_gens)
         - sum(ps[s] for s in bus_storage)
