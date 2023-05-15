@@ -50,7 +50,7 @@ function constraint_transmission_power_balance(pm::_PM.AbstractACPModel, n::Int,
             sum(p[a] for a in bus_arcs)
             + sum(p_dc[a_dc] for a_dc in bus_arcs_dc)
             + sum(psw[a_sw] for a_sw in bus_arcs_sw)
-            + sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)
+            - sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)
             ==
             sum(pg[g] for g in bus_gens)
             - sum(ps[s] for s in bus_storage)
@@ -62,7 +62,7 @@ function constraint_transmission_power_balance(pm::_PM.AbstractACPModel, n::Int,
             sum(p[a] for a in bus_arcs)
             + sum(p_dc[a_dc] for a_dc in bus_arcs_dc)
             + sum(psw[a_sw] for a_sw in bus_arcs_sw)
-            + sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)
+            - sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)
             ==
             sum(pg[g] for g in bus_gens)
             - sum(ps[s] for s in bus_storage)
@@ -76,7 +76,7 @@ function constraint_transmission_power_balance(pm::_PM.AbstractACPModel, n::Int,
             sum(q[a] for a in bus_arcs)
             + sum(q_dc[a_dc] for a_dc in bus_arcs_dc)
             + sum(qsw[a_sw] for a_sw in bus_arcs_sw)
-            + sum(qbound_load[a_qbound_load][1] for a_qbound_load in bus_arcs_boundary_from)
+            - sum(qbound_load[a_qbound_load][1] for a_qbound_load in bus_arcs_boundary_from)
             ==
             sum(qg[g] for g in bus_gens)
             - sum(qs[s] for s in bus_storage)
@@ -88,7 +88,7 @@ function constraint_transmission_power_balance(pm::_PM.AbstractACPModel, n::Int,
             sum(q[a] for a in bus_arcs)
             + sum(q_dc[a_dc] for a_dc in bus_arcs_dc)
             + sum(qsw[a_sw] for a_sw in bus_arcs_sw)
-            + sum(qbound_load[a_qbound_load][1] for a_qbound_load in bus_arcs_boundary_from)
+            - sum(qbound_load[a_qbound_load][1] for a_qbound_load in bus_arcs_boundary_from)
             ==
             sum(qg[g] for g in bus_gens)
             - sum(qs[s] for s in bus_storage)
