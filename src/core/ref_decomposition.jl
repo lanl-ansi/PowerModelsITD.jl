@@ -132,18 +132,18 @@ function _ref_filter_distribution_slack_generators_decomposition!(ref::Dict{Symb
                 # # Add new slack gen. as proxy to penalty function
                 # penalty_gen_indx = 10000001
                 # nw_ref[:gen][penalty_gen_indx] = deepcopy(gen_data)
-                # nw_ref[:gen][penalty_gen_indx]["cost"] = [1e8, 1e8, 0.0]
+                # nw_ref[:gen][penalty_gen_indx]["cost"] = [1e9, 0.0]
                 # nw_ref[:gen][penalty_gen_indx]["name"] = "_virtual_gen.voltage_source.penalty.source"
                 # nw_ref[:gen][penalty_gen_indx]["source_id"] = "voltage_source.penalty.source"
                 # nw_ref[:gen][penalty_gen_indx]["index"] = penalty_gen_indx
                 # nw_ref[:gen][penalty_gen_indx]["control_mode"] = 1
 
-                # nw_ref[:gen][penalty_gen_indx]["pmax"] = ones(length(gen_data["pmax"])).*0.1
-                # nw_ref[:gen][penalty_gen_indx]["qmax"] = ones(length(gen_data["qmax"])).*0.1
+                # # nw_ref[:gen][penalty_gen_indx]["pmax"] = ones(length(gen_data["pmax"])).*0.1
+                # # nw_ref[:gen][penalty_gen_indx]["qmax"] = ones(length(gen_data["qmax"])).*0.1
 
                 # nw_ref[:gen][penalty_gen_indx]["pmin"] = zeros(length(gen_data["pmin"]))
                 # nw_ref[:gen][penalty_gen_indx]["qmin"] = zeros(length(gen_data["qmin"]))
-                # @info "$(nw_ref[:gen][penalty_gen_indx])"
+                # # @info "$(nw_ref[:gen][penalty_gen_indx])"
                 # # -------------------------------------------
 
                 cost_length = length(gen_data["cost"])

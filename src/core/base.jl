@@ -532,14 +532,12 @@ function solve_model(
 
         # Build and organize the result dictionary
         # TODO: merge the pm and pmd(s) results into a single Dict result similarly to PMITD
-        result = Dict{String, Any}("it" => Dict{String, Any}("pm" => Dict{String, Any}, "pmd" => Dict{String, Any}))
+        result = Dict{String, Any}("it" => Dict{String, Any}("pm" => Dict{String, Any}(), "pmd" => Dict{String, Any}()))
         result["it"]["pm"] = _IM.build_result(pmitd.pm, solve_time)
 
         pmd_count = 1
         for pmd in pmitd.pmd
-            pmd_result = Dict{String, Any}("$(pmd_count)" => Dict{String, Any})
-            pmd_result["$(pmd_count)"] = _IM.build_result(pmitd.pmd[pmd_count], solve_time)
-            result["it"]["pmd"] = pmd_result
+            result["it"]["pmd"]["ckt_$(pmd_count)"] = _IM.build_result(pmitd.pmd[pmd_count], solve_time)
             pmd_count += 1
         end
 
