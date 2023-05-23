@@ -35,7 +35,7 @@
 
         result = solve_model(pmitd_data, pmitd_type, ipopt_decomposition, build_opfitd_decomposition)               # Solve Decomposition
         # result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd; make_si=false, solution_model="eng")     # Solve ITD
-        # @info "$(result["solution"]["it"]["pmitd"])"
+        @info "$(result)"
     end
 
     # @testset "solve_model (decomposition): Balanced case5-case3 With 2 Dist. Generators BFA-LinDist3FlowPowerModel" begin
