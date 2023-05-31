@@ -1,0 +1,12 @@
+[
+    {
+		"transmission_boundary": "11",
+        "distribution_boundary": "voltage_source.source"
+	},
+    {
+        "transmission_boundary": "323",
+        "distribution_boundary": "voltage_source.source"
+    }
+]
+
+
