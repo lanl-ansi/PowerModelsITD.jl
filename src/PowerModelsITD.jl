@@ -42,6 +42,13 @@ module PowerModelsITD
 
     "DECOMPOSITION_PROBLEMS constant vector that contains the different types of ITD decomposition problems supported."
     const DECOMPOSITION_PROBLEMS = ["build_opfitd_decomposition", "build_mn_opfitd_decomposition"]
+    # mutable struct to store pmitd models/JuMP models for decomposition applications.
+    mutable struct DecompositionStruct
+        pm          # transmission system IM model
+        pmd         # distribution system IM model
+        optimizer   # IDEC optimizer struct
+        DecompositionStruct() = new()   # Constructor
+    end
 
     # Files to include in module
     include("io/common.jl")
@@ -52,11 +59,8 @@ module PowerModelsITD
     include("core/ref_decomposition.jl")
     include("core/helpers.jl")
     include("core/variable.jl")
-<<<<<<< HEAD
     include("core/objective_helpers.jl")
-=======
     include("core/variable_decomposition.jl")
->>>>>>> ADD: new ref_add_core_decomposition funcs for both Transmission and Distribution systems.
     include("core/objective.jl")
     include("core/objective_dmld.jl")
     include("core/objective_dmld_simple.jl")
