@@ -47,8 +47,13 @@ function _ref_filter_transmission_integration_loads_decomposition!(ref::Dict{Sym
             # Filters out only the loads connected to the transmission-boundary bus
             for (nw, nw_ref) in ref[:it][:pm][:nw]
                 # Get init (start) values before deleting the boundary load info.
-                conn["pbound_load_start"] = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
-                conn["qbound_load_start"] = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
+                pd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
+                qd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
+                conn["pbound_load_start"] = pd_start
+                conn["qbound_load_start"] = qd_start
+
+                @info "Pload init value: $(conn["pbound_load_start"])"
+                @info "Qload init value: $(conn["qbound_load_start"])"
 
                 nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
                 nw_ref[:bus_loads][conn["transmission_boundary"]] = []
@@ -125,7 +130,8 @@ function _ref_filter_distribution_slack_generators_decomposition!(ref::Dict{Symb
             if (gen_data["gen_bus"] == boundary_data["distribution_boundary"])
                 cost_length = length(gen_data["cost"])
                 gen_data["cost"] = zeros(cost_length)
-                # gen_data["control_mode"] = 0 # TODO: this may be needed.
+                # modify the control mode of the slack gen (not penalty related)
+                # gen_data["control_mode"] = 1 # TODO: this may be needed.
             end
         end
     end
@@ -342,6 +348,11 @@ function _compute_boundary_power_start_values_distribution!(ref::Dict{Symbol,<:A
         # Filters only the ones that have the "distribution_boundary" key
         for (_, conn) in filter(x -> "distribution_boundary" in keys(x.second), boundaries)
             # Get init (start) values before deleting the boundary load info.
+            pload_total = pload_total
+            qload_total = qload_total
+
+            @info "Paux init value: $(pload_total)"
+            @info "Qaux init value: $(qload_total)"
             conn["pbound_aux_start"] = round(pload_total; digits=5)
             conn["qbound_aux_start"] = round(qload_total; digits=5)
         end

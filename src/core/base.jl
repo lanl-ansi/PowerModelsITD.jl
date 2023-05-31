@@ -272,6 +272,9 @@ function instantiate_model_decomposition(
     # Correct the network data and assign the respective boundary number values.
     correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
 
+    # Initialize DecompositionStruct
+    decomposed_models = DecompositionStruct() # intialize empty struct
+
     # ----- IpoptDecomposition Optimizer ------
 
     # PM models
@@ -285,11 +288,13 @@ function instantiate_model_decomposition(
                                     _PM._pm_global_keys,
                                     _PM.pm_it_sym; kwargs...)
 
+    decomposed_models.pm = pm_inst_model
     optimizer.master = pm_inst_model.model                                      # Add pm model to master
     JuMP.set_optimizer(optimizer.master, _IDEC.Optimizer; add_bridges = true)   # Set optimizer
 
     # PMD models & Boundary linking vars
     pmd_inst_models = []
+    pmd_inst_JuMP_models = []
     boundary_vars_vect = []
     for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
 
@@ -307,9 +312,9 @@ function instantiate_model_decomposition(
                                         _PMD._pmd_global_keys,
                                         _PMD.pmd_it_sym; kwargs...)
 
-        pmd_JuMP_model = pmd_inst_model.model                                       # Add pmd model to subproblem
-        JuMP.set_optimizer(pmd_JuMP_model, _IDEC.Optimizer; add_bridges = true)    # Set the IDEC optimizer to the model
-        push!(pmd_inst_models, pmd_JuMP_model)                                      # push the subproblem model into the vector of subproblems
+        push!(pmd_inst_models, pmd_inst_model)                                              # Add pmd IM model to vector
+        JuMP.set_optimizer(pmd_inst_model.model , _IDEC.Optimizer; add_bridges = true)      # Set the IDEC optimizer to the JuMP model
+        push!(pmd_inst_JuMP_models, pmd_inst_model.model )                                  # push the subproblem JuMP model into the vector of subproblems
 
         # Boundary linking vars.
         linking_vars_vect = generate_boundary_linking_vars(pm_inst_model, pmd_inst_model, boundary_number)  # generates the respective (ACP, ACR, etc.) boundary linking vars vector.
@@ -317,13 +322,17 @@ function instantiate_model_decomposition(
 
     end
 
-    # Add all pmd models (i.e., vector) as subproblems to Optimizer
-    optimizer.subproblems = pmd_inst_models
+    # Add subproblems
+    decomposed_models.pmd = pmd_inst_models          # Add all IM models to DecompositionStruct
+    optimizer.subproblems = pmd_inst_JuMP_models     # Add all pmd JuMP models (i.e., vector) as subproblems to Optimizer
 
     # Boundary Linking vars
     optimizer.list_linking_vars = boundary_vars_vect
 
-    return optimizer
+    # Add Optimizer to DecompositionStruct
+    decomposed_models.optimizer = optimizer
+
+    return decomposed_models
 
 end
 
@@ -518,21 +527,24 @@ function solve_model(
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 
-        # @info "PMITD master: $(pmitd.master)"
-        # @info "PMITD subproblems: $(pmitd.subproblems)"
-        # @info "PMITD subproblem # 1: $(pmitd.subproblems[1])"
-        # @info "PMITD Linking Vars.: $(pmitd.list_linking_vars)"
-
         # Calls the _IDEC optimize!(..) function
-        result = _IDEC.optimize!(pmitd)   #TODO: works but core dumped when solving any problem (NL, L).
+        _, solve_time, solve_bytes_alloc, sec_in_gc = @timed _IDEC.optimize!(pmitd.optimizer)   #TODO: works but core dumped when solving any problem (NL, L).
 
-        result = 1
+        # Build and organize the result dictionary
+        # TODO: merge the pm and pmd(s) results into a single Dict result similarly to PMITD
+        result = Dict{String, Any}("it" => Dict{String, Any}("pm" => Dict{String, Any}(), "pmd" => Dict{String, Any}()))
+        result["it"]["pm"] = _IM.build_result(pmitd.pm, solve_time)
+
+        pmd_count = 1
+        for pmd in pmitd.pmd
+            result["it"]["pmd"]["ckt_$(pmd_count)"] = _IM.build_result(pmitd.pmd[pmd_count], solve_time)
+            pmd_count += 1
+        end
 
         # Inform about the time for solving the problem (*change to @debug)
         @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
 
         # TODO: Transform solution (both T&D) - SI or per unit - MATH or ENG.
-        ## -----------------------------------------
 
     else
         @error "The problem specification (build_method) or optimizer defined is not supported! Please use a supported optimizer or build_method."

@@ -23,6 +23,8 @@
 
 ## staged Decomposition
 
+- Added ability to obtain results from the solution using `_IM.build_result()` function. (WIP - Still need to organize the results correctly.)
+- Added `DecompositionStruct` to store IM models as well as the Optimizer with the JuMP models references.
 - Added a function, `_compute_boundary_power_start_values_distribution!`, that computes the summation of all the loads in the distribution system to be used as warstart for `pbound_aux` and `qbound_aux`
 - Added `start` values (warmstart) to the shared/boundary variables `pbound_load`, `qbound_load`, `pbound_aux`, and `qbound_aux` used in the decompostion process. `ref` decomposition has been modified respectively.
 - Removed constant vectors `STANDARD_PROBLEMS` and `DECOMPOSITION_PROBLEMS` that store strings of the names of supported `build_methods` (i.e., problem specifications). Replaced with type of optimizers.

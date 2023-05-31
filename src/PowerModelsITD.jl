@@ -34,6 +34,14 @@ module PowerModelsITD
     "BOUNDARY_NUMBER constant that determines the starting counter for the boundaries defined."
     const BOUNDARY_NUMBER = 100001
 
+    # mutable struct to store pmitd models/JuMP models for decomposition applications.
+    mutable struct DecompositionStruct
+        pm          # transmission system IM model
+        pmd         # distribution system IM model
+        optimizer   # IDEC optimizer struct
+        DecompositionStruct() = new()   # Constructor
+    end
+
     # Files to include in module
     include("io/common.jl")
     include("core/base.jl")
