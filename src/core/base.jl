@@ -527,29 +527,22 @@ function solve_model(
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
 
-        # Calls the _IDEC optimize!(..) function
-        _, solve_time, solve_bytes_alloc, sec_in_gc = @timed _IDEC.optimize!(pmitd.optimizer)   #TODO: works but core dumped when solving any problem (NL, L).
+        result = run_decomposition(pmitd)
 
-        # Build and organize the result dictionary
-        # TODO: merge the pm and pmd(s) results into a single Dict result similarly to PMITD
-        result = Dict{String, Any}("it" => Dict{String, Any}("pm" => Dict{String, Any}(), "pmd" => Dict{String, Any}()))
-        result["it"]["pm"] = _IM.build_result(pmitd.pm, solve_time)
-
-        pmd_count = 1
-        for pmd in pmitd.pmd
-            result["it"]["pmd"]["ckt_$(pmd_count)"] = _IM.build_result(pmitd.pmd[pmd_count], solve_time)
-            pmd_count += 1
+        # Transform solution (both T&D) - SI or per unit - MATH or ENG.
+        if (make_si == false)
+            _transform_decomposition_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        else
+            _transform_decomposition_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
         end
-
-        # Inform about the time for solving the problem (*change to @debug)
-        @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
-
-        # TODO: Transform solution (both T&D) - SI or per unit - MATH or ENG.
 
     else
         @error "The problem specification (build_method) or optimizer defined is not supported! Please use a supported optimizer or build_method."
         throw(error())
     end
+
+    # Inform about the time for solving the problem (*change to @debug)
+    @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
 
     return result
 end

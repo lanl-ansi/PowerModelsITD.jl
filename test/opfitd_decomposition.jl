@@ -5,111 +5,113 @@
 
 # ----------------- Linear NFA Tests ------------------------
 
-  @testset "solve_model (decomposition): Balanced case5-case3 With 2 Dist. Generators NFA-NFAU" begin
-        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
-        pmd_file = joinpath(dirname(dist_path), "case3_balanced_2dgs.dss")
-        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_2dgs.json")
+#   @testset "solve_model (decomposition): Balanced case5-case3 With 2 Dist. Generators NFA-NFAU" begin
+#         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+#         pmd_file = joinpath(dirname(dist_path), "case3_balanced_2dgs.dss")
+#         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_2dgs.json")
+#         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
+#         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+
+#         # Modify DGs costs
+#         gen_cost_1 = [0.0,26.0,0.0]
+#         gen_cost_2 = [0.0,15.0,0.0]
+#         pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen1"]["cost_pg_parameters"] = gen_cost_1 # Units are in $/MW^2, $/MW, and $.
+#         pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen2"]["cost_pg_parameters"] = gen_cost_2 # Units are in $/MW^2, $/MW, and $.
+
+#         # Solve the problem using the two approaches
+#         pmitd_data_decomposition = deepcopy(pmitd_data)
+#         pmitd_data_itd = deepcopy(pmitd_data)
+
+#         result_itd = solve_model(pmitd_data_decomposition, pmitd_type, ipopt, build_opfitd; make_si=false, solution_model="math")     # Solve ITD
+#         result_decomposition = solve_model(pmitd_data_itd, pmitd_type, ipopt_decomposition, build_opfitd_decomposition)     # Solve Decomposition
+
+#         #  ---- Compare results ----
+#         @info "------------------------ Objective -----------------------------------"
+#         # 1. Objective
+#         @info "objective (ITD): $(result_itd["objective"])"
+#         @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
+#         @info "--------------------------- Boundary flows --------------------------------"
+#         # 2. Boundary flows
+#         @info "Boundary Flow (ITD): $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 5, 9)"]["pbound_fr"])"
+#         @info "Boundary Flows (DECOMPOSITION): Pload = $(result_decomposition["it"]["pm"]["solution"]["boundary"]["(100001, 5, 9)"]["pbound_load"]) and Paux = $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["boundary"]["(100001, 5, 9)"]["pbound_aux"])"
+#         @info "------------------ Generator Dispatches - Transmission --------------------"
+#         # 3. Generator Dispatches - Transmission
+#         @info "Gen Dispatches (ITD) - Transmission: $(result_itd["solution"]["it"]["pm"]["gen"])"
+#         @info "Gen Dispatche (DECOMPOSITION) - Transmission: $(result_decomposition["it"]["pm"]["solution"]["gen"])"
+#         @info "-----------------Branch Power Flows - Transmission -----------------------"
+#         # 4. Branch Power Flows - Transmission
+#         @info "Branch Power Flows (ITD) - Transmission: $(result_itd["solution"]["it"]["pm"]["branch"])"
+#         @info "Branch Power Flows (DECOMPOSITION) - Transmission: $(result_decomposition["it"]["pm"]["solution"]["branch"])"
+#         @info "------------------- Generator Dispatches - Distribution ----------------------------------------"
+#         # 5. Generator Dispatches - Distribution
+#         @info "Gen Dispatches (ITD) - Distribution: $(result_itd["solution"]["it"]["pmd"]["gen"])"
+#         @info "Gen Dispatches (DECOMPOSITION) - Distribution (THIRD ONE IS THE SLACK): $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["gen"])"
+#         @info "------------------- Branch Power Flows - Distribution ----------------------------------------"
+#         # 6. Branch Power Flows - Distribution
+#         @info "Branch Power Flows (ITD) - Distribution: $(result_itd["solution"]["it"]["pmd"]["branch"])"
+#         @info "Branch Power Flows (DECOMPOSITION) - Distribution: $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["branch"])"
+#         @info "-----------------------------------------------------------"
+#     end
+
+    @testset "solve_model (decomposition): Balanced case5-case3x2 with 2 DGs NFA-NFAU" begin
+        pm_file = joinpath(dirname(trans_path), "case5_with2loads.m")
+        pmd_file1 = joinpath(dirname(dist_path), "case3_balanced_2dgs.dss")
+        pmd_file2 = joinpath(dirname(dist_path), "case3_unbalanced_2dgs.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3x2.json")
         pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        pmd_files = [pmd_file1, pmd_file2]
+        pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
 
-        # Modify DGs costs
-        gen_cost_1 = [0.0,26.0,0.0]
-        gen_cost_2 = [0.0,15.0,0.0]
-        pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen1"]["cost_pg_parameters"] = gen_cost_1 # Units are in $/MW^2, $/MW, and $.
-        pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen2"]["cost_pg_parameters"] = gen_cost_2 # Units are in $/MW^2, $/MW, and $.
+        # TODO: WITHOUT MODIFYING COSTS, IT WORKS, IF I MODIFY COSTS THEN I GET TOTALLY DIFFERENT RESULTS WHY?!!
+        # # Modify DGs costs
+        # gen_cost_1 = [0.0,26.0,0.0]
+        # gen_cost_2 = [0.0,15.0,0.0]
+        # pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen1"]["cost_pg_parameters"] = gen_cost_1 # Units are in $/MW^2, $/MW, and $.
+        # pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen2"]["cost_pg_parameters"] = gen_cost_2 # Units are in $/MW^2, $/MW, and $.
 
-        # Solve the problem using the two approaches
-        pmitd_data_decomposition = deepcopy(pmitd_data)
-        pmitd_data_itd = deepcopy(pmitd_data)
+        # pmitd_data["it"]["pmd"]["generator"]["3bus_unbal2dgs.gen1"]["cost_pg_parameters"] = gen_cost_2 # Units are in $/MW^2, $/MW, and $.
+        # pmitd_data["it"]["pmd"]["generator"]["3bus_unbal2dgs.gen2"]["cost_pg_parameters"] = gen_cost_1 # Units are in $/MW^2, $/MW, and $.
 
-        result_itd = solve_model(pmitd_data_decomposition, pmitd_type, ipopt, build_opfitd; make_si=false, solution_model="math")     # Solve ITD
-        result_decomposition = solve_model(pmitd_data_itd, pmitd_type, ipopt_decomposition, build_opfitd_decomposition)     # Solve Decomposition
-
-        #  ---- Compare results ----
-        @info "------------------------ Objective -----------------------------------"
-        # 1. Objective
-        @info "objective (ITD): $(result_itd["objective"])"
-        @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
-        @info "--------------------------- Boundary flows --------------------------------"
-        # 2. Boundary flows
-        @info "Boundary Flow (ITD): $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 5, 9)"]["pbound_fr"])"
-        @info "Boundary Flows (DECOMPOSITION): Pload = $(result_decomposition["it"]["pm"]["solution"]["boundary"]["(100001, 5, 9)"]["pbound_load"]) and Paux = $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["boundary"]["(100001, 5, 9)"]["pbound_aux"])"
-        @info "------------------ Generator Dispatches - Transmission --------------------"
-        # 3. Generator Dispatches - Transmission
-        @info "Gen Dispatches (ITD) - Transmission: $(result_itd["solution"]["it"]["pm"]["gen"])"
-        @info "Gen Dispatche (DECOMPOSITION) - Transmission: $(result_decomposition["it"]["pm"]["solution"]["gen"])"
-        @info "-----------------Branch Power Flows - Transmission -----------------------"
-        # 4. Branch Power Flows - Transmission
-        @info "Branch Power Flows (ITD) - Transmission: $(result_itd["solution"]["it"]["pm"]["branch"])"
-        @info "Branch Power Flows (DECOMPOSITION) - Transmission: $(result_decomposition["it"]["pm"]["solution"]["branch"])"
-        @info "------------------- Generator Dispatches - Distribution ----------------------------------------"
-        # 5. Generator Dispatches - Distribution
-        @info "Gen Dispatches (ITD) - Distribution: $(result_itd["solution"]["it"]["pmd"]["gen"])"
-        @info "Gen Dispatches (DECOMPOSITION) - Distribution (THIRD ONE IS THE SLACK): $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["gen"])"
-        @info "------------------- Branch Power Flows - Distribution ----------------------------------------"
-        # 6. Branch Power Flows - Distribution
-        @info "Branch Power Flows (ITD) - Distribution: $(result_itd["solution"]["it"]["pmd"]["branch"])"
-        @info "Branch Power Flows (DECOMPOSITION) - Distribution: $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["branch"])"
-        @info "-----------------------------------------------------------"
-    end
-
-    # @testset "solve_model (decomposition): Balanced case5-case3x2 with 2 DGs NFA-NFAU" begin
-    #     pm_file = joinpath(dirname(trans_path), "case5_with2loads.m")
-    #     pmd_file1 = joinpath(dirname(dist_path), "case3_balanced_2dgs.dss")
-    #     pmd_file2 = joinpath(dirname(dist_path), "case3_unbalanced_2dgs.dss")
-    #     pmitd_file = joinpath(dirname(bound_path), "case5_case3x2.json")
-    #     pmitd_type = LPowerModelITD{NFAPowerModel, NFAUPowerModel}
-    #     pmd_files = [pmd_file1, pmd_file2]
-    #     pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
-
-    #     # TODO: WITHOUT MODIFYING COSTS, IT WORKS, IF I MODIFY COSTS THEN I GET TOTALLY DIFFERENT RESULTS WHY?!!
-    #     # # Modify DGs costs
-    #     # gen_cost_1 = [0.0,26.0,0.0]
-    #     # gen_cost_2 = [0.0,15.0,0.0]
-    #     # pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen1"]["cost_pg_parameters"] = gen_cost_1 # Units are in $/MW^2, $/MW, and $.
-    #     # pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen2"]["cost_pg_parameters"] = gen_cost_2 # Units are in $/MW^2, $/MW, and $.
-
-    #     # pmitd_data["it"]["pmd"]["generator"]["3bus_unbal2dgs.gen1"]["cost_pg_parameters"] = gen_cost_2 # Units are in $/MW^2, $/MW, and $.
-    #     # pmitd_data["it"]["pmd"]["generator"]["3bus_unbal2dgs.gen2"]["cost_pg_parameters"] = gen_cost_1 # Units are in $/MW^2, $/MW, and $.
-
-    #    # Solve the problem using the two approaches
-    #    pmitd_data_decomposition = deepcopy(pmitd_data)
-    #    pmitd_data_itd = deepcopy(pmitd_data)
+       # Solve the problem using the two approaches
+       pmitd_data_decomposition = deepcopy(pmitd_data)
+       pmitd_data_itd = deepcopy(pmitd_data)
 
     #    result_itd = solve_model(pmitd_data_decomposition, pmitd_type, ipopt, build_opfitd; make_si=false, solution_model="math")     # Solve ITD
-    #    result_decomposition = solve_model(pmitd_data_itd, pmitd_type, ipopt_decomposition, build_opfitd_decomposition)     # Solve Decomposition
+       result_decomposition = solve_model(pmitd_data_itd, pmitd_type, ipopt_decomposition, build_opfitd_decomposition; make_si=true, solution_model="eng")     # Solve Decomposition
 
-    #     #  ---- Compare results ----
-    #     @info "------------------------ Objective -----------------------------------"
-    #     # 1. Objective
-    #     @info "objective (ITD): $(result_itd["objective"])"
-    #     @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
-    #     @info "--------------------------- Boundary flows --------------------------------"
-    #     # 2. Boundary flows
-    #     @info "Boundary Flow (ITD) ckt 1: $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 5, 17)"]["pbound_fr"])"
-    #     @info "Boundary Flow (ITD) ckt 2: $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100002, 6, 18)"]["pbound_fr"])"
-    #     @info "Boundary Flows (DECOMPOSITION) ckt 1: Pload = $(result_decomposition["it"]["pm"]["solution"]["boundary"]["(100001, 5, 9)"]["pbound_load"]) and Paux = $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["boundary"]["(100001, 5, 9)"]["pbound_aux"])"
-    #     @info "Boundary Flows (DECOMPOSITION) ckt 2: Pload = $(result_decomposition["it"]["pm"]["solution"]["boundary"]["(100002, 6, 9)"]["pbound_load"]) and Paux = $(result_decomposition["it"]["pmd"]["ckt_2"]["solution"]["boundary"]["(100002, 6, 9)"]["pbound_aux"])"
-    #     @info "------------------ Generator Dispatches - Transmission --------------------"
-    #     # 3. Generator Dispatches - Transmission
-    #     @info "Gen Dispatches (ITD) - Transmission: $(result_itd["solution"]["it"]["pm"]["gen"])"
-    #     @info "Gen Dispatches (DECOMPOSITION) - Transmission: $(result_decomposition["it"]["pm"]["solution"]["gen"])"
-    #     @info "-----------------Branch Power Flows - Transmission -----------------------"
-    #     # 4. Branch Power Flows - Transmission
-    #     @info "Branch Power Flows (ITD) - Transmission: $(result_itd["solution"]["it"]["pm"]["branch"])"
-    #     @info "Branch Power Flows (DECOMPOSITION) - Transmission: $(result_decomposition["it"]["pm"]["solution"]["branch"])"
-    #     @info "------------------- Generator Dispatches - Distribution ----------------------------------------"
-    #     # 5. Generator Dispatches - Distribution
-    #     @info "Gen Dispatches (ITD) - Distribution: $(result_itd["solution"]["it"]["pmd"]["gen"])"
-    #     @info "Gen Dispatches (DECOMPOSITION) - Distribution ckt 1: $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["gen"])"
-    #     @info "Gen Dispatches (DECOMPOSITION) - Distribution ckt 2: $(result_decomposition["it"]["pmd"]["ckt_2"]["solution"]["gen"])"
-    #     @info "------------------- Branch Power Flows - Distribution ----------------------------------------"
-    #     # 6. Branch Power Flows - Distribution
-    #     @info "Branch Power Flows (ITD) - Distribution: $(result_itd["solution"]["it"]["pmd"]["branch"])"
-    #     @info "Branch Power Flows (DECOMPOSITION) - Distribution ckt 1: $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["branch"])"
-    #     @info "Branch Power Flows (DECOMPOSITION) - Distribution ckt 2: $(result_decomposition["it"]["pmd"]["ckt_2"]["solution"]["branch"])"
-    #     @info "-----------------------------------------------------------"
-    # end
+       @info "result (DECOMPOSITION): $(result_decomposition["solution"]["it"]["pmitd"])"
+
+        # #  ---- Compare results ----
+        # @info "------------------------ Objective -----------------------------------"
+        # # 1. Objective
+        # @info "objective (ITD): $(result_itd["objective"])"
+        # @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
+        # @info "--------------------------- Boundary flows --------------------------------"
+        # # 2. Boundary flows
+        # @info "Boundary Flow (ITD) ckt 1: $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 5, 17)"]["pbound_fr"])"
+        # @info "Boundary Flow (ITD) ckt 2: $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100002, 6, 18)"]["pbound_fr"])"
+        # @info "Boundary Flows (DECOMPOSITION) ckt 1: Pload = $(result_decomposition["it"]["pm"]["solution"]["boundary"]["(100001, 5, 9)"]["pbound_load"]) and Paux = $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["boundary"]["(100001, 5, 9)"]["pbound_aux"])"
+        # @info "Boundary Flows (DECOMPOSITION) ckt 2: Pload = $(result_decomposition["it"]["pm"]["solution"]["boundary"]["(100002, 6, 9)"]["pbound_load"]) and Paux = $(result_decomposition["it"]["pmd"]["ckt_2"]["solution"]["boundary"]["(100002, 6, 9)"]["pbound_aux"])"
+        # @info "------------------ Generator Dispatches - Transmission --------------------"
+        # # 3. Generator Dispatches - Transmission
+        # @info "Gen Dispatches (ITD) - Transmission: $(result_itd["solution"]["it"]["pm"]["gen"])"
+        # @info "Gen Dispatches (DECOMPOSITION) - Transmission: $(result_decomposition["it"]["pm"]["solution"]["gen"])"
+        # @info "-----------------Branch Power Flows - Transmission -----------------------"
+        # # 4. Branch Power Flows - Transmission
+        # @info "Branch Power Flows (ITD) - Transmission: $(result_itd["solution"]["it"]["pm"]["branch"])"
+        # @info "Branch Power Flows (DECOMPOSITION) - Transmission: $(result_decomposition["it"]["pm"]["solution"]["branch"])"
+        # @info "------------------- Generator Dispatches - Distribution ----------------------------------------"
+        # # 5. Generator Dispatches - Distribution
+        # @info "Gen Dispatches (ITD) - Distribution: $(result_itd["solution"]["it"]["pmd"]["gen"])"
+        # @info "Gen Dispatches (DECOMPOSITION) - Distribution ckt 1: $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["gen"])"
+        # @info "Gen Dispatches (DECOMPOSITION) - Distribution ckt 2: $(result_decomposition["it"]["pmd"]["ckt_2"]["solution"]["gen"])"
+        # @info "------------------- Branch Power Flows - Distribution ----------------------------------------"
+        # # 6. Branch Power Flows - Distribution
+        # @info "Branch Power Flows (ITD) - Distribution: $(result_itd["solution"]["it"]["pmd"]["branch"])"
+        # @info "Branch Power Flows (DECOMPOSITION) - Distribution ckt 1: $(result_decomposition["it"]["pmd"]["ckt_1"]["solution"]["branch"])"
+        # @info "Branch Power Flows (DECOMPOSITION) - Distribution ckt 2: $(result_decomposition["it"]["pmd"]["ckt_2"]["solution"]["branch"])"
+        # @info "-----------------------------------------------------------"
+    end
 
     # @testset "solve_opfitd_decomposition: Multi-System case500-caseLV (5 ds in ms) with 3 DGs NFA-NFAU" begin
     #     pm_file = joinpath(dirname(trans_path), "pglib_opf_case500_goc.m")
