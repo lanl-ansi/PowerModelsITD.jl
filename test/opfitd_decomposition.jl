@@ -77,7 +77,7 @@
        pmitd_data_itd = deepcopy(pmitd_data)
 
     #    result_itd = solve_model(pmitd_data_decomposition, pmitd_type, ipopt, build_opfitd; make_si=false, solution_model="math")     # Solve ITD
-       result_decomposition = solve_model(pmitd_data_itd, pmitd_type, ipopt_decomposition, build_opfitd_decomposition; make_si=true, solution_model="eng")     # Solve Decomposition
+       result_decomposition = solve_model(pmitd_data_itd, pmitd_type, ipopt_decomposition, build_opfitd_decomposition; make_si=false, solution_model="eng")     # Solve Decomposition
 
        @info "result (DECOMPOSITION): $(result_decomposition["solution"]["it"]["pmitd"])"
 
