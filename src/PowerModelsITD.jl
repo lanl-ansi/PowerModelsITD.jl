@@ -68,6 +68,7 @@ module PowerModelsITD
     include("core/objective_dmld_simple.jl")
     include("core/objective_storage.jl")
     include("core/solution.jl")
+    include("core/solution_decomposition.jl")
 
     include("data_model/transformations.jl")
 
