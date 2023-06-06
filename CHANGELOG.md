@@ -88,7 +88,10 @@
 
 ## staged Decomposition
 
-- Added ability to obtain results from the solution using `_IM.build_result()` function. (WIP - Still need to organize the results correctly.)
+- Refactored unit tests in `opfitd_decomposition.jl` to comply with new dictionary structure.
+- Added new solution processing functions in charge of processing and transforming decomposition solutions from `pu` to `si` (vice versa) and `eng` and `math` models to `solution_decomposition.jl`.
+- Added functions that organize the result dictionary for decomposition problems. New dictionary structure: `result["solution"]["it"]["pm/pmd"]["solution/objective"]` and `result["solution"]["it"]["pmitd"]["boundary"]`.
+- Added ability to obtain results from the solution using `_IM.build_result()` function.
 - Added `DecompositionStruct` to store IM models as well as the Optimizer with the JuMP models references.
 - Added a function, `_compute_boundary_power_start_values_distribution!`, that computes the summation of all the loads in the distribution system to be used as warstart for `pbound_aux` and `qbound_aux`
 - Added `start` values (warmstart) to the shared/boundary variables `pbound_load`, `qbound_load`, `pbound_aux`, and `qbound_aux` used in the decompostion process. `ref` decomposition has been modified respectively.
