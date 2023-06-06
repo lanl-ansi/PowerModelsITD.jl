@@ -867,5 +867,8 @@ function solve_model(
         throw(error())
     end
 
+    # Inform about the time for solving the problem (*change to @debug)
+    @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
+
     return result
 end
