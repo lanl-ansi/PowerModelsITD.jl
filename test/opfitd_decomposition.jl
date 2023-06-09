@@ -2,10 +2,9 @@
 
 @testset "test/opfitd_decomposition.jl" begin
 
-
 # ----------------- Linear NFA Tests ------------------------
 
-  @testset "solve_model (decomposition): Balanced case5-case3 With 2 Dist. Generators NFA-NFAU" begin
+    @testset "solve_model (decomposition): Balanced case5-case3 With 2 Dist. Generators NFA-NFAU" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_2dgs.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_2dgs.json")
@@ -30,8 +29,7 @@
         @info "------------------------ Objective -----------------------------------"
         # 1. Objective
         @info "objective (ITD): $(result_itd["objective"])"
-        @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
-        # @info "objective (ITD): $(result_decomposition["solution"]["it"]["pm"]["objective"])"
+        @info "objective (DECOMPOSITION): $(result_decomposition["solution"]["it"]["pm"]["objective"])"
         @info "--------------------------- Boundary flows --------------------------------"
         # 2. Boundary flows
         @info "Boundary Flow (ITD): Pbound_fr = $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 5, voltage_source.3bus_bal2dgs.source)"]["pbound_fr"])"
@@ -85,7 +83,7 @@
     #     @info "------------------------ Objective -----------------------------------"
     #     # 1. Objective
     #     @info "objective (ITD): $(result_itd["objective"])"
-    #     @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
+    #     @info "objective (DECOMPOSITION): $(result_decomposition["solution"]["it"]["pm"]["objective"])"
     #     @info "--------------------------- Boundary flows --------------------------------"
     #     # 2. Boundary flows
     #     @info "Boundary Flow (ITD) 3bus_bal2dgs: Pbound_fr = $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 5, voltage_source.3bus_bal2dgs.source)"]["pbound_fr"])"
@@ -160,7 +158,7 @@
     #     @info "------------------------ Objective -----------------------------------"
     #     # 1. Objective
     #     @info "objective (ITD): $(result_itd["objective"])"
-    #     @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
+    #     @info "objective (DECOMPOSITION): $(result_decomposition["solution"]["it"]["pm"]["objective"])"
     #     @info "--------------------------- Boundary flows --------------------------------"
     #     # 2. Boundary flows
     #     @info "Boundary Flow (ITD) lv_138kv_10kw_3dgs_3: Pbound_fr = $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 11, voltage_source.lv_138kv_10kw_3dgs_3.source)"]["pbound_fr"])"
@@ -228,18 +226,20 @@
     #     # pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen1"]["cost_pg_parameters"] = gen_cost_1 # Units are in $/MW^2, $/MW, and $.
     #     # pmitd_data["it"]["pmd"]["generator"]["3bus_bal2dgs.gen2"]["cost_pg_parameters"] = gen_cost_2 # Units are in $/MW^2, $/MW, and $.
 
+    #     # apply_voltage_bounds!(pmitd_data; vm_lb=0.95, vm_ub=1.2)
+
     #     # Solve the problem using the two approaches
     #     pmitd_data_decomposition = deepcopy(pmitd_data)
     #     pmitd_data_itd = deepcopy(pmitd_data)
 
-    #     result_itd = solve_model(pmitd_data_decomposition, pmitd_type, ipopt, build_opfitd; make_si=true, solution_model="eng")     # Solve ITD
+    #     # result_itd = solve_model(pmitd_data_decomposition, pmitd_type, ipopt, build_opfitd; make_si=true, solution_model="eng")     # Solve ITD
     #     result_decomposition = solve_model(pmitd_data_itd, pmitd_type, ipopt_decomposition, build_opfitd_decomposition; make_si=true, solution_model="eng")     # Solve Decomposition
 
     #     #  ---- Compare results ----
     #     @info "------------------------ Objective -----------------------------------"
     #     # 1. Objective
     #     @info "objective (ITD): $(result_itd["objective"])"
-    #     @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
+    #     @info "objective (DECOMPOSITION): $(result_decomposition["solution"]["it"]["pm"]["objective"])"
     #     @info "--------------------------- Boundary flows --------------------------------"
     #     # 2. Boundary flows
     #     @info "Boundary Flow (ITD): Pbound_fr = $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 5, voltage_source.3bus_bal2dgs.source)"]["pbound_fr"])"
@@ -297,7 +297,7 @@
     #     @info "------------------------ Objective -----------------------------------"
     #     # 1. Objective
     #     @info "objective (ITD): $(result_itd["objective"])"
-    #     @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
+    #     @info "objective (DECOMPOSITION): $(result_decomposition["solution"]["it"]["pm"]["objective"])"
     #     @info "--------------------------- Boundary flows --------------------------------"
     #     # 2. Boundary flows
     #     @info "Boundary Flow (ITD) 3bus_bal2dgs: Pbound_fr = $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 5, voltage_source.3bus_bal2dgs.source)"]["pbound_fr"])"
@@ -380,7 +380,7 @@
     #     @info "------------------------ Objective -----------------------------------"
     #     # 1. Objective
     #     @info "objective (ITD): $(result_itd["objective"])"
-    #     @info "objective (DECOMPOSITION): READ FROM SCREEN OUTPUT (need to fix this!)"
+    #     @info "objective (DECOMPOSITION): $(result_decomposition["solution"]["it"]["pm"]["objective"])"
     #     @info "--------------------------- Boundary flows --------------------------------"
     #     # 2. Boundary flows
     #     @info "Boundary Flow (ITD) lv_138kv_10kw_3dgs_3: Pbound_fr = $(result_itd["solution"]["it"]["pmitd"]["boundary"]["(100001, 11, voltage_source.lv_138kv_10kw_3dgs_3.source)"]["pbound_fr"])"
