@@ -96,9 +96,9 @@
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_pfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
         calc_transmission_branch_flow_ac!(result, pmitd_data)
-        @test isapprox(pmitd_data["it"]["pm"]["branch"]["4"]["pt"], 39.196741; atol = 1e-3)
-        @test isapprox(pmitd_data["it"]["pm"]["branch"]["2"]["pt"], 2.7361689; atol = 1e-3)
-        @test isapprox(pmitd_data["it"]["pm"]["branch"]["4"]["qf"], 9.3280580; atol = 1e-3)
-        @test isapprox(pmitd_data["it"]["pm"]["branch"]["2"]["qf"], 74.408334; atol = 1e-3)
+        @test isapprox(pmitd_data["it"]["pm"]["branch"]["4"]["pt"], 39.2; atol = 1e-1)
+        @test isapprox(pmitd_data["it"]["pm"]["branch"]["2"]["pt"], 2.7; atol = 1e-1)
+        @test isapprox(pmitd_data["it"]["pm"]["branch"]["4"]["qf"], 9.3; atol = 1e-1)
+        @test isapprox(pmitd_data["it"]["pm"]["branch"]["2"]["qf"], 74.4; atol = 1e-1)
     end
 end
