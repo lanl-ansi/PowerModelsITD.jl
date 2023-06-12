@@ -3,6 +3,7 @@
 ## staged
 
 - Fixed implementation of polynomial nl costs above quadratic in `objective.jl`.
+- Bumped PMITD compatibility of `IM`, `PMD` and `PM` to the latest versions (i.e., V0.7.7, v0.14.9, and v0.19.9).
 
 ## v0.7.7
 
