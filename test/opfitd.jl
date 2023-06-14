@@ -18,7 +18,6 @@
         @test result["termination_status"] == LOCALLY_SOLVED
     end
 
-
     @testset "solve_model (with network inputs): Balanced case5-case3 ACR-ACR with polynomial nl terms" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
@@ -127,7 +126,6 @@
         @test result["termination_status"] == LOCALLY_SOLVED
         @test isapprox(result["objective"], 18005.97151; atol = 1e-4)
     end
-
 
     @testset "solve_model (with network inputs): Balanced case5-case13 ACR-ACR Without Dist. Generator ACR-ACR" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload_ieee13.m")
@@ -294,7 +292,6 @@
         @test isapprox(result["objective"], 18005.97151; atol = 1e-4)
     end
 
-
     @testset "solve_model (with network inputs): Balanced case5-case3 IVR-IVR with polynomial nl terms" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
@@ -320,7 +317,7 @@
         @test result["termination_status"] == LOCALLY_SOLVED
     end
 
-     @testset "solve_model (with network inputs): Balanced case5-case3 IVR-IVR with piecewise linear terms" begin
+    @testset "solve_model (with network inputs): Balanced case5-case3 IVR-IVR with piecewise linear terms" begin
         pm_file = joinpath(dirname(trans_path), "case5_pwlc_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal.json")

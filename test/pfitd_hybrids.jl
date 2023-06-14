@@ -22,7 +22,6 @@
         @test result["termination_status"] == LOCALLY_SOLVED
     end
 
-
     ## This unit test has been disabled due to the test failing in all CI Julia 1-latest runs due to NUMERICAL_ERROR (Windows)
     # @testset "solve_model (with network inputs): Unbalanced case5-case3 Without Dist. Generator ACR-FOTP" begin
     #     pm_file = joinpath(dirname(trans_path), "case5_withload.m")

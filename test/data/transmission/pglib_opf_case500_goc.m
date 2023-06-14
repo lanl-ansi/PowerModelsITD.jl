@@ -1733,15 +1733,15 @@ mpc.branch = [
 % INFO    : === Translation Options ===
 % INFO    : Phase Angle Bound:           30.0 (deg.)
 % INFO    : Setting Flat Start
-% INFO    : 
+% INFO    :
 % INFO    : === Generator Bounds Update Notes ===
-% INFO    : 
+% INFO    :
 % INFO    : === Base KV Replacement Notes ===
-% INFO    : 
+% INFO    :
 % INFO    : === Transformer Setting Replacement Notes ===
-% INFO    : 
+% INFO    :
 % INFO    : === Line Capacity Monotonicity Notes ===
-% INFO    : 
+% INFO    :
 % INFO    : === Voltage Setpoint Replacement Notes ===
 % INFO    : Bus 1	: V=0.98540926462, theta=-8.36784152229 -> V=1.0, theta=0.0
 % INFO    : Bus 2	: V=0.974020345007, theta=-11.1447179681 -> V=1.0, theta=0.0
@@ -2243,7 +2243,7 @@ mpc.branch = [
 % INFO    : Bus 498	: V=1.00866690287, theta=-2.66209509196 -> V=1.0, theta=0.0
 % INFO    : Bus 499	: V=1.00340669673, theta=-3.59395611678 -> V=1.0, theta=0.0
 % INFO    : Bus 500	: V=1.003371832, theta=-3.59691858681 -> V=1.0, theta=0.0
-% INFO    : 
+% INFO    :
 % INFO    : === Generator Setpoint Replacement Notes ===
 % INFO    : Gen at bus 272	: Pg=46.8993571031, Qg=18.0091132505 -> Pg=34.463, Qg=7.856
 % INFO    : Gen at bus 272	: Vg=1.0343582 -> Vg=1.0
@@ -2640,5 +2640,5 @@ mpc.branch = [
 % INFO    : Gen at bus 499	: Vg=1.039689 -> Vg=1.0
 % INFO    : Gen at bus 499	: Pg=1.73259069124, Qg=0.665908015041 -> Pg=1.2695, Qg=0.2905
 % INFO    : Gen at bus 499	: Vg=1.039689 -> Vg=1.0
-% INFO    : 
+% INFO    :
 % INFO    : === Writing Matpower Case File Notes ===

@@ -15,7 +15,6 @@
         @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["3bus_unbal.primary"]["vm"][1], 0.9352; atol=1e-3))
     end
 
-
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator IVR-IVR" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")

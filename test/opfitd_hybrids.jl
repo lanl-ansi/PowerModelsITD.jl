@@ -42,7 +42,6 @@
         @test result["termination_status"] == LOCALLY_SOLVED
     end
 
-
     @testset "solve_model (with network inputs): Unbalanced case5-case3 Without Dist. Generator BFA-LinDist3FlowPowerModel" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen.dss")
@@ -62,7 +61,6 @@
         result = solve_model(pmitd_data, pmitd_type, scs_solver, build_opfitd)
         @test result["termination_status"] == OPTIMAL
     end
-
 
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator SDPWRM-SOCConicUBF" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")

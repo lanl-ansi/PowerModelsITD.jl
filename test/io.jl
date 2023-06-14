@@ -22,7 +22,6 @@
         @test haskey(pmitd_data["it"], _PMD.pmd_it_name)
     end
 
-
     @testset "parse_link_file (invalid extension)" begin
         path = joinpath(dirname(dist_path), "case3_balanced.raw")
         @test_throws ErrorException parse_link_file(path)
