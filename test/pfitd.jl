@@ -68,7 +68,6 @@
     #     @test result["termination_status"] == LOCALLY_SOLVED
     # end
 
-
     @testset "solve_pfitd (with network inputs): Unbalanced case5-case3 With Dist. Generator SOCBF-SOCNLPUBF" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_notransformer.dss")

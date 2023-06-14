@@ -101,7 +101,6 @@
         @test all(isapprox.(result["solution"]["it"]["pmd"]["bus"]["3bus_bal_nogen.primary"]["va"][2], -121.0428; atol=1e-3))
     end
 
-
     @testset "solve_model opfitd (with network inputs): Multi-System Balanced case5-case3x2 With PV ACP-ACP" begin
         pm_file = joinpath(dirname(trans_path), "case5_with2loads.m")
         pmd_file1 = joinpath(dirname(dist_path), "case3_balanced_withPV.dss")

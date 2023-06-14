@@ -32,7 +32,6 @@
         @test isapprox(result["objective"], 58399.9993; atol = 1e-4)
     end
 
-
     @testset "solve_mn_opfitd: Multinetwork case5-case3 x2 Without Dist. Generator ACP-ACP" begin
         pm_file = joinpath(dirname(trans_path), "case5_with2loads.m")
         pmd_file1 = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen_mn.dss")

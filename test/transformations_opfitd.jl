@@ -20,7 +20,6 @@
         @test result["termination_status"] == LOCALLY_SOLVED
     end
 
-
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACR-ACR - Remove all bounds" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withoutgen.dss")
@@ -37,7 +36,6 @@
         result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd)
         @test result["termination_status"] == LOCALLY_SOLVED
     end
-
 
     @testset "solve_model (with network inputs): Balanced case5-case3 Without Dist. Generator ACR-ACR - Apply Kron reduction and phase projections" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")

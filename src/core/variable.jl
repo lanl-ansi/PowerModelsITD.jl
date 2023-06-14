@@ -53,7 +53,7 @@ function variable_boundary_power_real_to(pm::AbstractPowerModelITD; nw::Int=nw_i
     # creating the variables
     pbound_to = Dict{Any,Any}((l,j,i) => JuMP.@variable(pm.model,
             [c in connections[(l,j,i)]], base_name="$(nw)_pbound_to_$((l,j,i))",
-            start = _PMD.comp_start_value(ref(pm, nw, :boundary, l), "pbound_to_start", c, 0.0)
+            start = _PMD.comp_start_value(ref(pm, nw, :boundary, l), "pbound_to_start", c)
         ) for (l,j,i) in ref(pm, nw, :arcs_boundary_to)
     )
 
@@ -93,7 +93,7 @@ function variable_boundary_power_imaginary_to(pm::AbstractPowerModelITD; nw::Int
     # creating the variables
     qbound_to = Dict{Any,Any}((l,j,i) => JuMP.@variable(pm.model,
             [c in connections[(l,j,i)]], base_name="$(nw)_qbound_to_$((l,j,i))",
-            start = _PMD.comp_start_value(ref(pm, nw, :boundary, l), "qbound_to_start", c, 0.0)
+            start = _PMD.comp_start_value(ref(pm, nw, :boundary, l), "qbound_to_start", c)
         ) for (l,j,i) in ref(pm, nw, :arcs_boundary_to)
     )
 
