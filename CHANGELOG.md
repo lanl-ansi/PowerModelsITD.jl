@@ -2,12 +2,16 @@
 
 ## staged
 
+- none.
+
+## v0.7.8
+
 - Fixed implementation of polynomial nl costs above quadratic in `objective.jl`.
 - Bumped PMITD compatibility of `IM`, `PMD` and `PM` to the latest versions (i.e., V0.7.7, v0.14.9, and v0.19.9).
 - Added functions and capabilitites that automatically initialize the boundary power flow variables (i.e., `pbound_fr`, `pbound_to`, `qbound_fr`, and `qbound_to`).
-- `p/qbound_fr` variables are initialized based on the data parsed from the tranmission system data.
+- `p/qbound_fr` variables are initialized based on the data parsed from the transmission system data.
 - `p/qbound_to` variables are initialized by adding all the loads in the respective distribution systems and dividing them by 3 (assuming the initial state of the distribution system is balanced).
-- Refactored multiple functions in `ref.jl` to avoid unnecesary loops. These unnecesary loops were making the refs processes unccessary long.
+- Refactored multiple functions in `ref.jl` to avoid unnecessary loops. These unnecessary loops were making the refs processes unnecessary long.
 
 ## v0.7.7
 
