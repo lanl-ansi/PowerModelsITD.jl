@@ -88,6 +88,7 @@
 
 ## staged Decomposition
 
+- Refactored functions in `ref_decomposition.jl` by removing unnecessary loops.
 - Refactored unit tests in `opfitd_decomposition.jl` to comply with new dictionary structure.
 - Added new solution processing functions in charge of processing and transforming decomposition solutions from `pu` to `si` (vice versa) and `eng` and `math` models to `solution_decomposition.jl`.
 - Added functions that organize the result dictionary for decomposition problems. New dictionary structure: `result["solution"]["it"]["pm/pmd"]["solution/objective"]` and `result["solution"]["it"]["pmitd"]["boundary"]`.

@@ -36,29 +36,23 @@ end
 Removes/filters-out the loads at buses (i.e., boundary buses) where distribution systems are going to be integrated/connected.
 """
 function _ref_filter_transmission_integration_loads_decomposition!(ref::Dict{Symbol,<:Any})
-    # Loops over all T-D pmitd available
+    # Loops over all nws
     for (nw, nw_ref) in ref[:it][:pm][:nw]
-
         # boundary info.
         boundaries = nw_ref[:pmitd]
-
         # Filters only the ones that have the "transmission_boundary" key
         for (i, conn) in filter(x -> "transmission_boundary" in keys(x.second), boundaries)
-            # Filters out only the loads connected to the transmission-boundary bus
-            for (nw, nw_ref) in ref[:it][:pm][:nw]
-                # Get init (start) values before deleting the boundary load info.
-                pd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
-                qd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
-                conn["pbound_load_start"] = pd_start
-                conn["qbound_load_start"] = qd_start
+            # Get init (start) values before deleting the boundary load info.
+            pd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
+            qd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
+            conn["pbound_load_start"] = pd_start
+            conn["qbound_load_start"] = qd_start
 
-                @info "Pload init value: $(conn["pbound_load_start"])"
-                @info "Qload init value: $(conn["qbound_load_start"])"
+            @info "Pload init value: $(conn["pbound_load_start"])"
+            @info "Qload init value: $(conn["qbound_load_start"])"
 
-                nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
-                nw_ref[:bus_loads][conn["transmission_boundary"]] = []
-            end
-
+            nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
+            nw_ref[:bus_loads][conn["transmission_boundary"]] = []
         end
     end
 end
@@ -104,6 +98,7 @@ Unrestricts the slack generator.
 """
 function _ref_filter_distribution_slack_generators_decomposition!(ref::Dict{Symbol,<:Any})
 
+    # Loops over all nws
     for (nw, nw_ref) in ref[:it][:pmd][:nw]
         # Unrestrict buspairs connected to reference bus
         for (j, bus_pair) in nw_ref[:buspairs]
@@ -237,9 +232,6 @@ Creates the boundary `refs` that integrate/connect the distribution system bus w
 """
 function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,<:Any})
 
-    # Compute pbound_aux and qbound_aux start values and adds them to [:pmitd]
-    _compute_boundary_power_start_values_distribution!(ref)
-
     # Loops over all T-D pmitd available
     for (nw, nw_ref) in ref[:it][:pmd][:nw]
 
@@ -256,6 +248,9 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
         else
             nw_ref[:boundary][boundary_number] = Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_aux_start" => 0, "qbound_aux_start" => 0)
         end
+
+        # Compute pbound_aux and qbound_aux start values and adds them to [:pmitd]
+        _compute_boundary_power_start_values_distribution!(nw_ref)
 
         # modify default values with actual values coming from linking file information
         nw_ref[:boundary][boundary_number]["f_bus"] = boundaries[string(boundary_number)]["transmission_boundary"]
@@ -329,33 +324,24 @@ end
 
 Computes the starting values for `pbound_aux` and `qbound_aux` variables and adds them to `ref`.
 """
-function _compute_boundary_power_start_values_distribution!(ref::Dict{Symbol,<:Any})
+function _compute_boundary_power_start_values_distribution!(nw_ref::Dict{Symbol,<:Any})
 
-    # Loop thorugh all nws
-    for (nw, nw_ref) in ref[:it][:pmd][:nw]
+    # Vars to store summation of load
+    pload_total = 0
+    qload_total = 0
 
-        # Vars to store summation of load
-        pload_total = 0
-        qload_total = 0
+    # loop thorugh all loads to add them up.
+    for (_, load) in nw_ref[:load]
+        pload_total = pload_total + sum(load["pd"])
+        qload_total = qload_total + sum(load["qd"])
+    end
 
-        # loop thorugh all loads to add them up.
-        for (_, load) in nw_ref[:load]
-            pload_total = pload_total + sum(load["pd"])
-            qload_total = qload_total + sum(load["qd"])
-        end
-
-        boundaries = nw_ref[:pmitd]   # boundary info.
-        # Filters only the ones that have the "distribution_boundary" key
-        for (_, conn) in filter(x -> "distribution_boundary" in keys(x.second), boundaries)
-            # Get init (start) values before deleting the boundary load info.
-            pload_total = pload_total
-            qload_total = qload_total
-
-            @info "Paux init value: $(pload_total)"
-            @info "Qaux init value: $(qload_total)"
-            conn["pbound_aux_start"] = round(pload_total; digits=5)
-            conn["qbound_aux_start"] = round(qload_total; digits=5)
-        end
+    # Filters only the ones that have the "distribution_boundary" key. Add start value.
+    for (_, conn) in filter(x -> "distribution_boundary" in keys(x.second), nw_ref[:pmitd])
+        @info "Paux init value: $(pload_total)"
+        @info "Qaux init value: $(qload_total)"
+        conn["pbound_aux_start"] = round(pload_total; digits=5)
+        conn["qbound_aux_start"] = round(qload_total; digits=5)
     end
 
 end
