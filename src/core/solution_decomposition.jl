@@ -17,11 +17,12 @@ function run_decomposition(pmitd::DecompositionStruct)
     result["solution"]["it"][_PM.pm_it_name] = _IM.build_result(pmitd.pm, solve_time)
     result["solution"]["it"][pmitd_it_name]["boundary"] = result["solution"]["it"][_PM.pm_it_name]["solution"]["boundary"]
 
-    for pmd in pmitd.pmd
+    for (pmd_num, pmd) in enumerate(pmitd.pmd)
         for (_, boundary_data) in pmd.data[pmitd_it_name]
 
-            ckt_name = boundary_data["ckt_name"]
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _IM.build_result(pmd, solve_time)
+	        pmd.model = pmitd.optimizer.subproblems[pmd_num]
+	        ckt_name = boundary_data["ckt_name"]
+            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = build_result_subproblems(pmd, solve_time)
 
             boundary_key = collect(keys(result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"]["boundary"]))
             boundary_vars = result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"]["boundary"][boundary_key[1]]
@@ -40,6 +41,227 @@ function run_decomposition(pmitd::DecompositionStruct)
     return result
 end
 
+# ----------------- Custom-made build_result and build_solution_values function ------------------------
+
+""
+function build_result_subproblems(aim::_IM.AbstractInfrastructureModel, solve_time; solution_processors=[])
+    # try-catch is needed until solvers reliably support ResultCount()
+    result_count = 1
+    try
+        result_count = JuMP.result_count(aim.model)
+    catch
+        @warn("the given optimizer does not provide the ResultCount() attribute, assuming the solver returned a solution which may be incorrect.");
+    end
+
+    solution = Dict{String,Any}()
+
+    if result_count > 0
+        solution = build_solution_subproblem(aim, post_processors=solution_processors)
+    else
+        @warn("model has no results, solution cannot be built")
+    end
+
+    result = Dict{String,Any}(
+        "optimizer" => JuMP.solver_name(aim.model),
+        "termination_status" => JuMP.termination_status(aim.model),
+        "primal_status" => JuMP.primal_status(aim.model),
+        "dual_status" => JuMP.dual_status(aim.model),
+        "objective" => _guard_objective_value(aim.model),
+        "objective_lb" => _guard_objective_bound(aim.model),
+        "solve_time" => solve_time,
+        "solution" => solution,
+    )
+
+    return result
+end
+
+
+""
+function _guard_objective_value(model)
+    obj_val = NaN
+
+    try
+        obj_val = JuMP.objective_value(model)
+    catch
+    end
+
+    return obj_val
+end
+
+
+""
+function _guard_objective_bound(model)
+    obj_lb = -Inf
+
+    try
+        obj_lb = JuMP.objective_bound(model)
+    catch
+    end
+
+    return obj_lb
+end
+
+
+
+""
+function build_solution_subproblem(aim::_IM.AbstractInfrastructureModel; post_processors=[])
+
+    sol = Dict{String, Any}("it" => Dict{String, Any}())
+    sol["multiinfrastructure"] = true
+
+    for it in  _IM.it_ids(aim)
+        sol["it"][string(it)] = build_solution_values_subproblem(aim.model, aim.sol[:it][it])
+        sol["it"][string(it)]["multinetwork"] = true
+    end
+
+    _IM.solution_preprocessor(aim, sol)
+
+    for post_processor in post_processors
+        post_processor(aim, sol)
+    end
+
+    for it in _IM.it_ids(aim)
+        it_str = string(it)
+        data_it = _IM.ismultiinfrastructure(aim) ? aim.data["it"][it_str] : aim.data
+
+        if _IM.ismultinetwork(data_it)
+            sol["it"][it_str]["multinetwork"] = true
+        else
+            for (k, v) in sol["it"][it_str]["nw"]["$(nw_id_default)"]
+                sol["it"][it_str][k] = v
+            end
+
+            sol["it"][it_str]["multinetwork"] = false
+            delete!(sol["it"][it_str], "nw")
+        end
+
+        if !_IM.ismultiinfrastructure(aim)
+            for (k, v) in sol["it"][it_str]
+                sol[k] = v
+            end
+
+            delete!(sol["it"], it_str)
+        end
+    end
+
+    if !_IM.ismultiinfrastructure(aim)
+        sol["multiinfrastructure"] = false
+        delete!(sol, "it")
+    end
+
+    return sol
+end
+
+
+""
+function build_solution_values_subproblem(model::JuMP.Model, var::Dict)
+    return build_solution_values(model, var)
+end
+
+
+""
+function build_solution_values(model::JuMP.Model, var::Dict)
+    sol = Dict{String, Any}()
+    for (key, val) in var
+        sol[string(key)] = build_solution_values(model, val)
+    end
+    return sol
+end
+
+""
+function build_solution_values(model::JuMP.Model, var::JuMP.Containers.DenseAxisArray)
+    sol_tmp = []
+    for val in eachindex(var)
+        push!(sol_tmp, build_solution_values(model, var[val]))
+    end
+    return sol_tmp
+end
+
+
+""
+function build_solution_values(model::JuMP.Model, var::Array{<:Any,1})
+    return [build_solution_values(val) for val in var]
+end
+
+""
+function build_solution_values(model::JuMP.Model, var::Array{<:Any,2})
+    return [build_solution_values(var[i, j]) for i in 1:size(var, 1), j in 1:size(var, 2)]
+end
+
+""
+function build_solution_values(model::JuMP.Model, var::Number)
+    return var
+end
+
+""
+function build_solution_values(model::JuMP.Model, var::JuMP.VariableRef)
+    var_fr_model = JuMP.variable_by_name(model, string(var))
+    return JuMP.value(var_fr_model)
+end
+
+""
+function build_solution_values(model::JuMP.Model, var::JuMP.GenericAffExpr)
+    var_terms = var.terms           # Get variable terms OrderedDict: (var => coeff)
+    var_keys = keys(var.terms)      # Get the JuMP.VariableRef as keys
+    var_vector = collect(var_keys)  # Collect the JuMP.VariableRef keys in a vector
+
+    cmp_terms = []              # vector used to store the final computed terms (i.e., coeff*value)
+    for v in var_vector
+        v_name = string(v)      # convert JuMP.VariableRef to string (for searching the value in the model)
+        v_coeff = var_terms[v]  # get the coefficient from the OrderedDict of var_terms
+        v_model = JuMP.variable_by_name(model, v_name)  # get the new value from the JuMP model.
+        push!(cmp_terms, v_coeff*JuMP.value(v_model))   # multiply the value obtained with the corresponding coefficient - add to vector of computed terms
+    end
+
+    return sum(cmp_terms) # sum all the computed terms (coeff*value) - return the value
+end
+
+""
+function build_solution_values(model::JuMP.Model, var::JuMP.GenericQuadExpr)
+    var_terms = var.terms           # Get variable terms OrderedDict: (var => coeff)
+    var_keys = keys(var.terms)      # Get the JuMP.VariableRef as keys
+    var_vector = collect(var_keys)  # Collect the JuMP.VariableRef keys in a vector
+
+    cmp_terms = []              # vector used to store the final computed terms (i.e., coeff*value)
+    for v in var_vector
+        v_name = string(v)      # convert JuMP.VariableRef to string (for searching the value in the model)
+        v_coeff = var_terms[v]  # get the coefficient from the OrderedDict of var_terms
+        v_model = JuMP.variable_by_name(model, v_name)  # get the new value from the JuMP model.
+        push!(cmp_terms, v_coeff*JuMP.value(v_model))   # multiply the value obtained with the corresponding coefficient - add to vector of computed terms
+    end
+
+    return sum(cmp_terms) # sum all the computed terms (coeff*value) - return the value
+end
+
+""
+function build_solution_values(model::JuMP.Model, var::JuMP.NonlinearExpression)
+    var_terms = var.terms           # Get variable terms OrderedDict: (var => coeff)
+    var_keys = keys(var.terms)      # Get the JuMP.VariableRef as keys
+    var_vector = collect(var_keys)  # Collect the JuMP.VariableRef keys in a vector
+
+    cmp_terms = []              # vector used to store the final computed terms (i.e., coeff*value)
+    for v in var_vector
+        v_name = string(v)      # convert JuMP.VariableRef to string (for searching the value in the model)
+        v_coeff = var_terms[v]  # get the coefficient from the OrderedDict of var_terms
+        v_model = JuMP.variable_by_name(model, v_name)  # get the new value from the JuMP model.
+        push!(cmp_terms, v_coeff*JuMP.value(v_model))   # multiply the value obtained with the corresponding coefficient - add to vector of computed terms
+    end
+
+    return sum(cmp_terms) # sum all the computed terms (coeff*value) - return the value
+end
+
+""
+function build_solution_values(model::JuMP.Model, var::JuMP.ConstraintRef)
+    return JuMP.dual(var)
+end
+
+""
+function build_solution_values(var::Any)
+    @warn("build_solution_values found unknown type $(typeof(var))")
+    return var
+end
+
+# ---------------------------------------------------------------------------------
 
 """
     function _transform_decomposition_solution_to_pu!(

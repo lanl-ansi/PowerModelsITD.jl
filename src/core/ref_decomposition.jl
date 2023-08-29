@@ -48,9 +48,6 @@ function _ref_filter_transmission_integration_loads_decomposition!(ref::Dict{Sym
             conn["pbound_load_start"] = pd_start
             conn["qbound_load_start"] = qd_start
 
-            @info "Pload init value: $(conn["pbound_load_start"])"
-            @info "Qload init value: $(conn["qbound_load_start"])"
-
             nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
             nw_ref[:bus_loads][conn["transmission_boundary"]] = []
         end
@@ -338,8 +335,6 @@ function _compute_boundary_power_start_values_distribution!(nw_ref::Dict{Symbol,
 
     # Filters only the ones that have the "distribution_boundary" key. Add start value.
     for (_, conn) in filter(x -> "distribution_boundary" in keys(x.second), nw_ref[:pmitd])
-        @info "Paux init value: $(pload_total)"
-        @info "Qaux init value: $(qload_total)"
         conn["pbound_aux_start"] = round(pload_total; digits=5)
         conn["qbound_aux_start"] = round(qload_total; digits=5)
     end
