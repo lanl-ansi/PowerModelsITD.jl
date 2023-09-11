@@ -88,6 +88,7 @@
 
 ## staged Decomposition
 
+- Added boundary constraints for the following decomposition-based formulations: `ACR-ACRU`, `ACR-FBSUBF`, `ACR-FOTRU`, `ACP-FOTPU`.
 - Refactored functions in `ref_decomposition.jl` by removing unnecessary loops.
 - Refactored unit tests in `opfitd_decomposition.jl` to comply with new dictionary structure.
 - Added new solution processing functions in charge of processing and transforming decomposition solutions from `pu` to `si` (vice versa) and `eng` and `math` models to `solution_decomposition.jl`.

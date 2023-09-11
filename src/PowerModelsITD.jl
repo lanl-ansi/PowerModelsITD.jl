@@ -83,10 +83,14 @@ module PowerModelsITD
     include("form/lindist3flow.jl")
 
     include("form_decomposition/boundary.jl")
+    include("form_decomposition/acr.jl")
     include("form_decomposition/acp.jl")
     include("form_decomposition/linear.jl")
-    include("form_decomposition/lindist3flow.jl")
     include("form_decomposition/wmodels.jl")
+    include("form_decomposition/fbs.jl")
+    include("form_decomposition/fotr.jl")
+    include("form_decomposition/fotp.jl")
+    include("form_decomposition/lindist3flow.jl")
 
     include("prob/pfitd.jl")
     include("prob/opfitd.jl")
