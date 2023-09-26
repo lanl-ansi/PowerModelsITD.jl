@@ -235,19 +235,7 @@ end
 
 ""
 function build_solution_values(model::JuMP.Model, var::JuMP.NonlinearExpression)
-    var_terms = var.terms           # Get variable terms OrderedDict: (var => coeff)
-    var_keys = keys(var.terms)      # Get the JuMP.VariableRef as keys
-    var_vector = collect(var_keys)  # Collect the JuMP.VariableRef keys in a vector
-
-    cmp_terms = []              # vector used to store the final computed terms (i.e., coeff*value)
-    for v in var_vector
-        v_name = string(v)      # convert JuMP.VariableRef to string (for searching the value in the model)
-        v_coeff = var_terms[v]  # get the coefficient from the OrderedDict of var_terms
-        v_model = JuMP.variable_by_name(model, v_name)  # get the new value from the JuMP model.
-        push!(cmp_terms, v_coeff*JuMP.value(v_model))   # multiply the value obtained with the corresponding coefficient - add to vector of computed terms
-    end
-
-    return sum(cmp_terms) # sum all the computed terms (coeff*value) - return the value
+    return JuMP.value(var)
 end
 
 ""
