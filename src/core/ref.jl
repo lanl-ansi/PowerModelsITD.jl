@@ -127,8 +127,11 @@ function _ref_connect_transmission_distribution!(ref::Dict{Symbol,<:Any})
             nw_ref_it[:boundary][boundary_number]["t_bus"] = nw_ref_it[Symbol(boundary_number)]["distribution_boundary"]
             nw_ref_it[:boundary][boundary_number]["index"] = boundary_number
             nw_ref_it[:boundary][boundary_number]["name"] = "_itd_boundary_$boundary_number"
-            nw_ref_it[:boundary][boundary_number]["pbound_fr_start"] = nw_ref_it[Symbol(boundary_number)]["pbound_fr_start"]
-            nw_ref_it[:boundary][boundary_number]["qbound_fr_start"] = nw_ref_it[Symbol(boundary_number)]["qbound_fr_start"]
+            # round to 4 decimal digits the P & Q variable init from transmission
+            pbound_fr_start_rounded = round(nw_ref_it[Symbol(boundary_number)]["pbound_fr_start"], digits=4)
+            qbound_fr_start_rounded = round(nw_ref_it[Symbol(boundary_number)]["qbound_fr_start"], digits=4)
+            nw_ref_it[:boundary][boundary_number]["pbound_fr_start"] = pbound_fr_start_rounded
+            nw_ref_it[:boundary][boundary_number]["qbound_fr_start"] = qbound_fr_start_rounded
 
             # Compute pbound_to and qbound_to start values for specific nw
             pload_totals = _compute_boundary_active_power_start_values_distribution(nw_ref)
@@ -136,9 +139,11 @@ function _ref_connect_transmission_distribution!(ref::Dict{Symbol,<:Any})
             # Get the ckt_name related to the boundary number
             source_id = nw_ref[:bus][nw_ref_it[:boundary][boundary_number]["t_bus"]]["source_id"]
             ckt_name = split(source_id, ".")[2]
-            # Assumes balance power initiliazation
-            nw_ref_it[:boundary][boundary_number]["pbound_to_start"] = pload_totals[ckt_name][1]/3
-            nw_ref_it[:boundary][boundary_number]["qbound_to_start"] = qload_totals[ckt_name][1]/3
+            # Assumes balance power initiliazation (round to 4 decimal digits)
+            pbound_to_start_rounded = round(pload_totals[ckt_name][1]/3, digits=4)
+            qbound_to_start_rounded = round(qload_totals[ckt_name][1]/3, digits=4)
+            nw_ref_it[:boundary][boundary_number]["pbound_to_start"] = -pbound_to_start_rounded
+            nw_ref_it[:boundary][boundary_number]["qbound_to_start"] = -qbound_to_start_rounded
 
             # Add bus reference from transmission (pm)
             # The dictionary represents Dict(original bus_index => boundary # that belongs to)

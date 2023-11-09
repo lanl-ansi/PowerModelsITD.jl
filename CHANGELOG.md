@@ -2,7 +2,8 @@
 
 ## staged
 
-- none.
+- Refactor initialization of boundary variables to round them up to 4 digits (decimal).
+- Fixed sign in initialization values of distribution system(s) boundary variables. The inits should have been negative.
 
 ## v0.7.8
 
