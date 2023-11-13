@@ -89,6 +89,15 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
         end
     end
 
+    # PM Storage
+    pm_strg_cost = Dict()
+
+    for (n, nw_ref) in _PM.nws(pm)
+        for (i, strg) in nw_ref[:storage]
+            dsch = _PM.var(pm, n, :sd, i)                   # get discharge power value
+            pm_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost (no cost conversion is needed, cost must be in $/pu)
+        end
+    end
 
     # PMD
     pmd_gen_cost = Dict()
@@ -115,8 +124,10 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
 
     for (n, nw_ref) in _PMD.nws(pmd)
         for (i, strg) in nw_ref[:storage]
-            dsch = _PMD.var(pmd, n, :sd, i)                 # get discharge power value
-            pmd_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost
+            dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
+            strg_cost_dollar_per_pu = strg["cost"][1]*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+            strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
+            pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
         end
     end
 
@@ -125,6 +136,9 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
     return JuMP.@objective(pmitd.model, Min,
         sum(
             sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
+        for (n, nw_ref) in _PM.nws(pm))
+        + sum(
+            sum( pm_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
         for (n, nw_ref) in _PM.nws(pm))
         + sum(
             sum( pmd_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
@@ -169,6 +183,16 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
         end
     end
 
+    # PM Storage
+    pm_strg_cost = Dict()
+
+    for (n, nw_ref) in _PM.nws(pm)
+        for (i, strg) in nw_ref[:storage]
+            dsch = _PM.var(pm, n, :sd, i)                   # get discharge power value
+            pm_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost (no cost conversion is needed, cost must be in $/pu)
+        end
+    end
+
     # PMD
     pmd_gen_cost = Dict()
 
@@ -190,21 +214,26 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
         end
     end
 
-      # PMD Storage
-      pmd_strg_cost = Dict()
+    # PMD Storage
+    pmd_strg_cost = Dict()
 
-      for (n, nw_ref) in _PMD.nws(pmd)
-          for (i, strg) in nw_ref[:storage]
-              dsch = _PMD.var(pmd, n, :sd, i)                 # get discharge power value
-              pmd_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost
-          end
-      end
+    for (n, nw_ref) in _PMD.nws(pmd)
+        for (i, strg) in nw_ref[:storage]
+            dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
+            strg_cost_dollar_per_pu = strg["cost"][1]*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+            strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
+            pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
+        end
+    end
 
 
     # ITD (Combined objective)
     return JuMP.@NLobjective(pmitd.model, Min,
         sum(
             sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
+        for (n, nw_ref) in _PM.nws(pm))
+        + sum(
+            sum( pm_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
         for (n, nw_ref) in _PM.nws(pm))
         + sum(
             sum( pmd_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
@@ -252,6 +281,16 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractIVRPo
         end
     end
 
+    # PM Storage
+    pm_strg_cost = Dict()
+
+    for (n, nw_ref) in _PM.nws(pm)
+        for (i, strg) in nw_ref[:storage]
+            dsch = _PM.var(pm, n, :sd, i)                   # get discharge power value
+            pm_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost (no cost conversion is needed, cost must be in $/pu)
+        end
+    end
+
 
     # PMD
     pmd_gen_cost = Dict()
@@ -276,21 +315,26 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractIVRPo
         end
     end
 
-      # PMD Storage
-      pmd_strg_cost = Dict()
+    # PMD Storage
+    pmd_strg_cost = Dict()
 
-      for (n, nw_ref) in _PMD.nws(pmd)
-          for (i, strg) in nw_ref[:storage]
-              dsch = _PMD.var(pmd, n, :sd, i)                 # get discharge power value
-              pmd_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost
-          end
-      end
+    for (n, nw_ref) in _PMD.nws(pmd)
+        for (i, strg) in nw_ref[:storage]
+            dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
+            strg_cost_dollar_per_pu = strg["cost"][1]*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+            strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
+            pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
+        end
+    end
 
 
     # ITD (Combined objective)
     return JuMP.@NLobjective(pmitd.model, Min,
         sum(
             sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
+        for (n, nw_ref) in _PM.nws(pm))
+        + sum(
+            sum( pm_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
         for (n, nw_ref) in _PM.nws(pm))
         + sum(
             sum( pmd_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
@@ -336,6 +380,16 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractPower
         end
     end
 
+    # PM Storage
+    pm_strg_cost = Dict()
+
+    for (n, nw_ref) in _PM.nws(pm)
+        for (i, strg) in nw_ref[:storage]
+            dsch = _PM.var(pm, n, :sd, i)                   # get discharge power value
+            pm_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost (no cost conversion is needed, cost must be in $/pu)
+        end
+    end
+
 
     # PMD
     pmd_gen_cost = Dict()
@@ -364,20 +418,25 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractPower
         end
     end
 
-      # PMD Storage
-      pmd_strg_cost = Dict()
+    # PMD Storage
+    pmd_strg_cost = Dict()
 
-      for (n, nw_ref) in _PMD.nws(pmd)
-          for (i, strg) in nw_ref[:storage]
-              dsch = _PMD.var(pmd, n, :sd, i)                 # get discharge power value
-              pmd_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost
-          end
-      end
+    for (n, nw_ref) in _PMD.nws(pmd)
+        for (i, strg) in nw_ref[:storage]
+            dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
+            strg_cost_dollar_per_pu = strg["cost"][1]*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+            strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
+            pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
+        end
+    end
 
     # ITD (Combined objective)
     return JuMP.@NLobjective(pmitd.model, Min,
         sum(
             sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
+        for (n, nw_ref) in _PM.nws(pm))
+        + sum(
+            sum( pm_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
         for (n, nw_ref) in _PM.nws(pm))
         + sum(
             sum( pmd_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )

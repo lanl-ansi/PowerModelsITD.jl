@@ -93,6 +93,14 @@ function parse_power_transmission_file(pm_file::String; skip_correct::Bool=true,
     # Parse file
     data = _PM.parse_file(pm_file; validate = !skip_correct)
 
+    # Add default cost to storage devices in transmission.
+    # (Users can assign their own cost values by modifying these costs from the dictionary).
+    if haskey(data, "storage")
+        for (strg_name, strg_data) in data["storage"]
+            strg_data["cost"] = _compute_default_strg_cost_transmission(strg_data, data["baseMVA"])
+        end
+    end
+
     # replicate if multinetwork
     if multinetwork
         data = _PM.replicate(data, number_multinetworks)
@@ -137,6 +145,24 @@ function parse_power_distribution_file(pmd_file::String, base_data::Dict{String,
         _PMD.make_multiconductor!(data, real(3))
     else # Otherwise, use the PowerModelsDistribution parser.
         data = _PMD.parse_file(pmd_file; multinetwork=multinetwork)
+    end
+
+    # Add default cost to storage devices in distribution.
+    # (Users can assign their own cost values by modifying these costs from the dictionary).
+    if multinetwork
+        for (nw_id, nw_data) in data["nw"]
+            if haskey(nw_data, "storage")
+                for (strg_name, strg_data) in nw_data["storage"]
+                    strg_data["cost"] = _compute_default_strg_cost_distribution(strg_data)
+                end
+            end
+        end
+    else
+        if haskey(data, "storage")
+            for (strg_name, strg_data) in data["storage"]
+                strg_data["cost"] = _compute_default_strg_cost_distribution(strg_data)
+            end
+        end
     end
 
     if (unique == false)

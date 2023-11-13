@@ -62,6 +62,7 @@ function build_opfitd_oltc(pmitd::AbstractPowerModelITD)
     _PM.variable_gen_power(pm_model)
     _PM.variable_branch_power(pm_model)
     _PM.variable_dcline_power(pm_model)
+    _PM.variable_storage_power(pm_model)
 
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model)
@@ -82,6 +83,13 @@ function build_opfitd_oltc(pmitd::AbstractPowerModelITD)
     # reference buses (this only needs to happen for pm(transmission))
     for i in _PM.ids(pm_model, :ref_buses)
         _PM.constraint_theta_ref(pm_model, i)
+    end
+
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
     end
 
 
@@ -200,6 +208,7 @@ function build_opfitd_oltc(pmitd::AbstractBFPowerModelITD)
     _PM.variable_branch_power(pm_model)
     _PM.variable_branch_current(pm_model)
     _PM.variable_dcline_power(pm_model)
+    _PM.variable_storage_power(pm_model)
 
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model)
@@ -223,6 +232,12 @@ function build_opfitd_oltc(pmitd::AbstractBFPowerModelITD)
         _PM.constraint_theta_ref(pm_model, i)
     end
 
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
+    end
 
     # PM branches
     for i in _PM.ids(pm_model, :branch)
@@ -341,6 +356,7 @@ function build_opfitd_oltc(pmitd::AbstractLNLBFPowerModelITD)
     _PM.variable_gen_power(pm_model)
     _PM.variable_branch_power(pm_model)
     _PM.variable_dcline_power(pm_model)
+    _PM.variable_storage_power(pm_model)
 
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model)
@@ -364,6 +380,12 @@ function build_opfitd_oltc(pmitd::AbstractLNLBFPowerModelITD)
         _PM.constraint_theta_ref(pm_model, i)
     end
 
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
+    end
 
     # PM branches
     for i in _PM.ids(pm_model, :branch)
@@ -482,7 +504,7 @@ function build_mn_opfitd_oltc(pmitd::AbstractPowerModelITD)
         _PM.variable_gen_power(pm_model, nw=n)
         _PM.variable_branch_power(pm_model, nw=n)
         _PM.variable_dcline_power(pm_model, nw=n)
-        _PM.variable_storage_power_mi(pm_model, nw=n)
+        _PM.variable_storage_power(pm_model, nw=n)
 
         # PMD(Distribution) Variables
         _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
@@ -506,7 +528,7 @@ function build_mn_opfitd_oltc(pmitd::AbstractPowerModelITD)
         end
 
         for i in _PM.ids(pm_model, :storage, nw=n)
-            _PM.constraint_storage_complementarity_mi(pm_model, i, nw=n)
+            _PM.constraint_storage_complementarity_nl(pm_model, i, nw=n)
             _PM.constraint_storage_losses(pm_model, i, nw=n)
             _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
         end
@@ -659,7 +681,7 @@ function build_mn_opfitd_oltc(pmitd::AbstractBFPowerModelITD)
        _PM.variable_branch_power(pm_model, nw=n)
        _PM.variable_branch_current(pm_model, nw=n)
        _PM.variable_dcline_power(pm_model, nw=n)
-       _PM.variable_storage_power_mi(pm_model, nw=n)
+       _PM.variable_storage_power(pm_model, nw=n)
 
        # PMD(Distribution) Variables
        _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
@@ -684,7 +706,7 @@ function build_mn_opfitd_oltc(pmitd::AbstractBFPowerModelITD)
        end
 
        for i in _PM.ids(pm_model, :storage, nw=n)
-           _PM.constraint_storage_complementarity_mi(pm_model, i, nw=n)
+           _PM.constraint_storage_complementarity_nl(pm_model, i, nw=n)
            _PM.constraint_storage_losses(pm_model, i, nw=n)
            _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
        end
@@ -836,7 +858,7 @@ function build_mn_opfitd_oltc(pmitd::AbstractLNLBFPowerModelITD)
         _PM.variable_gen_power(pm_model, nw=n)
         _PM.variable_branch_power(pm_model, nw=n)
         _PM.variable_dcline_power(pm_model, nw=n)
-        _PM.variable_storage_power_mi(pm_model, nw=n)
+        _PM.variable_storage_power(pm_model, nw=n)
 
         # PMD(Distribution) Variables
         _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
@@ -861,7 +883,7 @@ function build_mn_opfitd_oltc(pmitd::AbstractLNLBFPowerModelITD)
         end
 
         for i in _PM.ids(pm_model, :storage, nw=n)
-            _PM.constraint_storage_complementarity_mi(pm_model, i, nw=n)
+            _PM.constraint_storage_complementarity_nl(pm_model, i, nw=n)
             _PM.constraint_storage_losses(pm_model, i, nw=n)
             _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
         end

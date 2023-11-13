@@ -179,3 +179,65 @@ function calc_transmission_branch_flow_ac!(result::Dict{String,<:Any}, pmitd_dat
     # updates the network data with transmission power flows calculated
     _IM.update_data!(pmitd_data["it"]["pm"], flows)
 end
+
+
+"""
+    function _compute_default_strg_cost_transmission(
+        strg_data::Dict{String,<:Any},
+        baseMVA::Float64
+    )
+
+Computes a default cost for the energy storage (transmission).
+Returns the default storage cost to be added to the data dictionary.
+"""
+function _compute_default_strg_cost_transmission(strg_data::Dict{String,<:Any}, baseMVA::Float64)
+
+    # Obtained from 2019 U.S. utility-scale storage NREL data ($/MWh of energy rating).
+    cost_utility_scale_strg_dollar_per_mwh = 345000
+
+    # Calculate cost in $ for entire strg system
+    cost_strg_system_dollars = cost_utility_scale_strg_dollar_per_mwh*strg_data["energy_rating"]*baseMVA
+
+    # Calculate cost to be used in optimization (in $/MWh)
+    cycles = 2000   # Total number of cycles under warranty (default value)
+    DoD = 1.0       # Default Depth of Discharge (100%)
+    cost_strg_dollars_per_MWh = cost_strg_system_dollars/(cycles*(strg_data["energy_rating"]*baseMVA)*DoD*(strg_data["charge_efficiency"]*strg_data["discharge_efficiency"]))
+
+    # Convert cost from $/MWh -> $/pu: to convert from $/MWh to $/pu just multiply by MVA Base (e.g., 2.5 $/MWh x 100 MWh/1pu = 250 $/pu)
+    cost_strg_dollars_per_pu = cost_strg_dollars_per_MWh*baseMVA
+
+    # Round to 4 digits the strg cost
+    cost_strg_dollars_per_pu = round(cost_strg_dollars_per_pu, digits=4)
+
+    return cost_strg_dollars_per_pu
+
+end
+
+
+"""
+    function _compute_default_strg_cost_distribution(
+        strg_data::Dict{String,<:Any}
+    )
+
+Computes a default cost for the energy storage (distribution).
+Returns the default storage cost to be added to the data dictionary.
+"""
+function _compute_default_strg_cost_distribution(strg_data::Dict{String,<:Any})
+
+    # Obtained from 2019 U.S. residential-scale storage NREL data ($/kWh of energy rating).
+    cost_utility_scale_strg_dollar_per_kwh = 1100
+
+    # Calculate cost in $ for entire strg system
+    cost_strg_system_dollars = cost_utility_scale_strg_dollar_per_kwh*strg_data["energy_ub"]
+
+    # Calculate cost to be used in optimization (in $/kWh)
+    cycles = 2000   # Total number of cycles under warranty (default value)
+    DoD = 1.0       # Default Depth of Discharge (100%)
+    cost_strg_dollars_per_kWh = cost_strg_system_dollars/(cycles*strg_data["energy_ub"]*DoD*((strg_data["charge_efficiency"]/100)*(strg_data["discharge_efficiency"]/100)))
+
+    # Round to 4 digits the strg cost
+    cost_strg_dollars_per_kWh = round(cost_strg_dollars_per_kWh, digits=4)
+
+    return cost_strg_dollars_per_kWh
+
+end

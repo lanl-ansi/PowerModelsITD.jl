@@ -1,13 +1,19 @@
 # PowerModelsITD.jl Change Log
 
-## staged LAAExperimental
+## staged Energy-Storage
 
 - Added `eng2math_passthrough` parameter to all `instantiate_model(..)` and `solve_X(...)` functions.
-- Added unit tests to `opftid_pass.jl` that test the correct operation of the `eng2math_passthrough` both in single network and multinetwork applications.
-- Added test cases files for the `opftid_pass.jl` unit tests.
+- Added unit tests to `opftid_storage.jl` that test the correct operation of the `eng2math_passthrough` both in single network and multinetwork applications.
+- Added test cases files for the `opftid_storage.jl` unit tests.
 - Added new problem specifications `build_opfitd_storage` and `build_mn_opfitd_storage` to `prob/opfitd_storage.jl` that perform opf optimization taking into account storage costs.
 - Added new objective functions to `objective_storage.jl` that consider energy storage costs in the objective function for the opf optimization.
-- Added unit tests to `opftid_pass.jl` that test the new costs functions with energy storage costs added.
+- Added unit tests to `opftid_storage.jl` that test the new costs functions with energy storage costs added.
+- Added functions `_compute_default_strg_cost_transmission` and `_compute_default_strg_cost_distribution` to `data.jl` that compute default costs for storage devices based on dafault parameters. Users are encouraged to use their own costs.
+- Added code to `common.jl` functions `parse_power_distribution_file` and `parse_power_transmission_file` that adds default costs to distribution and transmission system(s) storage devices when parsing their individual files.
+- Modified `solve_opfitd_storage` and `solve_mn_opfitd_storage` functions in `opfitd_storage.jl`, so that the `eng2math_passthrough = Dict("storage"=>["cost"])` is done automatically. PMITD assumes that if an user is running the `solve_opfitd_storage(...)` function, then storage costs should be passed from `ENG` to `MATH` models.
+- Added the required variables and constraints for Transmission system-related storage devices to all problem specifications in `opfitd_storage.jl`.
+- Fixed storage variables and constraints being used in `opfitd` and `opfitd_oltc.jl` where the versions used were the `_mi` mixed integer versions.
+- Modified all objectives in `objective_storage.jl` to take into account the cost of discharging the storage devices in the transmission system. Also, added in-situ conversion for the PMD cost that converts the $/kWh -> $/pu cost, so that the user can provide the $/kWh in the `ENG` model, avoiding confusions.
 
 ## staged
 
