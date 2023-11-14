@@ -32,6 +32,35 @@ end
 
 
 """
+	function solve_opfitd_storage(
+        pmitd_data::Dict{String,<:Any},
+        pmitd_type,
+        optimizer;
+        solution_processors::Vector{<:Function}=Function[],
+        pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
+        make_si::Bool=true,
+        auto_rename::Bool=false,
+        solution_model::String="eng",
+        kwargs...
+	)
+
+Solve Integrated T&D Optimal Power Flow with Storage OPF Dispatch.
+"""
+function solve_opfitd_storage(pmitd_data::Dict{String,<:Any}, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), make_si::Bool=true, solution_model::String="eng", kwargs...)
+
+    if isempty(eng2math_passthrough)
+        eng2math_passthrough = Dict("storage"=>["cost"])    # by default, pass the eng2math passthrough
+    else
+        eng2math_pass_strg = "storage"=>["cost"]
+        push!(eng2math_passthrough, eng2math_pass_strg)
+    end
+
+    return solve_model(pmitd_data, pmitd_type, optimizer, build_opfitd_storage; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, solution_model=solution_model, kwargs...)
+end
+
+
+"""
 	function solve_mn_opfitd_storage(
         pm_file,
         pmd_file,
@@ -59,6 +88,35 @@ function solve_mn_opfitd_storage(pm_file, pmd_file, pmitd_file, pmitd_type, opti
     end
 
     return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_mn_opfitd_storage; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
+end
+
+
+"""
+	function solve_mn_opfitd_storage(
+        pmitd_data::Dict{String,<:Any}
+        pmitd_type,
+        optimizer;
+        solution_processors::Vector{<:Function}=Function[],
+        pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
+        make_si::Bool=true,
+        auto_rename::Bool=false,
+        solution_model::String="eng",
+        kwargs...
+	)
+
+Solve Multinetwork Integrated T&D Optimal Power Flow with Storage OPF Dispatch.
+"""
+function solve_mn_opfitd_storage(pmitd_data::Dict{String,<:Any}, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), make_si::Bool=true, solution_model::String="eng", kwargs...)
+
+    if isempty(eng2math_passthrough)
+        eng2math_passthrough = Dict("storage"=>["cost"])    # by default, pass the eng2math passthrough
+    else
+        eng2math_pass_strg = "storage"=>["cost"]
+        push!(eng2math_passthrough, eng2math_pass_strg)
+    end
+
+    return solve_model(pmitd_data, pmitd_type, optimizer, build_mn_opfitd_storage; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, solution_model=solution_model, kwargs...)
 end
 
 

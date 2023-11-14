@@ -4,34 +4,38 @@
 
 
     # @testset "Check that eng2math_passthrough value is being added to the instantiated model: " begin
-    #     pm_file = joinpath(dirname(trans_path), "case5_withload_strg.m")
-    #     # pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+    #     # pm_file = joinpath(dirname(trans_path), "case5_withload_strg.m")
+    #     pm_file = joinpath(dirname(trans_path), "case5_withload.m")
     #     pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery.dss")
     #     pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery.json")
     #     pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
-    #     # pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
 
-    #     # @info "$(pmitd_data)"
+    #     # One way of doing
+    #     # pmitd_result_strg = solve_opfitd_storage(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt)
 
-    #     pmitd_result_strg = solve_opfitd_storage(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt)
-
-
-    # end
-
-
-    # @testset "solve_model (build_mn_opfitd_storage): Multinetwork Balanced case5-case3 With Battery ACP-ACPU " begin
-    #     # pm_file = joinpath(dirname(trans_path), "case5_withload_strg.m")
-    #     pm_file = joinpath(dirname(trans_path), "case5_withload.m")
-    #     pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn.dss")
-    #     pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
-    #     pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
-    #     pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
-
-    #     # @info "$(pmitd_data)"
-
-    #     pmitd_result_strg = solve_mn_opfitd_storage(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt)
+    #     # Other way of doing it
+    #     pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+    #     pmitd_result_strg = solve_opfitd_storage(pmitd_data, pmitd_type, ipopt)
 
     # end
+
+
+    @testset "solve_model (build_mn_opfitd_storage): Multinetwork Balanced case5-case3 With Battery ACP-ACPU " begin
+        # pm_file = joinpath(dirname(trans_path), "case5_withload_strg.m")
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
+        pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
+
+        # One way
+        # pmitd_result_strg = solve_mn_opfitd_storage(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt)
+
+        # Other way
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
+        pmitd_result_strg = solve_mn_opfitd_storage(pmitd_data, pmitd_type, ipopt)
+
+
+    end
 
 
     #---------------------------------------------------------------------------------------------------------------

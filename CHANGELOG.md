@@ -14,6 +14,7 @@
 - Added the required variables and constraints for Transmission system-related storage devices to all problem specifications in `opfitd_storage.jl`.
 - Fixed storage variables and constraints being used in `opfitd` and `opfitd_oltc.jl` where the versions used were the `_mi` mixed integer versions.
 - Modified all objectives in `objective_storage.jl` to take into account the cost of discharging the storage devices in the transmission system. Also, added in-situ conversion for the PMD cost that converts the $/kWh -> $/pu cost, so that the user can provide the $/kWh in the `ENG` model, avoiding confusions.
+- Added the option to parse files and use the parsed structure solve directly the optimization problem using `solve_opfitd_storage(..)` and `solve_mn_opfitd_storage(..)`. This allows users to parse the data, modify costs (or other parameters) and then run the solve functions without using the `solve_model(..)` function which requires users to explicitly use the `eng2math_passthrough = Dict("storage"=>["cost"])`.
 
 ## staged
 
