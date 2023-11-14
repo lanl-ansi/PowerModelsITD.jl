@@ -40,7 +40,6 @@ end
         pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
         eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         make_si::Bool=true,
-        auto_rename::Bool=false,
         solution_model::String="eng",
         kwargs...
 	)
@@ -100,7 +99,6 @@ end
         pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
         eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         make_si::Bool=true,
-        auto_rename::Bool=false,
         solution_model::String="eng",
         kwargs...
 	)

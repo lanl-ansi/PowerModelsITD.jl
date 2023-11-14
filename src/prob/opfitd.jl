@@ -24,6 +24,26 @@ end
 
 
 """
+	function solve_opfitd(
+        pmitd_data::Dict{String,<:Any},
+        pmitd_type,
+        optimizer;
+        solution_processors::Vector{<:Function}=Function[],
+        pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
+        make_si::Bool=true,
+        solution_model::String="eng",
+        kwargs...
+	)
+
+Solve Integrated T&D Optimal Power Flow.
+"""
+function solve_opfitd(pmitd_data::Dict{String,<:Any}, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), make_si::Bool=true, solution_model::String="eng", kwargs...)
+    return solve_model(pmitd_data, pmitd_type, optimizer, build_opfitd; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, solution_model=solution_model, kwargs...)
+end
+
+
+"""
 	function solve_mn_opfitd(
         pm_file,
         pmd_file,
@@ -43,6 +63,26 @@ Solve Multinetwork Integrated T&D Optimal Power Flow.
 """
 function solve_mn_opfitd(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", kwargs...)
     return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_mn_opfitd; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
+end
+
+
+"""
+	function solve_mn_opfitd(
+        pmitd_data::Dict{String,<:Any}
+        pmitd_type,
+        optimizer;
+        solution_processors::Vector{<:Function}=Function[],
+        pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
+        make_si::Bool=true,
+        solution_model::String="eng",
+        kwargs...
+	)
+
+Solve Multinetwork Integrated T&D Optimal Power Flow.
+"""
+function solve_mn_opfitd(pmitd_data::Dict{String,<:Any}, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), make_si::Bool=true, solution_model::String="eng", kwargs...)
+    return solve_model(pmitd_data, pmitd_type, optimizer, build_mn_opfitd; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, solution_model=solution_model, kwargs...)
 end
 
 
