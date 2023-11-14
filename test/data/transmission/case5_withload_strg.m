@@ -59,6 +59,5 @@ mpc.time_elapsed = 1.0
 %% storage data
 %   storage_bus ps qs energy  energy_rating charge_rating  discharge_rating  charge_efficiency  discharge_efficiency  thermal_rating  qmin  qmax  r  x  p_loss  q_loss  status
 mpc.storage = [
-	 3	 0.0	 0.0	 20.0	 100.0	 50.0	 70.0	 0.8	 0.9	 100.0	 -50.0	 70.0	 0.1	 0.0	 0.0	 0.0	 1;
-	 10	 0.0	 0.0	 30.0	 100.0	 50.0	 70.0	 0.9	 0.8	 100.0	 -50.0	 70.0	 0.1	 0.0	 0.0	 0.0	 1;
+	 3	 0.0	 0.0	 0.0	 200.0	 100.0	 100.0	 0.95	 0.95	 100.0	 -50.0	 70.0	 0.1	 0.0	 0.0	 0.0	 1;
 ];
