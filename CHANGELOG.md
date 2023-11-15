@@ -1,6 +1,6 @@
 # PowerModelsITD.jl Change Log
 
-## staged Energy-Storage
+## staged
 
 - Added `eng2math_passthrough` parameter to all `instantiate_model(..)` and `solve_X(...)` functions.
 - Added unit tests to `opftid_storage.jl` that test the correct operation of the `eng2math_passthrough` both in single network and multinetwork applications.
@@ -19,10 +19,6 @@
 - Added documentation of the new problem formulation that considers storage costs.
 - Updated BeginnersGuide.jl Pluto Notebook to latest versions.
 - Updated DOCs dependencies and fixed minor issues.
-
-## staged
-
-- none.
 
 ## v0.7.9
 
