@@ -16,6 +16,9 @@
 - Modified all objectives in `objective_storage.jl` to take into account the cost of discharging the storage devices in the transmission system. Also, added in-situ conversion for the PMD cost that converts the $/kWh -> $/pu cost, so that the user can provide the $/kWh in the `ENG` model, avoiding confusions.
 - Added the option to parse files and use the parsed structure solve directly the optimization problem using `solve_opfitd_storage(..)` and `solve_mn_opfitd_storage(..)`. This allows users to parse the data, modify costs (or other parameters) and then run the solve functions without using the `solve_model(..)` function which requires users to explicitly use the `eng2math_passthrough = Dict("storage"=>["cost"])`.
 - Added option to parse files and use the parsed structure directly into any `solve_x(..)` functions.
+- Added documentation of the new problem formulation that considers storage costs.
+- Updated BeginnersGuide.jl Pluto Notebook to latest versions.
+- Updated DOCs dependencies and fixed minor issues.
 
 ## staged
 
