@@ -84,8 +84,8 @@ if !_FAST
             )
 
             # edit existing html to replace :article with :iframe
-            doc.root[2][1][2][2] = iframe
-            # doc.root[2][1][1] = iframe
+            # doc.root[2][1][2][2] = iframe
+            doc.root[2][1][1] = iframe
 
             # Overwrite HTML
             open("docs/build/tutorials/$(base_name_splitted).html", "w") do io
