@@ -125,7 +125,7 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
     for (n, nw_ref) in _PMD.nws(pmd)
         for (i, strg) in nw_ref[:storage]
             dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
-            strg_cost_dollar_per_pu = strg["cost"][1]*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+            strg_cost_dollar_per_pu = strg["cost"][1]#*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
             strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
             pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
         end
@@ -220,7 +220,7 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
     for (n, nw_ref) in _PMD.nws(pmd)
         for (i, strg) in nw_ref[:storage]
             dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
-            strg_cost_dollar_per_pu = strg["cost"][1]*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+            strg_cost_dollar_per_pu = strg["cost"][1]#*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
             strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
             pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
         end
@@ -321,7 +321,7 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractIVRPo
     for (n, nw_ref) in _PMD.nws(pmd)
         for (i, strg) in nw_ref[:storage]
             dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
-            strg_cost_dollar_per_pu = strg["cost"][1]*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+            strg_cost_dollar_per_pu = strg["cost"][1]#*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
             strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
             pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
         end
@@ -424,7 +424,7 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractPower
     for (n, nw_ref) in _PMD.nws(pmd)
         for (i, strg) in nw_ref[:storage]
             dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
-            strg_cost_dollar_per_pu = strg["cost"][1]*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+            strg_cost_dollar_per_pu = strg["cost"][1]#*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
             strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
             pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
         end

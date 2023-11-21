@@ -1,5 +1,5 @@
 !Clear
-New Circuit.3bus_bal_battery_mn
+New Circuit.3bus_unbal_nogen_mn_diff
 !  define a really stiff source
 ~ basekv=230 pu=1.00 MVAsc3=200000 MVAsc1=210000
 
@@ -25,26 +25,19 @@ New linecode.4/0QUAD nphases=3 basefreq=60  ! ohms per 100ft
 
 !Define lines
 
-New Line.OHLine  bus1=Substation.1.2.3  Primary.1.2.3  linecode = 556MCM   length=1  ! 5 mile line
-New Line.Quad    Bus1=Primary.1.2.3  loadbus.1.2.3  linecode = 4/0QUAD  length=1   ! 100 ft
+New Line.OHLine  bus1=Substation.1.2.3  Primary.1.2.3  linecode = 556MCM   length=1 normamps=6000 emergamps=6000 ! 5 mile line
+New Line.Quad    Bus1=Primary.1.2.3  loadbus.1.2.3  linecode = 4/0QUAD  length=1 normamps=6000 emergamps=6000   ! 100 ft
 
 
 !Loads - single phase
-New Loadshape.ls1 pmult=(file=load_profile_diff2.csv)
+New Loadshape.ls1 pmult=(file=load_profile_diff3.csv)
 
-New Load.L1 phases=1  loadbus.1.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1 daily=ls1
+New Load.L1 phases=1  loadbus.1.0   ( 13.8 3 sqrt / )   kW=4000   kvar=1333.33  model=1 daily=ls1
 New Load.L2 phases=1  loadbus.2.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1 daily=ls1
 New Load.L3 phases=1  loadbus.3.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1 daily=ls1
-
-
-!Battery System DEFINITIONS
-New Storage.S1 phases=3 bus1=primary.1.2.3 kv=( 13.8 3 sqrt / ) kwhstored=0 kwhrated=500 kva=500 kvar=100
-~ %charge=100 %discharge=100 %effcharge=100 %effdischarge=100 %idlingkw=1 %r=0 %x=50
-
 
 Set VoltageBases = "230,13.8"
 Set tolerance=0.000001
 set defaultbasefreq=60
 !Calcvoltagebases
 !Solve
-

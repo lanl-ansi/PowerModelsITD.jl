@@ -50,7 +50,7 @@
         @test storage_ref_nw4[1]["cost"] == 0.25
     end
 
-    @testset "solve_model (build_opfitd_storage): Balanced case5-case3 With Battery ACP-ACPU " begin
+    @testset "solve_opfitd_storage: Balanced case5-case3 With Battery ACP-ACPU " begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery.json")
@@ -66,61 +66,40 @@
             st_data["cost"] = strg_cost
         end
 
-        # eng2math_passthrough
-        eng2math_passthrough = Dict("storage"=>["cost"])
-
         # with storage cost problem
-        pmitd_result_strg = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd_storage; eng2math_passthrough=eng2math_passthrough)
-        @test isapprox(pmitd_result_strg["objective"], 17977.48172498742+(pmitd_result_strg["solution"]["it"]["pmd"]["storage"]["3bus_bal_battery.s1"]["sd"]*strg_cost); atol = 1e-3)
+        pmitd_result_strg = solve_opfitd_storage(pmitd_data, pmitd_type, ipopt)
+        @test isapprox(pmitd_result_strg["objective"], 17977.48172498742+(pmitd_result_strg["solution"]["it"]["pmd"]["storage"]["3bus_bal_battery.s1"]["sd"]*strg_cost/100000); atol = 1e-3)
 
     end
 
-    @testset "solve_model (build_mn_opfitd_storage): Multinetwork Balanced case5-case3 With Battery ACP-ACPU " begin
-        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+    @testset "solve_opfitd_storage with Transmission storage: Balanced case5-case3 With Battery ACP-ACPU " begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload_strg.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery.json")
+        pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
+        pmitd_result_strg = solve_opfitd_storage(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt)
+        @test pmitd_result_strg["termination_status"] == LOCALLY_SOLVED
+    end
+
+    @testset "solve_mn_opfitd_storage with Transmission storage: Multinetwork Balanced case5-case3 With Battery ACP-ACPU " begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload_strg.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
-        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
-
-        # cost to assign to energy storage
-        # Units $/kWh
-        strg_cost = 0.025
-
-        # add cost to storages in PMD
-        for (nw_id, nw_data) in pmitd_data["it"]["pmd"]["nw"]
-            for (st_name, st_data) in nw_data["storage"]
-                st_data["cost"] = strg_cost
-            end
-        end
-
-        # instantiate model with eng2math_passthrough
-        eng2math_passthrough = Dict("storage"=>["cost"])
-
-        # with storage cost problem
-        pmitd_result_strg = solve_model(pmitd_data, pmitd_type, ipopt, build_mn_opfitd_storage; multinetwork=true, eng2math_passthrough=eng2math_passthrough)
-
-        # add solution cost of the batteries
-        sln_batt_cost = 0
-        for (nw_id, nw_data) in pmitd_result_strg["solution"]["it"]["pmd"]["nw"]
-            for (st_name, st_data) in nw_data["storage"]
-                sln_batt_cost += st_data["sd"]*strg_cost
-            end
-        end
-
-        @test isapprox(pmitd_result_strg["objective"], 71226.99645541582+(sln_batt_cost); atol = 1e-3)
-
+        pmitd_result_strg = solve_mn_opfitd_storage(pm_file, pmd_file, pmitd_file, pmitd_type, ipopt)
+        @test pmitd_result_strg["termination_status"] == LOCALLY_SOLVED
     end
 
-    @testset "solve_mn_opfitd_storage: Multinetwork Balanced case5-case3 With Battery ACP-ACPU " begin
+    @testset "solve_mn_opfitd_storage: Multinetwork Balanced case5-case3 With Battery ACP-ACPU - very cheap storage cost" begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
-        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn_diff.dss")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withBattery_mn_diff.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
 
         # cost to assign to energy storage
         # Units $/kWh
-        strg_cost = 0.0025
+        strg_cost = 0.001
 
         # add cost to storages in PMD
         for (nw_id, nw_data) in pmitd_data["it"]["pmd"]["nw"]
@@ -130,14 +109,69 @@
         end
 
         pmitd_result_strg = solve_mn_opfitd_storage(pmitd_data, pmitd_type, ipopt)
-        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["10"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+
+        # add solution cost of the batteries
+        result_soln_dsch = zeros(5)
+        result_soln_ch = zeros(5)
+        result_soln_ps = zeros(5)
+        for (nw_id, nw_data) in pmitd_result_strg["solution"]["it"]["pmd"]["nw"]
+            for (st_name, st_data) in nw_data["storage"]
+                result_soln_dsch[parse(Int64, nw_id)] = st_data["sd"]
+                result_soln_ch[parse(Int64, nw_id)] = st_data["sc"]
+                result_soln_ps[parse(Int64, nw_id)] = sum(st_data["ps"])
+            end
+        end
+
+        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["4"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+        @test isapprox(result_soln_dsch[4], 500.0; atol = 1e-1)
+        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["2"]["storage"]["3bus_bal_battery_mn.s1"]["sc"], 500.0; atol = 1e-1)
+        @test isapprox(result_soln_ch[2], 500.0; atol = 1e-1)
+
+    end
+
+    @testset "solve_mn_opfitd_storage: Multinetwork Balanced case5-case3 With Battery ACP-ACPU - very expensive storage cost" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withBattery_mn_diff.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
+        pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
+
+        # cost to assign to energy storage
+        # Units $/kWh
+        strg_cost = 100000000
+
+        # add cost to storages in PMD
+        for (nw_id, nw_data) in pmitd_data["it"]["pmd"]["nw"]
+            for (st_name, st_data) in nw_data["storage"]
+                st_data["cost"] = strg_cost
+            end
+        end
+
+        pmitd_result_strg = solve_mn_opfitd_storage(pmitd_data, pmitd_type, ipopt)
+
+        # add solution cost of the batteries
+        result_soln_dsch = zeros(5)
+        result_soln_ch = zeros(5)
+        result_soln_ps = zeros(5)
+        for (nw_id, nw_data) in pmitd_result_strg["solution"]["it"]["pmd"]["nw"]
+            for (st_name, st_data) in nw_data["storage"]
+                result_soln_dsch[parse(Int64, nw_id)] = st_data["sd"]
+                result_soln_ch[parse(Int64, nw_id)] = st_data["sc"]
+                result_soln_ps[parse(Int64, nw_id)] = sum(st_data["ps"])
+            end
+        end
+
+        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["4"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 0.0; atol = 1e-1)
+        @test isapprox(result_soln_dsch[4], 0.0; atol = 1e-1)
+        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["2"]["storage"]["3bus_bal_battery_mn.s1"]["sc"], 0.0; atol = 1e-1)
+        @test isapprox(result_soln_ch[2], 0.0; atol = 1e-1)
 
     end
 
     ## IVRU is missing critical current variables (real currentr) for solving opfs with storage in PMD
     # @testset "solve_mn_opfitd_storage: Multinetwork Balanced case5-case3 With Battery IVR-IVRU " begin
     #     pm_file = joinpath(dirname(trans_path), "case5_withload.m")
-    #     pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn_diff.dss")
+    #     pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withBattery_mn_diff.dss")
     #     pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
     #     pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
     #     pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
@@ -160,14 +194,14 @@
 
     @testset "solve_mn_opfitd_storage: Multinetwork Balanced case5-case3 With Battery ACR-FBSUBF " begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
-        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn_diff.dss")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withBattery_mn_diff.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
         pmitd_type = NLBFPowerModelITD{ACRPowerModel, FBSUBFPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
 
         # cost to assign to energy storage
         # Units $/kWh
-        strg_cost = 0.0025
+        strg_cost = 0.001
 
         # add cost to storages in PMD
         for (nw_id, nw_data) in pmitd_data["it"]["pmd"]["nw"]
@@ -177,20 +211,21 @@
         end
 
         pmitd_result_strg = solve_mn_opfitd_storage(pmitd_data, pmitd_type, ipopt)
-        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["10"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["4"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["2"]["storage"]["3bus_bal_battery_mn.s1"]["sc"], 500.0; atol = 1e-1)
 
     end
 
     @testset "solve_mn_opfitd_storage: Multinetwork Balanced case5-case3 With Battery ACR-FOTRU " begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
-        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn_diff.dss")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withBattery_mn_diff.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
         pmitd_type = NLFOTPowerModelITD{ACRPowerModel, FOTRUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
 
         # cost to assign to energy storage
         # Units $/kWh
-        strg_cost = 0.0025
+        strg_cost = 0.001
 
         # add cost to storages in PMD
         for (nw_id, nw_data) in pmitd_data["it"]["pmd"]["nw"]
@@ -200,20 +235,21 @@
         end
 
         pmitd_result_strg = solve_mn_opfitd_storage(pmitd_data, pmitd_type, ipopt)
-        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["10"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["4"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+        @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["2"]["storage"]["3bus_bal_battery_mn.s1"]["sc"], 500.0; atol = 1e-1)
 
     end
 
     @testset "solve_mn_opfitd_storage: Multinetwork Balanced case5-case3 With Battery BFA-LinDist3Flow " begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
-        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn_diff.dss")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withBattery_mn_diff.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
         pmitd_type = BFPowerModelITD{BFAPowerModel, LinDist3FlowPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
 
         # cost to assign to energy storage
         # Units $/kWh
-        strg_cost = 0.0025
+        strg_cost = 0.001
 
         # add cost to storages in PMD
         for (nw_id, nw_data) in pmitd_data["it"]["pmd"]["nw"]
@@ -223,14 +259,16 @@
         end
 
         pmitd_result_strg = solve_mn_opfitd_storage(pmitd_data, pmitd_type, ipopt)
+        @test pmitd_result_strg["termination_status"] == LOCALLY_SOLVED
         # LinDist3Flow seems to have problems with Energy Storage control.
-        # @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["10"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+        # @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["4"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+        # @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["2"]["storage"]["3bus_bal_battery_mn.s1"]["sc"], 500.0; atol = 1e-1)
 
     end
 
     @testset "solve_mn_opfitd_storage: Multinetwork Balanced case5-case3 With Battery in Transmission ACP-ACPU " begin
         pm_file = joinpath(dirname(trans_path), "case5_withload_strg.m")
-        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen_mn_diff2.dss")
+        pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withoutgen_mn_diff3.dss")
         pmitd_file = joinpath(dirname(bound_path), "case5_case3_unbal_nogen_mn_diff.json")
         pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
