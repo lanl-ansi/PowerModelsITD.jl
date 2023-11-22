@@ -162,86 +162,88 @@ Fuel cost minimization objective for polynomial terms linear-quadratic (IVR form
 """
 function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::AbstractIVRPowerModelITD, pm::_PM.AbstractIVRModel, pmd::_PMD.AbstractUnbalancedIVRModel)
 
-    # PM
-    pm_gen_cost = Dict()
+    @error "IVR-IVRU formulation not yet supported for storage problems."
 
-    for (n, nw_ref) in _PM.nws(pm)
-        for (i,gen) in nw_ref[:gen]
-            bus = gen["gen_bus"]
+    # # PM
+    # pm_gen_cost = Dict()
 
-            #to avoid function calls inside of @NLconstraint:
-            pg = _PM.var(pm, n, :pg, i)
-            if length(gen["cost"]) == 1
-                pm_gen_cost[(n,i)] = gen["cost"][1]
-            elseif length(gen["cost"]) == 2
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pm.model, gen["cost"][1]*pg + gen["cost"][2])
-            elseif length(gen["cost"]) == 3
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pm.model, gen["cost"][1]*pg^2 + gen["cost"][2]*pg + gen["cost"][3])
-            else
-                pm_gen_cost[(n,i)] = 0.0
-            end
-        end
-    end
+    # for (n, nw_ref) in _PM.nws(pm)
+    #     for (i,gen) in nw_ref[:gen]
+    #         bus = gen["gen_bus"]
 
-    # PM Storage
-    pm_strg_cost = Dict()
+    #         #to avoid function calls inside of @NLconstraint:
+    #         pg = _PM.var(pm, n, :pg, i)
+    #         if length(gen["cost"]) == 1
+    #             pm_gen_cost[(n,i)] = gen["cost"][1]
+    #         elseif length(gen["cost"]) == 2
+    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pm.model, gen["cost"][1]*pg + gen["cost"][2])
+    #         elseif length(gen["cost"]) == 3
+    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pm.model, gen["cost"][1]*pg^2 + gen["cost"][2]*pg + gen["cost"][3])
+    #         else
+    #             pm_gen_cost[(n,i)] = 0.0
+    #         end
+    #     end
+    # end
 
-    for (n, nw_ref) in _PM.nws(pm)
-        for (i, strg) in nw_ref[:storage]
-            dsch = _PM.var(pm, n, :sd, i)                   # get discharge power value
-            pm_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost (no cost conversion is needed, cost must be in $/pu)
-        end
-    end
+    # # PM Storage
+    # pm_strg_cost = Dict()
 
-    # PMD
-    pmd_gen_cost = Dict()
+    # for (n, nw_ref) in _PM.nws(pm)
+    #     for (i, strg) in nw_ref[:storage]
+    #         dsch = _PM.var(pm, n, :sd, i)                   # get discharge power value
+    #         pm_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost (no cost conversion is needed, cost must be in $/pu)
+    #     end
+    # end
 
-    for (n, nw_ref) in _PMD.nws(pmd)
-        for (i,gen) in nw_ref[:gen]
-            bus = gen["gen_bus"]
+    # # PMD
+    # pmd_gen_cost = Dict()
 
-            #to avoid function calls inside of @NLconstraint:
-            pg = _PMD.var(pmd, n, :pg, i)
-            if length(gen["cost"]) == 1
-                pmd_gen_cost[(n,i)] = gen["cost"][1]
-            elseif length(gen["cost"]) == 2
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmd.model, gen["cost"][1]*sum(pg[c] for c in gen["connections"]) + gen["cost"][2])
-            elseif length(gen["cost"]) == 3
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmd.model, gen["cost"][1]*sum(pg[c] for c in gen["connections"])^2 + gen["cost"][2]*sum(pg[c] for c in gen["connections"]) + gen["cost"][3])
-            else
-                pmd_gen_cost[(n,i)] = 0.0
-            end
-        end
-    end
+    # for (n, nw_ref) in _PMD.nws(pmd)
+    #     for (i,gen) in nw_ref[:gen]
+    #         bus = gen["gen_bus"]
 
-    # PMD Storage
-    pmd_strg_cost = Dict()
+    #         #to avoid function calls inside of @NLconstraint:
+    #         pg = _PMD.var(pmd, n, :pg, i)
+    #         if length(gen["cost"]) == 1
+    #             pmd_gen_cost[(n,i)] = gen["cost"][1]
+    #         elseif length(gen["cost"]) == 2
+    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmd.model, gen["cost"][1]*sum(pg[c] for c in gen["connections"]) + gen["cost"][2])
+    #         elseif length(gen["cost"]) == 3
+    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmd.model, gen["cost"][1]*sum(pg[c] for c in gen["connections"])^2 + gen["cost"][2]*sum(pg[c] for c in gen["connections"]) + gen["cost"][3])
+    #         else
+    #             pmd_gen_cost[(n,i)] = 0.0
+    #         end
+    #     end
+    # end
 
-    for (n, nw_ref) in _PMD.nws(pmd)
-        for (i, strg) in nw_ref[:storage]
-            dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
-            strg_cost_dollar_per_pu = strg["cost"][1]#*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
-            strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
-            pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
-        end
-    end
+    # # PMD Storage
+    # pmd_strg_cost = Dict()
+
+    # for (n, nw_ref) in _PMD.nws(pmd)
+    #     for (i, strg) in nw_ref[:storage]
+    #         dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
+    #         strg_cost_dollar_per_pu = strg["cost"][1]#*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+    #         strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
+    #         pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
+    #     end
+    # end
 
 
-    # ITD (Combined objective)
-    return JuMP.@NLobjective(pmitd.model, Min,
-        sum(
-            sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
-        for (n, nw_ref) in _PM.nws(pm))
-        + sum(
-            sum( pm_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
-        for (n, nw_ref) in _PM.nws(pm))
-        + sum(
-            sum( pmd_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
-        for (n, nw_ref) in _PMD.nws(pmd))
-        + sum(
-            sum( pmd_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
-        for (n, nw_ref) in _PMD.nws(pmd))
-    )
+    # # ITD (Combined objective)
+    # return JuMP.@NLobjective(pmitd.model, Min,
+    #     sum(
+    #         sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
+    #     for (n, nw_ref) in _PM.nws(pm))
+    #     + sum(
+    #         sum( pm_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
+    #     for (n, nw_ref) in _PM.nws(pm))
+    #     + sum(
+    #         sum( pmd_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
+    #     for (n, nw_ref) in _PMD.nws(pmd))
+    #     + sum(
+    #         sum( pmd_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
+    #     for (n, nw_ref) in _PMD.nws(pmd))
+    # )
 
 end
 
@@ -257,92 +259,94 @@ Fuel cost minimization objective for polynomial terms non-linear (IVR formulatio
 """
 function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractIVRPowerModelITD, pm::_PM.AbstractIVRModel, pmd::_PMD.AbstractUnbalancedIVRModel)
 
-    # PM
-    pm_gen_cost = Dict()
-    for (n, nw_ref) in _PM.nws(pm)
-        for (i,gen) in nw_ref[:gen]
-            bus = gen["gen_bus"]
+    @error "IVR-IVRU formulation not yet supported for storage problems."
 
-            #to avoid function calls inside of @NLconstraint:
-            pg = _PM.var(pm, n, :pg, i)
-            cost_rev = reverse(gen["cost"])
-            if length(cost_rev) == 1
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1])
-            elseif length(cost_rev) == 2
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg)
-            elseif length(cost_rev) == 3
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2)
-            elseif length(cost_rev) >= 4
-                cost_rev_nl = cost_rev[4:end]
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2 + sum( v*pg^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
-            else
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, 0.0)
-            end
-        end
-    end
+    # # PM
+    # pm_gen_cost = Dict()
+    # for (n, nw_ref) in _PM.nws(pm)
+    #     for (i,gen) in nw_ref[:gen]
+    #         bus = gen["gen_bus"]
 
-    # PM Storage
-    pm_strg_cost = Dict()
+    #         #to avoid function calls inside of @NLconstraint:
+    #         pg = _PM.var(pm, n, :pg, i)
+    #         cost_rev = reverse(gen["cost"])
+    #         if length(cost_rev) == 1
+    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1])
+    #         elseif length(cost_rev) == 2
+    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg)
+    #         elseif length(cost_rev) == 3
+    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2)
+    #         elseif length(cost_rev) >= 4
+    #             cost_rev_nl = cost_rev[4:end]
+    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2 + sum( v*pg^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
+    #         else
+    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, 0.0)
+    #         end
+    #     end
+    # end
 
-    for (n, nw_ref) in _PM.nws(pm)
-        for (i, strg) in nw_ref[:storage]
-            dsch = _PM.var(pm, n, :sd, i)                   # get discharge power value
-            pm_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost (no cost conversion is needed, cost must be in $/pu)
-        end
-    end
+    # # PM Storage
+    # pm_strg_cost = Dict()
 
-
-    # PMD
-    pmd_gen_cost = Dict()
-    for (n, nw_ref) in _PMD.nws(pmd)
-        for (i,gen) in nw_ref[:gen]
-
-            pg = _PMD.var(pmd, n, :pg, i)
-            cost_rev = reverse(gen["cost"])
-
-            if length(cost_rev) == 1
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1])
-            elseif length(cost_rev) == 2
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]))
-            elseif length(cost_rev) == 3
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]) + cost_rev[3]*sum(pg[c] for c in gen["connections"])^2)
-            elseif length(cost_rev) >= 4
-                cost_rev_nl = cost_rev[4:end]
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]) + cost_rev[3]*sum(pg[c] for c in gen["connections"])^2 + sum( v*sum(pg[c] for c in gen["connections"])^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
-            else
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, 0.0)
-            end
-        end
-    end
-
-    # PMD Storage
-    pmd_strg_cost = Dict()
-
-    for (n, nw_ref) in _PMD.nws(pmd)
-        for (i, strg) in nw_ref[:storage]
-            dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
-            strg_cost_dollar_per_pu = strg["cost"][1]#*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
-            strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
-            pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
-        end
-    end
+    # for (n, nw_ref) in _PM.nws(pm)
+    #     for (i, strg) in nw_ref[:storage]
+    #         dsch = _PM.var(pm, n, :sd, i)                   # get discharge power value
+    #         pm_strg_cost[(n,i)] = strg["cost"][1]*dsch     # compute discharge cost (no cost conversion is needed, cost must be in $/pu)
+    #     end
+    # end
 
 
-    # ITD (Combined objective)
-    return JuMP.@NLobjective(pmitd.model, Min,
-        sum(
-            sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
-        for (n, nw_ref) in _PM.nws(pm))
-        + sum(
-            sum( pm_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
-        for (n, nw_ref) in _PM.nws(pm))
-        + sum(
-            sum( pmd_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
-        for (n, nw_ref) in _PMD.nws(pmd))
-        + sum(
-            sum( pmd_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
-        for (n, nw_ref) in _PMD.nws(pmd))
-    )
+    # # PMD
+    # pmd_gen_cost = Dict()
+    # for (n, nw_ref) in _PMD.nws(pmd)
+    #     for (i,gen) in nw_ref[:gen]
+
+    #         pg = _PMD.var(pmd, n, :pg, i)
+    #         cost_rev = reverse(gen["cost"])
+
+    #         if length(cost_rev) == 1
+    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1])
+    #         elseif length(cost_rev) == 2
+    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]))
+    #         elseif length(cost_rev) == 3
+    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]) + cost_rev[3]*sum(pg[c] for c in gen["connections"])^2)
+    #         elseif length(cost_rev) >= 4
+    #             cost_rev_nl = cost_rev[4:end]
+    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]) + cost_rev[3]*sum(pg[c] for c in gen["connections"])^2 + sum( v*sum(pg[c] for c in gen["connections"])^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
+    #         else
+    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, 0.0)
+    #         end
+    #     end
+    # end
+
+    # # PMD Storage
+    # pmd_strg_cost = Dict()
+
+    # for (n, nw_ref) in _PMD.nws(pmd)
+    #     for (i, strg) in nw_ref[:storage]
+    #         dsch = _PMD.var(pmd, n, :sd, i)                                                     # get discharge power value
+    #         strg_cost_dollar_per_pu = strg["cost"][1]#*nw_ref[:settings]["sbase_default"]        # convert from $/kWh -> $/pu
+    #         strg_cost_dollar_per_pu = round(strg_cost_dollar_per_pu, digits=4)
+    #         pmd_strg_cost[(n,i)] = strg_cost_dollar_per_pu*dsch                                 # compute discharge cost
+    #     end
+    # end
+
+
+    # # ITD (Combined objective)
+    # return JuMP.@NLobjective(pmitd.model, Min,
+    #     sum(
+    #         sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
+    #     for (n, nw_ref) in _PM.nws(pm))
+    #     + sum(
+    #         sum( pm_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
+    #     for (n, nw_ref) in _PM.nws(pm))
+    #     + sum(
+    #         sum( pmd_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
+    #     for (n, nw_ref) in _PMD.nws(pmd))
+    #     + sum(
+    #         sum( pmd_strg_cost[(n,i)] for (i,strg) in nw_ref[:storage] )
+    #     for (n, nw_ref) in _PMD.nws(pmd))
+    # )
 
 end
 

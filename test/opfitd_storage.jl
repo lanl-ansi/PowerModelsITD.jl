@@ -25,6 +25,98 @@
         @test storage_ref[1]["cost"] == 0.25
     end
 
+    @testset "Check that eng2math_passthrough value is being added to the instantiated model: " begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery.json")
+        pmitd_type = BFPowerModelITD{BFAPowerModel, LinDist3FlowPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+
+        # add cost to storages in PMD
+        for (st_name, st_data) in pmitd_data["it"]["pmd"]["storage"]
+            st_data["cost"] = 0.25
+        end
+
+        # instantiate model with eng2math_passthrough
+        eng2math_passthrough = Dict("storage"=>["cost"])
+        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd; eng2math_passthrough=eng2math_passthrough)
+
+        # get storage reference
+        storage_ref = _IM.ref(pmitd_inst_model, _PMD.pmd_it_sym, nw=nw_id_default, :storage)
+
+        # test that the "cost" value in storage exists.
+        @test storage_ref[1]["cost"] == 0.25
+    end
+
+    @testset "Check that eng2math_passthrough value is being added to the instantiated model: " begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery.json")
+        pmitd_type = NLBFPowerModelITD{ACRPowerModel, FBSUBFPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+
+        # add cost to storages in PMD
+        for (st_name, st_data) in pmitd_data["it"]["pmd"]["storage"]
+            st_data["cost"] = 0.25
+        end
+
+        # instantiate model with eng2math_passthrough
+        eng2math_passthrough = Dict("storage"=>["cost"])
+        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd; eng2math_passthrough=eng2math_passthrough)
+
+        # get storage reference
+        storage_ref = _IM.ref(pmitd_inst_model, _PMD.pmd_it_sym, nw=nw_id_default, :storage)
+
+        # test that the "cost" value in storage exists.
+        @test storage_ref[1]["cost"] == 0.25
+    end
+
+    @testset "Check that IVR-IVRU gives warning error when instantiated: " begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery.json")
+        pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        # instantiate model with eng2math_passthrough
+        eng2math_passthrough = Dict("storage"=>["cost"])
+        @test_throws ErrorException instantiate_model(pmitd_data, pmitd_type, build_opfitd; eng2math_passthrough=eng2math_passthrough)
+    end
+
+    @testset "Check that IVR-IVRU gives warning error when instantiated: (Multinetwork): " begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery_mn.json")
+        pmitd_type = IVRPowerModelITD{IVRPowerModel, IVRUPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
+        # instantiate model with eng2math_passthrough
+        eng2math_passthrough = Dict("storage"=>["cost"])
+        @test_throws ErrorException instantiate_model(pmitd_data, pmitd_type, build_mn_opfitd; multinetwork=true, eng2math_passthrough=eng2math_passthrough)
+    end
+
+    @testset "solve_model (with network inputs) build_opfitd_storage: case5-case3 ACR-ACR with polynomial nl terms above quadratic" begin
+        pm_file = joinpath(dirname(trans_path), "case5_withload.m")
+        pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery.dss")
+        pmitd_file = joinpath(dirname(bound_path), "case5_case3_bal_battery.json")
+        pmitd_type = NLPowerModelITD{ACRPowerModel, ACRUPowerModel}
+        pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
+        # add cost to storages in PMD
+        for (st_name, st_data) in pmitd_data["it"]["pmd"]["storage"]
+            st_data["cost"] = 0.25
+        end
+        eng2math_passthrough = Dict("storage"=>["cost"])
+        # transform pmd to math, to change gens cost models
+        pmitd_data["it"]["pmd"] = _PMD.transform_data_model(pmitd_data["it"]["pmd"]; eng2math_passthrough=eng2math_passthrough)
+        # Modify (internally) all gens (both T&D) costs so that polynomial nl terms are used.
+        pmitd_data["it"]["pmd"]["gen"]["1"]["cost"] = [20.0, 35.0, 110.0, 140.0, 1.0] # modify dist. system gen.
+        pmitd_data["it"]["pmd"]["gen"]["1"]["ncost"] = 5
+        pmitd_data["it"]["pm"]["gen"]["4"]["cost"] = [25.0, 1.0]  # modify trans. system gen.
+        pmitd_data["it"]["pm"]["gen"]["1"]["cost"] = [30.0, 1.0]     # modify trans. system gen.
+        pmitd_data["it"]["pm"]["gen"]["5"]["cost"] = [10.0, 100.0, 300.0, 1400.0, 1.0] # modify trans. system gen.
+        pmitd_data["it"]["pm"]["gen"]["5"]["ncost"] = 5
+        result = solve_model(pmitd_data, pmitd_type, ipopt, build_opfitd_storage)
+        @test result["termination_status"] == LOCALLY_SOLVED
+    end
+
     @testset "Check that eng2math_passthrough value is being added to the instantiated model (Multinetwork): " begin
         pm_file = joinpath(dirname(trans_path), "case5_withload.m")
         pmd_file = joinpath(dirname(dist_path), "case3_balanced_withBattery_mn.dss")
@@ -168,7 +260,7 @@
 
     end
 
-    ## IVRU is missing critical current variables (real currentr) for solving opfs with storage in PMD
+    # # IVRU is missing critical current variables (real currentr) for solving opfs with storage in PMD
     # @testset "solve_mn_opfitd_storage: Multinetwork Balanced case5-case3 With Battery IVR-IVRU " begin
     #     pm_file = joinpath(dirname(trans_path), "case5_withload.m")
     #     pmd_file = joinpath(dirname(dist_path), "case3_unbalanced_withBattery_mn_diff.dss")
@@ -178,7 +270,7 @@
 
     #     # cost to assign to energy storage
     #     # Units $/kWh
-    #     strg_cost = 0.0025
+    #     strg_cost = 0.001
 
     #     # add cost to storages in PMD
     #     for (nw_id, nw_data) in pmitd_data["it"]["pmd"]["nw"]
@@ -188,7 +280,8 @@
     #     end
 
     #     pmitd_result_strg = solve_mn_opfitd_storage(pmitd_data, pmitd_type, ipopt)
-    #     @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["10"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+    #     @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["4"]["storage"]["3bus_bal_battery_mn.s1"]["sd"], 500.0; atol = 1e-1)
+    #     @test isapprox(pmitd_result_strg["solution"]["it"]["pmd"]["nw"]["2"]["storage"]["3bus_bal_battery_mn.s1"]["sc"], 500.0; atol = 1e-1)
 
     # end
 

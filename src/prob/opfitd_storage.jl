@@ -270,123 +270,125 @@ Constructor for Integrated T&D Optimal Power Flow in current-voltage (IV) variab
 """
 function build_opfitd_storage(pmitd::AbstractIVRPowerModelITD)
 
-    # Get Models
-    pm_model = _get_powermodel_from_powermodelitd(pmitd)
-    pmd_model = _get_powermodeldistribution_from_powermodelitd(pmitd)
+    @error "IVR-IVRU formulation not yet supported for storage problems."
 
-    # PM(Transmission) Variables
-    _PM.variable_bus_voltage(pm_model)
-    _PM.variable_branch_current(pm_model)
-    _PM.variable_gen_current(pm_model)
-    _PM.variable_dcline_current(pm_model)
-    _PM.variable_storage_power(pm_model)
+    # # Get Models
+    # pm_model = _get_powermodel_from_powermodelitd(pmitd)
+    # pmd_model = _get_powermodeldistribution_from_powermodelitd(pmitd)
 
-    # PMD(Distribution) Variables
-    _PMD.variable_mc_bus_voltage(pmd_model)
-    _PMD.variable_mc_branch_current(pmd_model)
-    _PMD.variable_mc_switch_current(pmd_model)
-    _PMD.variable_mc_transformer_current(pmd_model)
-    _PMD.variable_mc_generator_current(pmd_model)
-    _PMD.variable_mc_load_current(pmd_model)
+    # # PM(Transmission) Variables
+    # _PM.variable_bus_voltage(pm_model)
+    # _PM.variable_branch_current(pm_model)
+    # _PM.variable_gen_current(pm_model)
+    # _PM.variable_dcline_current(pm_model)
+    # _PM.variable_storage_power(pm_model)
 
-    # PMITD (Boundary) Current Variables
-    variable_boundary_current(pmitd)
+    # # PMD(Distribution) Variables
+    # _PMD.variable_mc_bus_voltage(pmd_model)
+    # _PMD.variable_mc_branch_current(pmd_model)
+    # _PMD.variable_mc_switch_current(pmd_model)
+    # _PMD.variable_mc_transformer_current(pmd_model)
+    # _PMD.variable_mc_generator_current(pmd_model)
+    # _PMD.variable_mc_load_current(pmd_model)
 
-    # --- PM(Transmission) Constraints ---
-    # reference buses (this only needs to happen for pm(transmission))
-    for i in _PM.ids(pm_model, :ref_buses)
-        _PM.constraint_theta_ref(pm_model, i)
-    end
+    # # PMITD (Boundary) Current Variables
+    # variable_boundary_current(pmitd)
 
-    for i in _PM.ids(pm_model, :storage)
-        _PM.constraint_storage_state(pm_model, i)
-        _PM.constraint_storage_complementarity_nl(pm_model, i)
-        _PM.constraint_storage_losses(pm_model, i)
-        _PM.constraint_storage_thermal_limit(pm_model, i)
-    end
+    # # --- PM(Transmission) Constraints ---
+    # # reference buses (this only needs to happen for pm(transmission))
+    # for i in _PM.ids(pm_model, :ref_buses)
+    #     _PM.constraint_theta_ref(pm_model, i)
+    # end
 
-    for i in _PM.ids(pm_model, :branch)
-        _PM.constraint_current_from(pm_model, i)
-        _PM.constraint_current_to(pm_model, i)
+    # for i in _PM.ids(pm_model, :storage)
+    #     _PM.constraint_storage_state(pm_model, i)
+    #     _PM.constraint_storage_complementarity_nl(pm_model, i)
+    #     _PM.constraint_storage_losses(pm_model, i)
+    #     _PM.constraint_storage_thermal_limit(pm_model, i)
+    # end
 
-        _PM.constraint_voltage_drop(pm_model, i)
-        _PM.constraint_voltage_angle_difference(pm_model, i)
+    # for i in _PM.ids(pm_model, :branch)
+    #     _PM.constraint_current_from(pm_model, i)
+    #     _PM.constraint_current_to(pm_model, i)
 
-        _PM.constraint_thermal_limit_from(pm_model, i)
-        _PM.constraint_thermal_limit_to(pm_model, i)
-    end
+    #     _PM.constraint_voltage_drop(pm_model, i)
+    #     _PM.constraint_voltage_angle_difference(pm_model, i)
 
-    for i in _PM.ids(pm_model, :dcline)
-        _PM.constraint_dcline_power_losses(pm_model, i)
-    end
+    #     _PM.constraint_thermal_limit_from(pm_model, i)
+    #     _PM.constraint_thermal_limit_to(pm_model, i)
+    # end
 
-
-    # --- PMD(Distribution) Constraints ---
-    # gens should be constrained before KCL, or Pd/Qd undefined
-    for id in _PMD.ids(pmd_model, :gen)
-        _PMD.constraint_mc_generator_power(pmd_model, id)
-    end
-
-    # loads should be constrained before KCL, or Pd/Qd undefined
-    for id in _PMD.ids(pmd_model, :load)
-        _PMD.constraint_mc_load_power(pmd_model, id)
-    end
+    # for i in _PM.ids(pm_model, :dcline)
+    #     _PM.constraint_dcline_power_losses(pm_model, i)
+    # end
 
 
-    for i in _PMD.ids(pmd_model, :branch)
-        _PMD.constraint_mc_current_from(pmd_model, i)
-        _PMD.constraint_mc_current_to(pmd_model, i)
-        _PMD.constraint_mc_bus_voltage_drop(pmd_model, i)
-        _PMD.constraint_mc_voltage_angle_difference(pmd_model, i)
-        _PMD.constraint_mc_thermal_limit_from(pmd_model, i)
-        _PMD.constraint_mc_thermal_limit_to(pmd_model, i)
-    end
+    # # --- PMD(Distribution) Constraints ---
+    # # gens should be constrained before KCL, or Pd/Qd undefined
+    # for id in _PMD.ids(pmd_model, :gen)
+    #     _PMD.constraint_mc_generator_power(pmd_model, id)
+    # end
 
-    for i in _PMD.ids(pmd_model, :switch)
-        _PMD.constraint_mc_switch_state(pmd_model, i)
-        _PMD.constraint_mc_switch_current_limit(pmd_model, i)
-    end
-
-    for i in _PMD.ids(pmd_model, :transformer)
-        _PMD.constraint_mc_transformer_power(pmd_model, i)
-    end
+    # # loads should be constrained before KCL, or Pd/Qd undefined
+    # for id in _PMD.ids(pmd_model, :load)
+    #     _PMD.constraint_mc_load_power(pmd_model, id)
+    # end
 
 
-    # -------------------------------------------------
-    # --- PMITD(T&D) INDEPENDENT Constraints ----------
+    # for i in _PMD.ids(pmd_model, :branch)
+    #     _PMD.constraint_mc_current_from(pmd_model, i)
+    #     _PMD.constraint_mc_current_to(pmd_model, i)
+    #     _PMD.constraint_mc_bus_voltage_drop(pmd_model, i)
+    #     _PMD.constraint_mc_voltage_angle_difference(pmd_model, i)
+    #     _PMD.constraint_mc_thermal_limit_from(pmd_model, i)
+    #     _PMD.constraint_mc_thermal_limit_to(pmd_model, i)
+    # end
 
-    for i in ids(pmitd, :boundary)
-        constraint_boundary_current(pmitd, i)
-        constraint_boundary_voltage_magnitude(pmitd, i)
-        constraint_boundary_voltage_angle(pmitd, i)
-    end
+    # for i in _PMD.ids(pmd_model, :switch)
+    #     _PMD.constraint_mc_switch_state(pmd_model, i)
+    #     _PMD.constraint_mc_switch_current_limit(pmd_model, i)
+    # end
 
-    # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
-    # # ---- Transmission Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
-    for i in _PM.ids(pm_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_transmission_current_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
-            _PM.constraint_current_balance(pm_model, i)
-        end
-    end
+    # for i in _PMD.ids(pmd_model, :transformer)
+    #     _PMD.constraint_mc_transformer_power(pmd_model, i)
+    # end
 
-    # # ---- Distribution Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
-    for i in _PMD.ids(pmd_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_distribution_current_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
-            _PMD.constraint_mc_current_balance(pmd_model, i)
-        end
-    end
 
-    # -------------------------------------------------
-    # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost_storage(pmitd)
+    # # -------------------------------------------------
+    # # --- PMITD(T&D) INDEPENDENT Constraints ----------
+
+    # for i in ids(pmitd, :boundary)
+    #     constraint_boundary_current(pmitd, i)
+    #     constraint_boundary_voltage_magnitude(pmitd, i)
+    #     constraint_boundary_voltage_angle(pmitd, i)
+    # end
+
+    # # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+    # # # ---- Transmission Power Balance ---
+    # boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+    # for i in _PM.ids(pm_model, :bus)
+    #     for j in ids(pmitd, :boundary)
+    #         constraint_transmission_current_balance_boundary(pmitd, i, j, boundary_buses)
+    #     end
+    #     if !(i in boundary_buses)
+    #         _PM.constraint_current_balance(pm_model, i)
+    #     end
+    # end
+
+    # # # ---- Distribution Power Balance ---
+    # boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+    # for i in _PMD.ids(pmd_model, :bus)
+    #     for j in ids(pmitd, :boundary)
+    #         constraint_distribution_current_balance_boundary(pmitd, i, j, boundary_buses)
+    #     end
+    #     if !(i in boundary_buses)
+    #         _PMD.constraint_mc_current_balance(pmd_model, i)
+    #     end
+    # end
+
+    # # -------------------------------------------------
+    # # --- PMITD(T&D) Cost Functions -------------------
+    # objective_itd_min_fuel_cost_storage(pmitd)
 
 end
 
@@ -877,163 +879,165 @@ Constructor for Multinetwork Integrated T&D Optimal Power Flow in current-voltag
 """
 function build_mn_opfitd_storage(pmitd::AbstractIVRPowerModelITD)
 
-    # Get Models
-    pm_model = _get_powermodel_from_powermodelitd(pmitd)
-    pmd_model = _get_powermodeldistribution_from_powermodelitd(pmitd)
+    @error "IVR-IVRU formulation not yet supported for multinetwork storage problems."
 
-    for (n, network) in nws(pmitd)
-        # PM(Transmission) Variables
-        _PM.variable_bus_voltage(pm_model, nw=n)
-        _PM.variable_branch_current(pm_model, nw=n)
-        _PM.variable_gen_current(pm_model, nw=n)
-        _PM.variable_dcline_current(pm_model, nw=n)
-        _PM.variable_storage_power(pm_model, nw=n)
+    # # Get Models
+    # pm_model = _get_powermodel_from_powermodelitd(pmitd)
+    # pmd_model = _get_powermodeldistribution_from_powermodelitd(pmitd)
 
-        # PMD(Distribution) Variables
-        _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
-        _PMD.variable_mc_branch_current(pmd_model; nw=n)
-        _PMD.variable_mc_switch_current(pmd_model; nw=n)
-        _PMD.variable_mc_transformer_current(pmd_model; nw=n)
-        _PMD.variable_mc_generator_current(pmd_model; nw=n)
-        _PMD.variable_mc_load_current(pmd_model; nw=n)
-        _PMD.variable_mc_storage_power(pmd_model; nw=n)
+    # for (n, network) in nws(pmitd)
+    #     # PM(Transmission) Variables
+    #     _PM.variable_bus_voltage(pm_model, nw=n)
+    #     _PM.variable_branch_current(pm_model, nw=n)
+    #     _PM.variable_gen_current(pm_model, nw=n)
+    #     _PM.variable_dcline_current(pm_model, nw=n)
+    #     _PM.variable_storage_power(pm_model, nw=n)
 
-        # PMITD (Boundary) Current Variables
-        variable_boundary_current(pmitd; nw=n)
+    #     # PMD(Distribution) Variables
+    #     _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
+    #     _PMD.variable_mc_branch_current(pmd_model; nw=n)
+    #     _PMD.variable_mc_switch_current(pmd_model; nw=n)
+    #     _PMD.variable_mc_transformer_current(pmd_model; nw=n)
+    #     _PMD.variable_mc_generator_current(pmd_model; nw=n)
+    #     _PMD.variable_mc_load_current(pmd_model; nw=n)
+    #     _PMD.variable_mc_storage_power(pmd_model; nw=n)
 
-        # reference buses (this only needs to happen for pm(transmission))
-        for i in _PM.ids(pm_model, :ref_buses, nw=n)
-            _PM.constraint_theta_ref(pm_model, i, nw=n)
-        end
+    #     # PMITD (Boundary) Current Variables
+    #     variable_boundary_current(pmitd; nw=n)
 
-        for i in _PM.ids(pm_model, :storage, nw=n)
-            _PM.constraint_storage_complementarity_nl(pm_model, i, nw=n)
-            _PM.constraint_storage_losses(pm_model, i, nw=n)
-            _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
-        end
+    #     # reference buses (this only needs to happen for pm(transmission))
+    #     for i in _PM.ids(pm_model, :ref_buses, nw=n)
+    #         _PM.constraint_theta_ref(pm_model, i, nw=n)
+    #     end
 
-        # PM branches
-        for i in _PM.ids(pm_model, :branch, nw=n)
-            _PM.constraint_current_from(pm_model, i, nw=n)
-            _PM.constraint_current_to(pm_model, i, nw=n)
+    #     for i in _PM.ids(pm_model, :storage, nw=n)
+    #         _PM.constraint_storage_complementarity_nl(pm_model, i, nw=n)
+    #         _PM.constraint_storage_losses(pm_model, i, nw=n)
+    #         _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
+    #     end
 
-            _PM.constraint_voltage_drop(pm_model, i, nw=n)
-            _PM.constraint_voltage_angle_difference(pm_model, i, nw=n)
+    #     # PM branches
+    #     for i in _PM.ids(pm_model, :branch, nw=n)
+    #         _PM.constraint_current_from(pm_model, i, nw=n)
+    #         _PM.constraint_current_to(pm_model, i, nw=n)
 
-            _PM.constraint_thermal_limit_from(pm_model, i, nw=n)
-            _PM.constraint_thermal_limit_to(pm_model, i, nw=n)
-        end
+    #         _PM.constraint_voltage_drop(pm_model, i, nw=n)
+    #         _PM.constraint_voltage_angle_difference(pm_model, i, nw=n)
 
-        # PM DC lines
-        for i in _PM.ids(pm_model, :dcline, nw=n)
-            _PM.constraint_dcline_power_losses(pm_model, i, nw=n)
-        end
+    #         _PM.constraint_thermal_limit_from(pm_model, i, nw=n)
+    #         _PM.constraint_thermal_limit_to(pm_model, i, nw=n)
+    #     end
 
-        # -------------------------------------------------
-        # --- PMD(Distribution) Constraints ---
+    #     # PM DC lines
+    #     for i in _PM.ids(pm_model, :dcline, nw=n)
+    #         _PM.constraint_dcline_power_losses(pm_model, i, nw=n)
+    #     end
 
-        # generators should be constrained before KCL, or Pd/Qd undefined
-        for i in _PMD.ids(pmd_model, n, :gen)
-            _PMD.constraint_mc_generator_power(pmd_model, i; nw=n)
-        end
+    #     # -------------------------------------------------
+    #     # --- PMD(Distribution) Constraints ---
 
-        # loads should be constrained before KCL, or Pd/Qd undefined
-        for i in _PMD.ids(pmd_model, n, :load)
-            _PMD.constraint_mc_load_power(pmd_model, i; nw=n)
-        end
+    #     # generators should be constrained before KCL, or Pd/Qd undefined
+    #     for i in _PMD.ids(pmd_model, n, :gen)
+    #         _PMD.constraint_mc_generator_power(pmd_model, i; nw=n)
+    #     end
 
-        for i in _PMD.ids(pmd_model, n, :storage)
-            _PMD.constraint_storage_complementarity_nl(pmd_model, i; nw=n)
-            _PMD.constraint_mc_storage_losses(pmd_model, i; nw=n)
-            _PMD.constraint_mc_storage_thermal_limit(pmd_model, i; nw=n)
-        end
+    #     # loads should be constrained before KCL, or Pd/Qd undefined
+    #     for i in _PMD.ids(pmd_model, n, :load)
+    #         _PMD.constraint_mc_load_power(pmd_model, i; nw=n)
+    #     end
 
-        for i in _PMD.ids(pmd_model, n, :branch)
-            _PMD.constraint_mc_current_from(pmd_model, i; nw=n)
-            _PMD.constraint_mc_current_to(pmd_model, i; nw=n)
-            _PMD.constraint_mc_bus_voltage_drop(pmd_model, i; nw=n)
-            _PMD.constraint_mc_voltage_angle_difference(pmd_model, i; nw=n)
-            _PMD.constraint_mc_thermal_limit_from(pmd_model, i; nw=n)
-            _PMD.constraint_mc_thermal_limit_to(pmd_model, i; nw=n)
-        end
+    #     for i in _PMD.ids(pmd_model, n, :storage)
+    #         _PMD.constraint_storage_complementarity_nl(pmd_model, i; nw=n)
+    #         _PMD.constraint_mc_storage_losses(pmd_model, i; nw=n)
+    #         _PMD.constraint_mc_storage_thermal_limit(pmd_model, i; nw=n)
+    #     end
 
-        for i in _PMD.ids(pmd_model, n, :switch)
-            _PMD.constraint_mc_switch_state(pmd_model, i; nw=n)
-            _PMD.constraint_mc_switch_current_limit(pmd_model, i; nw=n)
-        end
+    #     for i in _PMD.ids(pmd_model, n, :branch)
+    #         _PMD.constraint_mc_current_from(pmd_model, i; nw=n)
+    #         _PMD.constraint_mc_current_to(pmd_model, i; nw=n)
+    #         _PMD.constraint_mc_bus_voltage_drop(pmd_model, i; nw=n)
+    #         _PMD.constraint_mc_voltage_angle_difference(pmd_model, i; nw=n)
+    #         _PMD.constraint_mc_thermal_limit_from(pmd_model, i; nw=n)
+    #         _PMD.constraint_mc_thermal_limit_to(pmd_model, i; nw=n)
+    #     end
 
-        for i in _PMD.ids(pmd_model, n, :transformer)
-            _PMD.constraint_mc_transformer_power(pmd_model, i; nw=n)
-        end
+    #     for i in _PMD.ids(pmd_model, n, :switch)
+    #         _PMD.constraint_mc_switch_state(pmd_model, i; nw=n)
+    #         _PMD.constraint_mc_switch_current_limit(pmd_model, i; nw=n)
+    #     end
 
-        # -------------------------------------------------
-        # --- PMITD(T&D) INDEPENDENT Constraints ----------
+    #     for i in _PMD.ids(pmd_model, n, :transformer)
+    #         _PMD.constraint_mc_transformer_power(pmd_model, i; nw=n)
+    #     end
 
-        for i in ids(pmitd, :boundary; nw=n)
-            constraint_boundary_current(pmitd, i; nw=n)
-            constraint_boundary_voltage_magnitude(pmitd, i; nw=n)
-            constraint_boundary_voltage_angle(pmitd, i; nw=n)
-        end
+    #     # -------------------------------------------------
+    #     # --- PMITD(T&D) INDEPENDENT Constraints ----------
 
-        # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
-        # # ---- Transmission Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
-        for i in _PM.ids(pm_model, :bus, nw=n)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_transmission_current_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
-                _PM.constraint_current_balance(pm_model, i, nw=n)
-            end
-        end
+    #     for i in ids(pmitd, :boundary; nw=n)
+    #         constraint_boundary_current(pmitd, i; nw=n)
+    #         constraint_boundary_voltage_magnitude(pmitd, i; nw=n)
+    #         constraint_boundary_voltage_angle(pmitd, i; nw=n)
+    #     end
 
-        # # ---- Distribution Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
-        for i in _PMD.ids(pmd_model, n, :bus)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_distribution_current_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
-                _PMD.constraint_mc_current_balance(pmd_model, i; nw=n)
-            end
-        end
-    end
+    #     # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+    #     # # ---- Transmission Power Balance ---
+    #     boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+    #     for i in _PM.ids(pm_model, :bus, nw=n)
+    #         for j in ids(pmitd, :boundary; nw=n)
+    #             constraint_transmission_current_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
+    #         end
+    #         if !(i in boundary_buses)
+    #             _PM.constraint_current_balance(pm_model, i, nw=n)
+    #         end
+    #     end
 
-    # --- PM energy storage state constraint ---
-    network_ids_pm = sort(collect(_PM.nw_ids(pm_model)))
+    #     # # ---- Distribution Power Balance ---
+    #     boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+    #     for i in _PMD.ids(pmd_model, n, :bus)
+    #         for j in ids(pmitd, :boundary; nw=n)
+    #             constraint_distribution_current_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
+    #         end
+    #         if !(i in boundary_buses)
+    #             _PMD.constraint_mc_current_balance(pmd_model, i; nw=n)
+    #         end
+    #     end
+    # end
 
-    n_1_pm = network_ids_pm[1]
-    for i in _PM.ids(pm_model, :storage, nw=n_1_pm)
-        _PM.constraint_storage_state(pm_model, i, nw=n_1_pm)
-    end
+    # # --- PM energy storage state constraint ---
+    # network_ids_pm = sort(collect(_PM.nw_ids(pm_model)))
 
-    for n_2_pm in network_ids_pm[2:end]
-        for i in _PM.ids(pm_model, :storage, nw=n_2_pm)
-            _PM.constraint_storage_state(pm_model, i, n_1_pm, n_2_pm)
-        end
-        n_1_pm = n_2_pm
-    end
+    # n_1_pm = network_ids_pm[1]
+    # for i in _PM.ids(pm_model, :storage, nw=n_1_pm)
+    #     _PM.constraint_storage_state(pm_model, i, nw=n_1_pm)
+    # end
 
-    # --- PMD energy storage state constraint ---
-    network_ids_pmd = sort(collect(_PMD.nw_ids(pmd_model)))
+    # for n_2_pm in network_ids_pm[2:end]
+    #     for i in _PM.ids(pm_model, :storage, nw=n_2_pm)
+    #         _PM.constraint_storage_state(pm_model, i, n_1_pm, n_2_pm)
+    #     end
+    #     n_1_pm = n_2_pm
+    # end
 
-    n_1_pmd = network_ids_pmd[1]
+    # # --- PMD energy storage state constraint ---
+    # network_ids_pmd = sort(collect(_PMD.nw_ids(pmd_model)))
 
-    for i in _PMD.ids(pmd_model, :storage; nw=n_1_pmd)
-        _PMD.constraint_storage_state(pmd_model, i; nw=n_1_pmd)
-    end
+    # n_1_pmd = network_ids_pmd[1]
 
-    for n_2_pmd in network_ids_pmd[2:end]
-        for i in _PMD.ids(pmd_model, :storage; nw=n_2_pmd)
-            _PMD.constraint_storage_state(pmd_model, i, n_1_pmd, n_2_pmd)
-        end
+    # for i in _PMD.ids(pmd_model, :storage; nw=n_1_pmd)
+    #     _PMD.constraint_storage_state(pmd_model, i; nw=n_1_pmd)
+    # end
 
-        n_1_pmd = n_2_pmd
-    end
+    # for n_2_pmd in network_ids_pmd[2:end]
+    #     for i in _PMD.ids(pmd_model, :storage; nw=n_2_pmd)
+    #         _PMD.constraint_storage_state(pmd_model, i, n_1_pmd, n_2_pmd)
+    #     end
 
-    # -------------------------------------------------
-    # --- PMITD(T&D) Cost Functions -------------------
-    objective_itd_min_fuel_cost_storage(pmitd)
+    #     n_1_pmd = n_2_pmd
+    # end
+
+    # # -------------------------------------------------
+    # # --- PMITD(T&D) Cost Functions -------------------
+    # objective_itd_min_fuel_cost_storage(pmitd)
 
 end
 
