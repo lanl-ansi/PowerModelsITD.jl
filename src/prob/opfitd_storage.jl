@@ -271,6 +271,7 @@ Constructor for Integrated T&D Optimal Power Flow in current-voltage (IV) variab
 function build_opfitd_storage(pmitd::AbstractIVRPowerModelITD)
 
     @error "IVR-IVRU formulation not yet supported for storage problems."
+    throw(error())
 
     # # Get Models
     # pm_model = _get_powermodel_from_powermodelitd(pmitd)
@@ -880,6 +881,7 @@ Constructor for Multinetwork Integrated T&D Optimal Power Flow in current-voltag
 function build_mn_opfitd_storage(pmitd::AbstractIVRPowerModelITD)
 
     @error "IVR-IVRU formulation not yet supported for multinetwork storage problems."
+    throw(error())
 
     # # Get Models
     # pm_model = _get_powermodel_from_powermodelitd(pmitd)

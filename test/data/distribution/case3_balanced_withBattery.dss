@@ -40,6 +40,8 @@ New Load.L3 phases=1  loadbus.3.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  mod
 New Storage.S1 phases=3 bus1=primary.1.2.3 kv=( 13.8 3 sqrt / ) kwhstored=50 kwhrated=50 kva=100 kvar=100
 ~ %charge=100 %discharge=100 %effcharge=100 %effdischarge=100 %idlingkw=1 %r=0 %x=50
 
+!GENERATORS DEFINITIONS
+New generator.gen1 Bus1=loadbus.1.2.3 Phases=3 kV=( 13.8 3 sqrt / )  kW=20 pf=1 conn=wye Model=3
 
 Set VoltageBases = "230,13.8"
 Set tolerance=0.000001

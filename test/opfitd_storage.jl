@@ -16,7 +16,7 @@
 
         # instantiate model with eng2math_passthrough
         eng2math_passthrough = Dict("storage"=>["cost"])
-        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd; eng2math_passthrough=eng2math_passthrough)
+        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd_storage; eng2math_passthrough=eng2math_passthrough)
 
         # get storage reference
         storage_ref = _IM.ref(pmitd_inst_model, _PMD.pmd_it_sym, nw=nw_id_default, :storage)
@@ -39,7 +39,7 @@
 
         # instantiate model with eng2math_passthrough
         eng2math_passthrough = Dict("storage"=>["cost"])
-        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd; eng2math_passthrough=eng2math_passthrough)
+        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd_storage; eng2math_passthrough=eng2math_passthrough)
 
         # get storage reference
         storage_ref = _IM.ref(pmitd_inst_model, _PMD.pmd_it_sym, nw=nw_id_default, :storage)
@@ -62,7 +62,7 @@
 
         # instantiate model with eng2math_passthrough
         eng2math_passthrough = Dict("storage"=>["cost"])
-        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd; eng2math_passthrough=eng2math_passthrough)
+        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_opfitd_storage; eng2math_passthrough=eng2math_passthrough)
 
         # get storage reference
         storage_ref = _IM.ref(pmitd_inst_model, _PMD.pmd_it_sym, nw=nw_id_default, :storage)
@@ -79,7 +79,7 @@
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file)
         # instantiate model with eng2math_passthrough
         eng2math_passthrough = Dict("storage"=>["cost"])
-        @test_throws ErrorException instantiate_model(pmitd_data, pmitd_type, build_opfitd; eng2math_passthrough=eng2math_passthrough)
+        @test_throws ErrorException instantiate_model(pmitd_data, pmitd_type, build_opfitd_storage; eng2math_passthrough=eng2math_passthrough)
     end
 
     @testset "Check that IVR-IVRU gives warning error when instantiated: (Multinetwork): " begin
@@ -90,7 +90,7 @@
         pmitd_data = parse_files(pm_file, pmd_file, pmitd_file; multinetwork=true)
         # instantiate model with eng2math_passthrough
         eng2math_passthrough = Dict("storage"=>["cost"])
-        @test_throws ErrorException instantiate_model(pmitd_data, pmitd_type, build_mn_opfitd; multinetwork=true, eng2math_passthrough=eng2math_passthrough)
+        @test_throws ErrorException instantiate_model(pmitd_data, pmitd_type, build_mn_opfitd_storage; multinetwork=true, eng2math_passthrough=eng2math_passthrough)
     end
 
     @testset "solve_model (with network inputs) build_opfitd_storage: case5-case3 ACR-ACR with polynomial nl terms above quadratic" begin
@@ -133,7 +133,7 @@
 
         # instantiate model with eng2math_passthrough
         eng2math_passthrough = Dict("storage"=>["cost"])
-        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_mn_opfitd; multinetwork=true, eng2math_passthrough=eng2math_passthrough)
+        pmitd_inst_model = instantiate_model(pmitd_data, pmitd_type, build_mn_opfitd_storage; multinetwork=true, eng2math_passthrough=eng2math_passthrough)
 
         # get storage reference from nw=4
         storage_ref_nw4 = _IM.ref(pmitd_inst_model, _PMD.pmd_it_sym, nw=4, :storage)
@@ -160,7 +160,7 @@
 
         # with storage cost problem
         pmitd_result_strg = solve_opfitd_storage(pmitd_data, pmitd_type, ipopt)
-        @test isapprox(pmitd_result_strg["objective"], 17977.48172498742+(pmitd_result_strg["solution"]["it"]["pmd"]["storage"]["3bus_bal_battery.s1"]["sd"]*strg_cost/100000); atol = 1e-3)
+        @test isapprox(pmitd_result_strg["objective"], 17976.959438016635+(pmitd_result_strg["solution"]["it"]["pmd"]["storage"]["3bus_bal_battery.s1"]["sd"]*strg_cost/100000); atol = 1e-3)
 
     end
 
