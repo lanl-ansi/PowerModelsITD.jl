@@ -10,6 +10,7 @@
 
 - Integrated T&D Power Flow (pfitd)
 - Integrated T&D Optimal Power Flow (opfitd)
+- Integrated T&D Optimal Power Flow with storage costs (opfitd_storage)
 - Integrated T&D Optimal Power Flow with on-load tap-changer (opfitd_oltc)
 - Integrated T&D Optimal power flow at transmission and minimum load delta at distribution system (opfitd_dmld)
 

@@ -41,4 +41,6 @@ PowerModelsITD.silence!()
     include("opfitd_oltc_mn.jl")
     include("opfitd_dmld.jl")
     include("opfitd_solution.jl")
+    include("opfitd_storage.jl")
+    include("solve_x.jl")
 end

@@ -1,5 +1,5 @@
 !Clear
-New Circuit.3bus_bal_battery
+New Circuit.3bus_bal_battery_mn
 !  define a really stiff source
 ~ basekv=230 pu=1.00 MVAsc3=200000 MVAsc1=210000
 
@@ -30,18 +30,17 @@ New Line.Quad    Bus1=Primary.1.2.3  loadbus.1.2.3  linecode = 4/0QUAD  length=1
 
 
 !Loads - single phase
+New Loadshape.ls1 pmult=(file=load_profile.csv)
 
-New Load.L1 phases=1  loadbus.1.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1
-New Load.L2 phases=1  loadbus.2.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1
-New Load.L3 phases=1  loadbus.3.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1
+New Load.L1 phases=1  loadbus.1.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1 daily=ls1
+New Load.L2 phases=1  loadbus.2.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1 daily=ls1
+New Load.L3 phases=1  loadbus.3.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1 daily=ls1
 
 
 !Battery System DEFINITIONS
 New Storage.S1 phases=3 bus1=primary.1.2.3 kv=( 13.8 3 sqrt / ) kwhstored=50 kwhrated=50 kva=100 kvar=100
 ~ %charge=100 %discharge=100 %effcharge=100 %effdischarge=100 %idlingkw=1 %r=0 %x=50
 
-!GENERATORS DEFINITIONS
-New generator.gen1 Bus1=loadbus.1.2.3 Phases=3 kV=( 13.8 3 sqrt / )  kW=20 pf=1 conn=wye Model=3
 
 Set VoltageBases = "230,13.8"
 Set tolerance=0.000001

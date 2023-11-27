@@ -15,7 +15,6 @@ makedocs(
         prettyurls=false,
         collapselevel=1,
     ),
-    strict=false,
     sitename = "PowerModelsITD.jl",
     authors = "Juan Ospina, David M Fobes, and contributors",
     pages = [
@@ -25,9 +24,10 @@ makedocs(
             "Getting Started" => "manual/quickguide.md",
             "File Formats" => "manual/fileformat.md",
             "Formulations" => "manual/formulations.md",
+            "Storage" => "manual/storage.md",
         ],
         "Tutorials" => [
-            "Beginners Guide" => "tutorials/Beginners Guide.md",
+            "Beginners Guide" => "tutorials/BeginnersGuide.md",
         ],
         "API Reference" => [
             "Base" => "reference/base.md",
@@ -60,12 +60,15 @@ if !_FAST
             Pluto.update_run!(ss, nb, nb.cells)
             html = Pluto.generate_html(nb)
 
-            fileout = "docs/build/tutorials/$(basename(file)).html"
+            base_name = basename(file)
+            base_name_splitted = split(base_name, '.')[1]
+            fileout = "docs/build/tutorials/$(base_name_splitted).html"
+
             open(fileout, "w") do io
                 write(io, html)
             end
 
-            doc = open("docs/build/tutorials/$(replace(basename(file), ".jl" => ".html"))", "r") do io
+            doc = open("docs/build/tutorials/$(base_name_splitted).html", "r") do io
                 Gumbo.parsehtml(read(io, String))
             end
 
@@ -81,10 +84,11 @@ if !_FAST
             )
 
             # edit existing html to replace :article with :iframe
-            doc.root[2][1][2][2] = iframe
+            # doc.root[2][1][2][2] = iframe
+            doc.root[2][1][1] = iframe
 
             # Overwrite HTML
-            open("docs/build/tutorials/$(replace(basename(file), ".jl" => ".html"))", "w") do io
+            open("docs/build/tutorials/$(base_name_splitted).html", "w") do io
                 Gumbo.prettyprint(io, doc)
             end
         end

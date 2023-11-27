@@ -9,6 +9,7 @@
         optimizer;
         solution_processors::Vector{<:Function}=Function[],
         pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         make_si::Bool=true,
         auto_rename::Bool=false,
         solution_model::String="eng",
@@ -17,8 +18,28 @@
 
 Solve Integrated T&D Optimal Power Flow.
 """
-function solve_opfitd(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", kwargs...)
-    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_opfitd; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
+function solve_opfitd(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", kwargs...)
+    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_opfitd; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
+end
+
+
+"""
+	function solve_opfitd(
+        pmitd_data::Dict{String,<:Any},
+        pmitd_type,
+        optimizer;
+        solution_processors::Vector{<:Function}=Function[],
+        pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
+        make_si::Bool=true,
+        solution_model::String="eng",
+        kwargs...
+	)
+
+Solve Integrated T&D Optimal Power Flow.
+"""
+function solve_opfitd(pmitd_data::Dict{String,<:Any}, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), make_si::Bool=true, solution_model::String="eng", kwargs...)
+    return solve_model(pmitd_data, pmitd_type, optimizer, build_opfitd; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, solution_model=solution_model, kwargs...)
 end
 
 
@@ -31,6 +52,7 @@ end
         optimizer;
         solution_processors::Vector{<:Function}=Function[],
         pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         make_si::Bool=true,
         auto_rename::Bool=false,
         solution_model::String="eng",
@@ -39,8 +61,28 @@ end
 
 Solve Multinetwork Integrated T&D Optimal Power Flow.
 """
-function solve_mn_opfitd(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", kwargs...)
-    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_mn_opfitd; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
+function solve_mn_opfitd(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", kwargs...)
+    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_mn_opfitd; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
+end
+
+
+"""
+	function solve_mn_opfitd(
+        pmitd_data::Dict{String,<:Any}
+        pmitd_type,
+        optimizer;
+        solution_processors::Vector{<:Function}=Function[],
+        pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]),
+        eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
+        make_si::Bool=true,
+        solution_model::String="eng",
+        kwargs...
+	)
+
+Solve Multinetwork Integrated T&D Optimal Power Flow.
+"""
+function solve_mn_opfitd(pmitd_data::Dict{String,<:Any}, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(), make_si::Bool=true, solution_model::String="eng", kwargs...)
+    return solve_model(pmitd_data, pmitd_type, optimizer, build_mn_opfitd; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, eng2math_passthrough=eng2math_passthrough, make_si=make_si, solution_model=solution_model, kwargs...)
 end
 
 
@@ -61,6 +103,7 @@ function build_opfitd(pmitd::AbstractPowerModelITD)
     _PM.variable_gen_power(pm_model)
     _PM.variable_branch_power(pm_model)
     _PM.variable_dcline_power(pm_model)
+    _PM.variable_storage_power(pm_model)
 
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model)
@@ -82,6 +125,12 @@ function build_opfitd(pmitd::AbstractPowerModelITD)
         _PM.constraint_theta_ref(pm_model, i)
     end
 
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
+    end
 
     # PM branches
     for i in _PM.ids(pm_model, :branch)
@@ -198,6 +247,7 @@ function build_opfitd(pmitd::AbstractIVRPowerModelITD)
     _PM.variable_branch_current(pm_model)
     _PM.variable_gen_current(pm_model)
     _PM.variable_dcline_current(pm_model)
+    _PM.variable_storage_power(pm_model)
 
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model)
@@ -214,6 +264,13 @@ function build_opfitd(pmitd::AbstractIVRPowerModelITD)
     # reference buses (this only needs to happen for pm(transmission))
     for i in _PM.ids(pm_model, :ref_buses)
         _PM.constraint_theta_ref(pm_model, i)
+    end
+
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
     end
 
     for i in _PM.ids(pm_model, :branch)
@@ -320,7 +377,7 @@ function build_opfitd(pmitd::AbstractBFPowerModelITD)
     _PM.variable_branch_power(pm_model)
     _PM.variable_branch_current(pm_model)
     _PM.variable_dcline_power(pm_model)
-
+    _PM.variable_storage_power(pm_model)
 
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model)
@@ -343,6 +400,12 @@ function build_opfitd(pmitd::AbstractBFPowerModelITD)
         _PM.constraint_theta_ref(pm_model, i)
     end
 
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
+    end
 
     # PM branches
     for i in _PM.ids(pm_model, :branch)
@@ -462,6 +525,7 @@ function build_opfitd(pmitd::AbstractLNLBFPowerModelITD)
     _PM.variable_gen_power(pm_model)
     _PM.variable_branch_power(pm_model)
     _PM.variable_dcline_power(pm_model)
+    _PM.variable_storage_power(pm_model)
 
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model)
@@ -484,6 +548,12 @@ function build_opfitd(pmitd::AbstractLNLBFPowerModelITD)
         _PM.constraint_theta_ref(pm_model, i)
     end
 
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
+    end
 
     # PM branches
     for i in _PM.ids(pm_model, :branch)
@@ -605,7 +675,7 @@ function build_mn_opfitd(pmitd::AbstractPowerModelITD)
         _PM.variable_gen_power(pm_model, nw=n)
         _PM.variable_branch_power(pm_model, nw=n)
         _PM.variable_dcline_power(pm_model, nw=n)
-        _PM.variable_storage_power_mi(pm_model, nw=n)
+        _PM.variable_storage_power(pm_model, nw=n)
 
         # PMD(Distribution) Variables
         _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
@@ -628,7 +698,7 @@ function build_mn_opfitd(pmitd::AbstractPowerModelITD)
         end
 
         for i in _PM.ids(pm_model, :storage, nw=n)
-            _PM.constraint_storage_complementarity_mi(pm_model, i, nw=n)
+            _PM.constraint_storage_complementarity_nl(pm_model, i, nw=n)
             _PM.constraint_storage_losses(pm_model, i, nw=n)
             _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
         end
@@ -783,7 +853,7 @@ function build_mn_opfitd(pmitd::AbstractIVRPowerModelITD)
         _PM.variable_branch_current(pm_model, nw=n)
         _PM.variable_gen_current(pm_model, nw=n)
         _PM.variable_dcline_current(pm_model, nw=n)
-        _PM.variable_storage_power_mi(pm_model, nw=n)
+        _PM.variable_storage_power(pm_model, nw=n)
 
         # PMD(Distribution) Variables
         _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
@@ -803,7 +873,7 @@ function build_mn_opfitd(pmitd::AbstractIVRPowerModelITD)
         end
 
         for i in _PM.ids(pm_model, :storage, nw=n)
-            _PM.constraint_storage_complementarity_mi(pm_model, i, nw=n)
+            _PM.constraint_storage_complementarity_nl(pm_model, i, nw=n)
             _PM.constraint_storage_losses(pm_model, i, nw=n)
             _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
         end
@@ -953,7 +1023,7 @@ function build_mn_opfitd(pmitd::AbstractBFPowerModelITD)
         _PM.variable_branch_power(pm_model, nw=n)
         _PM.variable_branch_current(pm_model, nw=n)
         _PM.variable_dcline_power(pm_model, nw=n)
-        _PM.variable_storage_power_mi(pm_model, nw=n)
+        _PM.variable_storage_power(pm_model, nw=n)
 
         # PMD(Distribution) Variables
         _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
@@ -977,7 +1047,7 @@ function build_mn_opfitd(pmitd::AbstractBFPowerModelITD)
         end
 
         for i in _PM.ids(pm_model, :storage, nw=n)
-            _PM.constraint_storage_complementarity_mi(pm_model, i, nw=n)
+            _PM.constraint_storage_complementarity_nl(pm_model, i, nw=n)
             _PM.constraint_storage_losses(pm_model, i, nw=n)
             _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
         end
@@ -1130,7 +1200,7 @@ function build_mn_opfitd(pmitd::AbstractLNLBFPowerModelITD)
         _PM.variable_gen_power(pm_model, nw=n)
         _PM.variable_branch_power(pm_model, nw=n)
         _PM.variable_dcline_power(pm_model, nw=n)
-        _PM.variable_storage_power_mi(pm_model, nw=n)
+        _PM.variable_storage_power(pm_model, nw=n)
 
         # PMD(Distribution) Variables
         _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
@@ -1154,7 +1224,7 @@ function build_mn_opfitd(pmitd::AbstractLNLBFPowerModelITD)
         end
 
         for i in _PM.ids(pm_model, :storage, nw=n)
-            _PM.constraint_storage_complementarity_mi(pm_model, i, nw=n)
+            _PM.constraint_storage_complementarity_nl(pm_model, i, nw=n)
             _PM.constraint_storage_losses(pm_model, i, nw=n)
             _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
         end

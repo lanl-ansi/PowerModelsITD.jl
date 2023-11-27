@@ -43,6 +43,7 @@ module PowerModelsITD
     include("core/objective.jl")
     include("core/objective_dmld.jl")
     include("core/objective_dmld_simple.jl")
+    include("core/objective_storage.jl")
     include("core/solution.jl")
 
     include("data_model/transformations.jl")
@@ -62,7 +63,8 @@ module PowerModelsITD
     include("prob/opfitd.jl")
     include("prob/opfitd_oltc.jl")
     include("prob/opfitd_dmld.jl")
+    include("prob/opfitd_storage.jl")
 
-     # This must come last to support automated export.
+    # This must come last to support automated export.
     include("core/export.jl")
 end
