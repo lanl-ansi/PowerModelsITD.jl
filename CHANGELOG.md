@@ -2,6 +2,10 @@
 
 ## staged
 
+- none.
+
+## v0.8.0
+
 - Added `eng2math_passthrough` parameter to all `instantiate_model(..)` and `solve_X(...)` functions.
 - Added unit tests to `opftid_storage.jl` that test the correct operation of the `eng2math_passthrough` both in single network and multinetwork applications.
 - Added test cases files for the `opftid_storage.jl` unit tests.
