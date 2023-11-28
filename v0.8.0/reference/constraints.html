@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Constraints · PowerModelsITD.jl</title><meta name="title" content="Constraints · PowerModelsITD.jl"/><meta property="og:title" content="Constraints · PowerModelsITD.jl"/><meta property="twitter:title" content="Constraints · PowerModelsITD.jl"/><meta name="description" content="Documentation for PowerModelsITD.jl."/><meta property="og:description" content="Documentation for PowerModelsITD.jl."/><meta property="twitter:description" content="Documentation for PowerModelsITD.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../index.html"><img src="../assets/logo.svg" alt="PowerModelsITD.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../index.html">PowerModelsITD.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../index.html">Introduction</a></li><li><a class="tocitem" href="../installation.html">Installation Guide</a></li><li><input class="collapse-toggle" id="menuitem-3" type="checkbox"/><label class="tocitem" for="menuitem-3"><span class="docs-label">Manual</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../manual/quickguide.html">Getting Started</a></li><li><a class="tocitem" href="../manual/fileformat.html">File Formats</a></li><li><a class="tocitem" href="../manual/formulations.html">Formulations</a></li><li><a class="tocitem" href="../manual/storage.html">Storage</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4" type="checkbox"/><label class="tocitem" for="menuitem-4"><span class="docs-label">Tutorials</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../tutorials/BeginnersGuide.html">Beginners Guide</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-5" type="checkbox" checked/><label class="tocitem" for="menuitem-5"><span class="docs-label">API Reference</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="base.html">Base</a></li><li><a class="tocitem" href="data_models.html">Data Models</a></li><li><a class="tocitem" href="formulations.html">Formulations</a></li><li><a class="tocitem" href="problems.html">Problems</a></li><li><a class="tocitem" href="variables.html">Variables</a></li><li class="is-active"><a class="tocitem" href="constraints.html">Constraints</a></li><li><a class="tocitem" href="objectives.html">Objectives</a></li><li><a class="tocitem" href="constants.html">Constants</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-6" type="checkbox"/><label class="tocitem" for="menuitem-6"><span class="docs-label">Developer Docs</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../developer/contributing.html">Contributing</a></li><li><a class="tocitem" href="../developer/style.html">Style Guide</a></li><li><a class="tocitem" href="../developer/roadmap.html">Roadmap</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">API Reference</a></li><li class="is-active"><a href="constraints.html">Constraints</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href="constraints.html">Constraints</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/lanl-ansi/PowerModelsITD.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/main/docs/src/reference/constraints.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="ConstraintAPI"><a class="docs-heading-anchor" href="#ConstraintAPI">Constraints</a><a id="ConstraintAPI-1"></a><a class="docs-heading-anchor-permalink" href="#ConstraintAPI" title="Permalink"></a></h1><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_current-Tuple{AbstractIVRPowerModelITD, Int64}" href="#PowerModelsITD.constraint_boundary_current-Tuple{AbstractIVRPowerModelITD, Int64}"><code>PowerModelsITD.constraint_boundary_current</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_current(
+    pmitd::AbstractIVRPowerModelITD,
+    i::Int;
+    nw::Int=nw_id_default
+)</code></pre><p>Boundary power constraints based on rectangular currents (I) for AbstractIVRPowerModelITD.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/boundary.jl#L57-L65">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_power-Tuple{AbstractPowerModelITD, Int64}" href="#PowerModelsITD.constraint_boundary_power-Tuple{AbstractPowerModelITD, Int64}"><code>PowerModelsITD.constraint_boundary_power</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_power(
+    pmitd::AbstractPowerModelITD,
+    i::Int;
+    nw::Int=nw_id_default
+)</code></pre><p>Boundary power constraints for AbstractPowerModelITD.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/boundary.jl#L3-L11">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_power-Tuple{LPowerModelITD, Int64}" href="#PowerModelsITD.constraint_boundary_power-Tuple{LPowerModelITD, Int64}"><code>PowerModelsITD.constraint_boundary_power</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_power(
+    pmitd::LPowerModelITD,
+    i::Int;
+    nw::Int=nw_id_default
+)</code></pre><p>Boundary power constraints for LPowerModelITD (Linear versions - Active P only).</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/boundary.jl#L32-L40">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACPPowerModel, ACPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACPPowerModel, ACPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.ACPPowerModel,
+    pmd::_PMD.ACPUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>ACP-ACPU boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/acp.jl#L266-L278">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACPPowerModel, FOTPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACPPowerModel, FOTPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.ACPPowerModel,
+    pmd::_PMD.FOTPUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>ACP-FOTPU boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/fotp.jl#L167-L179">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACRPowerModel, ACRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACRPowerModel, ACRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.ACRPowerModel,
+    pmd::_PMD.ACRUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>ACR-ACRU boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/acr.jl#L195-L207">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACRPowerModel, FBSUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACRPowerModel, FBSUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.ACRPowerModel,
+    pmd::_PMD.FBSUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>ACR-FBSU boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/fbs.jl#L125-L137">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACRPowerModel, FOTRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{ACRPowerModel, FOTRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.ACRPowerModel,
+    pmd::_PMD.FOTRUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>ACR-FOTRU boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/fotr.jl#L135-L147">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{AbstractPowerModelITD, Int64}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{AbstractPowerModelITD, Int64}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pmitd::AbstractPowerModelITD,
+    i::Int;
+    nw::Int=nw_id_default
+)</code></pre><p>General voltage angle boundary constraint.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/boundary.jl#L130-L138">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{DCPPowerModel, DCPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{DCPPowerModel, DCPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.DCPPowerModel,
+    pmd::_PMD.DCPUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>DCP-DCPU boundary bus voltage angle constraints: DCP angle.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/linear.jl#L171-L183">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{IVRPowerModel, IVRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{IVRPowerModel, IVRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.IVRPowerModel,
+    pmd::_PMD.IVRUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>IVR-IVRU boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/ivr.jl#L158-L170">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{NFAPowerModel, NFAUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{NFAPowerModel, NFAUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.NFAPowerModel,
+    pmd::_PMD.NFAUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>NFA-NFAU boundary bus voltage angle constraints: empty NFA angle.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/linear.jl#L154-L166">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractBFAModel, LPUBFDiagPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractBFAModel, LPUBFDiagPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.AbstractBFAModel,
+    pmd::_PMD.LPUBFDiagPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>BFA-LinDist3FlowPowerModel boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/lindist3flow.jl#L153-L165">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSDPWRMModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSDPWRMModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.AbstractSDPWRMModel,
+    pmd::_PMD.SOCConicUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>SDPWRM-SOCConicUBF boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L345-L357">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSOCBFConicModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSOCBFConicModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.AbstractSOCBFConicModel,
+    pmd::_PMD.SOCConicUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>SOCBFConic-SOCUBFConic boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L237-L249">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSOCBFModel, LPUBFDiagPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSOCBFModel, LPUBFDiagPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.AbstractSOCBFModel,
+    pmd::_PMD.LPUBFDiagPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>SOCBF-LinDist3FlowPowerModel boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/lindist3flow.jl#L112-L124">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSOCBFModel, SOCNLPUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSOCBFModel, SOCNLPUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.AbstractSOCBFModel,
+    pmd::_PMD.SOCNLPUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>SOCBF-SOCNLUBF boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L184-L196">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSOCWRConicModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_angle-Tuple{PowerModels.AbstractSOCWRConicModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_angle</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_angle(
+    pm::_PM.AbstractSOCWRConicModel,
+    pmd::_PMD.SOCConicUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>SOCWRConic-SOCConicUBF boundary bus voltage angle constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L290-L302">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACPPowerModel, ACPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACPPowerModel, ACPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.ACPPowerModel,
+    pmd::_PMD.ACPUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>ACP-ACPU boundary bus voltage magnitude constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/acp.jl#L238-L250">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACPPowerModel, FOTPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACPPowerModel, FOTPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.ACPPowerModel,
+    pmd::_PMD.FOTPUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>ACP-FOTPU boundary bus voltage magnitude constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/fotp.jl#L139-L151">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACRPowerModel, ACRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACRPowerModel, ACRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.ACRPowerModel,
+    pmd::_PMD.ACRUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>ACR-ACRU boundary bus voltage magnitude constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/acr.jl#L167-L179">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACRPowerModel, FBSUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACRPowerModel, FBSUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.ACRPowerModel,
+    pmd::_PMD.FBSUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>ACR-FBSU boundary bus voltage magnitude constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/fbs.jl#L95-L107">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACRPowerModel, FOTRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{ACRPowerModel, FOTRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.ACRPowerModel,
+    pmd::_PMD.FOTRUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>ACR-FOTRU boundary bus voltage magnitude constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/fotr.jl#L105-L117">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{AbstractPowerModelITD, Int64}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{AbstractPowerModelITD, Int64}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pmitd::AbstractPowerModelITD,
+    i::Int;
+    nw::Int=nw_id_default
+)</code></pre><p>General voltage magnitude boundary constraint.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/boundary.jl#L103-L111">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{DCPPowerModel, DCPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{DCPPowerModel, DCPUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.DCPPowerModel,
+    pmd::_PMD.DCPUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>DCP-DCPU boundary bus voltage magnitude constraints: empty since DC keeps vm = 1 for all.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/linear.jl#L120-L132">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{IVRPowerModel, IVRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{IVRPowerModel, IVRUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.IVRPowerModel,
+    pmd::_PMD.IVRUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>IVR-IVRU boundary bus voltage magnitude constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/ivr.jl#L130-L142">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{NFAPowerModel, NFAUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{NFAPowerModel, NFAUPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.NFAPowerModel,
+    pmd::_PMD.NFAUPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>NFA-NFAU boundary bus voltage magnitude constraints: empty NFA.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/linear.jl#L137-L149">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractBFAModel, LPUBFDiagPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractBFAModel, LPUBFDiagPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.AbstractBFAModel,
+    pmd::_PMD.LPUBFDiagPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>BFA-LinDist3FlowPowerModel boundary bus voltage magnitude constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/lindist3flow.jl#L129-L141">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSDPWRMModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSDPWRMModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.AbstractSDPWRMModel,
+    pmd::_PMD.SOCConicUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>SDPWRM-SOCConicUBF boundary bus voltage magnitude (W variables) constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L320-L332">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSOCBFConicModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSOCBFConicModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.AbstractSOCBFConicModel,
+    pmd::_PMD.SOCConicUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>SOCBFConic-SOCUBFConic boundary bus voltage magnitude (W variables) constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L212-L224">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSOCBFModel, LPUBFDiagPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSOCBFModel, LPUBFDiagPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.AbstractSOCBFModel,
+    pmd::_PMD.LPUBFDiagPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int=nw_id_default
+)</code></pre><p>SOCBF-LinDist3FlowPowerModel boundary bus voltage magnitude constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/lindist3flow.jl#L88-L100">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSOCBFModel, SOCNLPUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSOCBFModel, SOCNLPUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.AbstractSOCBFModel,
+    pmd::_PMD.SOCNLPUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>SOCBF-SOCNLUBF boundary bus voltage magnitude (W variables) constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L158-L170">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSOCWRConicModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}" href="#PowerModelsITD.constraint_boundary_voltage_magnitude-Tuple{PowerModels.AbstractSOCWRConicModel, SOCConicUBFPowerModel, Int64, Tuple{Int64, Int64, Int64}, Vector{Int64}, Vector{Int64}}"><code>PowerModelsITD.constraint_boundary_voltage_magnitude</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_boundary_voltage_magnitude(
+    pm::_PM.AbstractSOCWRConicModel,
+    pmd::_PMD.SOCConicUBFPowerModel,
+    i::Int,
+    f_idx::Tuple{Int,Int,Int},
+    f_connections::Vector{Int},
+    t_connections::Vector{Int};
+    nw::Int = nw_id_default
+)</code></pre><p>SOCWRConic-SOCConicUBF boundary bus voltage magnitude (W variables) constraints.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L265-L277">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_current_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedIVRModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}" href="#PowerModelsITD.constraint_distribution_current_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedIVRModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}"><code>PowerModelsITD.constraint_distribution_current_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_current_balance(
+    pmitd::AbstractPowerModelITD,
+    pmd::_PMD.AbstractUnbalancedIVRModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    terminals::Vector{Int},
+    grounded::Vector{Bool},
+    bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_gens::Vector{Tuple{Int,Vector{Int}}},
+    bus_storage::Vector{Tuple{Int,Vector{Int}}},
+    bus_loads::Vector{Tuple{Int,Vector{Int}}},
+    bus_shunts::Vector{Tuple{Int,Vector{Int}}},
+    bus_arcs_boundary_to
+)</code></pre><p>IVRU distribution constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/ivr.jl#L57-L77">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_current_balance_boundary-Tuple{AbstractIVRPowerModelITD, Int64, Int64, Vector}" href="#PowerModelsITD.constraint_distribution_current_balance_boundary-Tuple{AbstractIVRPowerModelITD, Int64, Int64, Vector}"><code>PowerModelsITD.constraint_distribution_current_balance_boundary</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_current_balance_boundary(
+    pmitd::AbstractIVRPowerModelITD,
+    i::Int,
+    j::Int,
+    boundary_buses::Vector;
+    nw_pmitd::Int=nw_id_default
+)</code></pre><p>General current balance contraints for boundary buses in the distribution system-side.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/boundary.jl#L293-L303">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractBFPowerModelITD, LPUBFDiagPowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}" href="#PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractBFPowerModelITD, LPUBFDiagPowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}"><code>PowerModelsITD.constraint_distribution_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_power_balance(
+    pmitd::AbstractBFPowerModelITD,
+    pmd::_PMD.LPUBFDiagPowerModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    terminals::Vector{Int},
+    grounded::Vector{Bool},
+    bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_gens::Vector{Tuple{Int,Vector{Int}}},
+    bus_storage::Vector{Tuple{Int,Vector{Int}}},
+    bus_loads::Vector{Tuple{Int,Vector{Int}}},
+    bus_shunts::Vector{Tuple{Int,Vector{Int}}},
+    bus_arcs_boundary_to
+)</code></pre><p>LinDist3FlowPowerModel distribution constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/lindist3flow.jl#L3-L23">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, FBSUBFPowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}" href="#PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, FBSUBFPowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}"><code>PowerModelsITD.constraint_distribution_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pmd::_PMD.FBSUBFPowerModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    terminals::Vector{Int},
+    grounded::Vector{Bool},
+    bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_gens::Vector{Tuple{Int,Vector{Int}}},
+    bus_storage::Vector{Tuple{Int,Vector{Int}}},
+    bus_loads::Vector{Tuple{Int,Vector{Int}}},
+    bus_shunts::Vector{Tuple{Int,Vector{Int}}},
+    bus_arcs_boundary_to
+)</code></pre><p>FBSU distribution constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/fbs.jl#L3-L23">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, FOTPUPowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}" href="#PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, FOTPUPowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}"><code>PowerModelsITD.constraint_distribution_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pmd::_PMD.FOTPUPowerModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    terminals::Vector{Int},
+    grounded::Vector{Bool},
+    bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_gens::Vector{Tuple{Int,Vector{Int}}},
+    bus_storage::Vector{Tuple{Int,Vector{Int}}},
+    bus_loads::Vector{Tuple{Int,Vector{Int}}},
+    bus_shunts::Vector{Tuple{Int,Vector{Int}}},
+    bus_arcs_boundary_to
+)</code></pre><p>FOTPU distribution constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/fotp.jl#L3-L23">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, FOTRUPowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}" href="#PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, FOTRUPowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}"><code>PowerModelsITD.constraint_distribution_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pmd::_PMD.FOTRUPowerModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    terminals::Vector{Int},
+    grounded::Vector{Bool},
+    bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_gens::Vector{Tuple{Int,Vector{Int}}},
+    bus_storage::Vector{Tuple{Int,Vector{Int}}},
+    bus_loads::Vector{Tuple{Int,Vector{Int}}},
+    bus_shunts::Vector{Tuple{Int,Vector{Int}}},
+    bus_arcs_boundary_to
+)</code></pre><p>FOTRU distribution constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/fotr.jl#L3-L23">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedACPModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}" href="#PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedACPModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}"><code>PowerModelsITD.constraint_distribution_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pmd::_PMD.AbstractUnbalancedACPModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    terminals::Vector{Int},
+    grounded::Vector{Bool},
+    bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_gens::Vector{Tuple{Int,Vector{Int}}},
+    bus_storage::Vector{Tuple{Int,Vector{Int}}},
+    bus_loads::Vector{Tuple{Int,Vector{Int}}},
+    bus_shunts::Vector{Tuple{Int,Vector{Int}}},
+    bus_arcs_boundary_to
+)</code></pre><p>ACPU distribution constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/acp.jl#L109-L129">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedACRModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}" href="#PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedACRModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}"><code>PowerModelsITD.constraint_distribution_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pmd::_PMD.AbstractUnbalancedACRModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    terminals::Vector{Int},
+    grounded::Vector{Bool},
+    bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_gens::Vector{Tuple{Int,Vector{Int}}},
+    bus_storage::Vector{Tuple{Int,Vector{Int}}},
+    bus_loads::Vector{Tuple{Int,Vector{Int}}},
+    bus_shunts::Vector{Tuple{Int,Vector{Int}}},
+    bus_arcs_boundary_to
+)</code></pre><p>ACRU distribution constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/acr.jl#L74-L94">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedActivePowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}" href="#PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedActivePowerModel, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}"><code>PowerModelsITD.constraint_distribution_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pmd::_PMD.AbstractUnbalancedActivePowerModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    terminals::Vector{Int},
+    grounded::Vector{Bool},
+    bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_gens::Vector{Tuple{Int,Vector{Int}}},
+    bus_storage::Vector{Tuple{Int,Vector{Int}}},
+    bus_loads::Vector{Tuple{Int,Vector{Int}}},
+    bus_shunts::Vector{Tuple{Int,Vector{Int}}},
+    bus_arcs_boundary_to
+)</code></pre><p>DCPU/NFAU distribution constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/linear.jl#L55-L75">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedWModels, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}" href="#PowerModelsITD.constraint_distribution_power_balance-Tuple{AbstractPowerModelITD, PowerModelsDistribution.AbstractUnbalancedWModels, Int64, Int64, Int64, Vector{Int64}, Vector{Bool}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Tuple{Int64, Int64, Int64}, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Vector{Tuple{Int64, Vector{Int64}}}, Any}"><code>PowerModelsITD.constraint_distribution_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pmd::_PMD.AbstractUnbalancedWModels,
+    n::Int,
+    j::Int,
+    i::Int,
+    terminals::Vector{Int},
+    grounded::Vector{Bool},
+    bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}},
+    bus_gens::Vector{Tuple{Int,Vector{Int}}},
+    bus_storage::Vector{Tuple{Int,Vector{Int}}},
+    bus_loads::Vector{Tuple{Int,Vector{Int}}},
+    bus_shunts::Vector{Tuple{Int,Vector{Int}}},
+    bus_arcs_boundary_to
+)</code></pre><p>Unbalanced W models distribution constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L71-L91">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_distribution_power_balance_boundary-Tuple{AbstractPowerModelITD, Int64, Int64, Vector}" href="#PowerModelsITD.constraint_distribution_power_balance_boundary-Tuple{AbstractPowerModelITD, Int64, Int64, Vector}"><code>PowerModelsITD.constraint_distribution_power_balance_boundary</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_distribution_power_balance_boundary(
+    pmitd::AbstractPowerModelITD,
+    i::Int,
+    j::Int,
+    boundary_buses::Vector;
+    nw_pmitd::Int=nw_id_default
+)</code></pre><p>General power balance contraints for boundary buses in the distribution system-side.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/boundary.jl#L200-L210">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_transmission_current_balance-Tuple{AbstractPowerModelITD, PowerModels.AbstractIVRModel, Int64, Int64, Int64, Vararg{Any, 8}}" href="#PowerModelsITD.constraint_transmission_current_balance-Tuple{AbstractPowerModelITD, PowerModels.AbstractIVRModel, Int64, Int64, Int64, Vararg{Any, 8}}"><code>PowerModelsITD.constraint_transmission_current_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_transmission_current_balance(
+    pmitd::AbstractPowerModelITD,
+    pm::_PM.AbstractIVRModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    bus_arcs,
+    bus_arcs_dc,
+    bus_gens,
+    bus_pd,
+    bus_qd,
+    bus_gs,
+    bus_bs,
+    bus_arcs_boundary_from
+)</code></pre><p>IVR transmission constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/ivr.jl#L3-L21">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_transmission_current_balance_boundary-Tuple{AbstractIVRPowerModelITD, Int64, Int64, Vector}" href="#PowerModelsITD.constraint_transmission_current_balance_boundary-Tuple{AbstractIVRPowerModelITD, Int64, Int64, Vector}"><code>PowerModelsITD.constraint_transmission_current_balance_boundary</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_transmission_current_balance_boundary(
+    pmitd::AbstractIVRPowerModelITD,
+    i::Int,
+    j::Int,
+    boundary_buses::Vector;
+    nw_pmitd::Int=nw_id_default
+)</code></pre><p>General current balance contraints for boundary buses in the transmission system-side.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/boundary.jl#L245-L255">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_transmission_power_balance-Tuple{AbstractPowerModelITD, PowerModels.AbstractACPModel, Int64, Int64, Int64, Vararg{Any, 10}}" href="#PowerModelsITD.constraint_transmission_power_balance-Tuple{AbstractPowerModelITD, PowerModels.AbstractACPModel, Int64, Int64, Int64, Vararg{Any, 10}}"><code>PowerModelsITD.constraint_transmission_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_transmission_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pm::_PM.AbstractACPModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    bus_arcs,
+    bus_arcs_dc,
+    bus_arcs_sw,
+    bus_gens,
+    bus_storage,
+    bus_pd,
+    bus_qd,
+    bus_gs,
+    bus_bs,
+    bus_arcs_boundary_from
+)</code></pre><p>ACP transmission constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/acp.jl#L3-L23">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_transmission_power_balance-Tuple{AbstractPowerModelITD, PowerModels.AbstractACRModel, Int64, Int64, Int64, Vararg{Any, 10}}" href="#PowerModelsITD.constraint_transmission_power_balance-Tuple{AbstractPowerModelITD, PowerModels.AbstractACRModel, Int64, Int64, Int64, Vararg{Any, 10}}"><code>PowerModelsITD.constraint_transmission_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_transmission_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pm::_PM.AbstractACRModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    bus_arcs,
+    bus_arcs_dc,
+    bus_arcs_sw,
+    bus_gens,
+    bus_storage,
+    bus_pd,
+    bus_qd,
+    bus_gs,
+    bus_bs,
+    bus_arcs_boundary_from
+)</code></pre><p>ACR transmission constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/acr.jl#L3-L23">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_transmission_power_balance-Tuple{AbstractPowerModelITD, PowerModels.AbstractActivePowerModel, Int64, Int64, Int64, Vararg{Any, 10}}" href="#PowerModelsITD.constraint_transmission_power_balance-Tuple{AbstractPowerModelITD, PowerModels.AbstractActivePowerModel, Int64, Int64, Int64, Vararg{Any, 10}}"><code>PowerModelsITD.constraint_transmission_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_transmission_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pm::_PM.AbstractActivePowerModel,
+    n::Int,
+    j::Int,
+    i::Int,
+    bus_arcs,
+    bus_arcs_dc,
+    bus_arcs_sw,
+    bus_gens,
+    bus_storage,
+    bus_pd,
+    bus_qd,
+    bus_gs,
+    bus_bs,
+    bus_arcs_boundary_from
+)</code></pre><p>DCP/NFA transmission constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/linear.jl#L3-L23">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_transmission_power_balance-Tuple{AbstractPowerModelITD, Union{PowerModels.AbstractACTModel, PowerModels.AbstractBFModel, PowerModels.AbstractWRConicModel, PowerModels.AbstractWRMModel, PowerModels.AbstractWRModel}, Int64, Int64, Int64, Vararg{Any, 10}}" href="#PowerModelsITD.constraint_transmission_power_balance-Tuple{AbstractPowerModelITD, Union{PowerModels.AbstractACTModel, PowerModels.AbstractBFModel, PowerModels.AbstractWRConicModel, PowerModels.AbstractWRMModel, PowerModels.AbstractWRModel}, Int64, Int64, Int64, Vararg{Any, 10}}"><code>PowerModelsITD.constraint_transmission_power_balance</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_transmission_power_balance(
+    pmitd::AbstractPowerModelITD,
+    pm::_PM.AbstractWModels,
+    n::Int,
+    j::Int,
+    i::Int,
+    bus_arcs,
+    bus_arcs_dc,
+    bus_arcs_sw,
+    bus_gens,
+    bus_storage,
+    bus_pd,
+    bus_qd,
+    bus_gs,
+    bus_bs,
+    bus_arcs_boundary_from
+)</code></pre><p>W Models (e.g., SOCBF) transmission constraint power balance.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/wmodels.jl#L3-L23">source</a></section></article><article class="docstring"><header><a class="docstring-article-toggle-button fa-solid fa-chevron-down" href="javascript:;" title="Collapse docstring"></a><a class="docstring-binding" id="PowerModelsITD.constraint_transmission_power_balance_boundary-Tuple{AbstractPowerModelITD, Int64, Int64, Vector}" href="#PowerModelsITD.constraint_transmission_power_balance_boundary-Tuple{AbstractPowerModelITD, Int64, Int64, Vector}"><code>PowerModelsITD.constraint_transmission_power_balance_boundary</code></a> — <span class="docstring-category">Method</span></header><section><div><pre><code class="language-julia hljs">function constraint_transmission_power_balance_boundary(
+    pmitd::AbstractPowerModelITD,
+    i::Int,
+    j::Int,
+    boundary_buses::Vector;
+    nw_pmitd::Int=nw_id_default
+)</code></pre><p>General power balance contraints for boundary buses in the transmission system-side.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/e37c806b1afbd23e201930b9d5ce036a106ae7b7/src/form/boundary.jl#L158-L168">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="variables.html">« Variables</a><a class="docs-footer-nextpage" href="objectives.html">Objectives »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Tuesday 28 November 2023 16:42">Tuesday 28 November 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
