@@ -19,6 +19,7 @@
 - Added documentation of the new problem formulation that considers storage costs.
 - Updated BeginnersGuide.jl Pluto Notebook to latest versions.
 - Updated DOCs dependencies and fixed minor issues.
+- Replaced the `BeginnersGuide.jl` Pluto notebook in the DOCs with a simple HTML file (with markdown) that presents the beginner guide in a more concise and simpler way.
 
 ## v0.7.9
 
