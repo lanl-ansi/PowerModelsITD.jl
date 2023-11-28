@@ -10,11 +10,11 @@ Each example case shown in this guide will be divided into **three** main parts.
 
 **Important**: All files used in this beginner guide are available in the `/test/data` folder of the repository.
 
-## Example Case #1: Solving a simple Optimal Power Flow for Integrated Transmission-Distribution systems (OPFITD)
+## Example Case #1: Solving a simple Integrated T&D Optimal Power Flow (OPFITD)
 
 ### Test Case #1
 
-In this example case, we want to solve the optimal power flow for integrated transmission-distribution (opfitd) problem for a case where we have the **PJM 5-bus system** (`case5_withload`) as the _transmission system_ and the **IEEE 4 Node Test Feeder** (`case3_unbalanced.dss`) as the _distribution system_. The boundary information that specifies the respective boundary buses for both the transmission and distribution systems can be found in `case5_case3_unbal.json`.
+In this example case, we want to solve the integrated T&D optimal power flow (opfitd) problem for a case where we have the **PJM 5-bus system** (`case5_withload`) as the _transmission system_ and the **IEEE 4 Node Test Feeder** (`case3_unbalanced.dss`) as the _distribution system_. The boundary information that specifies the respective boundary buses for both the transmission and distribution systems can be found in `case5_case3_unbal.json`.
 
 The formulation used to solve this optimization problem is the **ACP-ACPU** formulation.
 
@@ -59,11 +59,11 @@ After running the corresponding code, the user should get the following output d
 [ Main | Info ] : Solution Values for Boundary(ies): Dict{String, Any}("multinetwork" => false, "boundary" => Dict{String, Any}("(100001, 5, voltage_source.3bus_unbal.source)" => Dict{String, Any}("pbound_fr" => [8068.452673591816], "qbound_fr" => [4367.184067738673]), "(100001, voltage_source.3bus_unbal.source, 5)" => Dict{String, Any}("pbound_to" => [-3367.1850486607445, -2346.4026604158908, -2354.8649645151804], "qbound_to" => [-1355.0096276913357, -1507.4706735124998, -1504.7037665348369])))
 ```
 
-## Example Case #2: Solving a simple Multinetwork (Time-series) Multisystem (Multiple Distribution Systems) OPFITD
+## Example Case #2: Solving a Multinetwork (Time-series) Multisystem (Multiple Distribution Systems) OPFITD
 
 ### Test Case #2
 
-In this example case, we want to solve the optimal power flow for integrated transmission-distribution (opfitd) problem for a **Multinetwork** case where we have the **PJM 5-bus system** (`case5_with2loads`) as the _transmission system_ and **two** copies of the **IEEE 4 Node Test Feeder** (`case3_unbalanced_withoutgen_mn.dss`) as the _distribution systems_, where each distribution system has load profiles for their respective loads for **four** timesteps. The boundary information that specifies the respective boundary buses for both the transmission and dsitribution systems can be found in `case5_case3x2.json`.
+In this example case, we want to solve the integrated T&D optimal power flow (opfitd) problem for a **Multinetwork** case where we have the **PJM 5-bus system** (`case5_with2loads`) as the _transmission system_ and **two** copies of the **IEEE 4 Node Test Feeder** (`case3_unbalanced_withoutgen_mn.dss`) as the _distribution systems_, where each distribution system has load profiles for their respective loads for **four** timesteps. The boundary information that specifies the respective boundary buses for both the transmission and distribution systems can be found in `case5_case3x2.json`.
 
 The formulation used to solve this optimization problem is the **ACP-ACPU** formulation.
 
@@ -110,15 +110,15 @@ After running the corresponding code, the user should get the following output d
 
 As you can see on the output, the dictionary results have extra keys such as `nw`, which indicate that this is a multinetwork (multi-timestep) optimization problem. Below the `nw`, you can find the solutions of the respective multinetwork (i.e., timestep) as **"#"** (e.g., ```["nw"]["3"]``` represents the results for the **3th** timestep).
 
-## Example Case #3: Solving a simple OPFITD with voltage bounds (support for PowerModelsDistribution (PMD) Transformations)
+## Example Case #3: Solving OPFITD with voltage bounds (support for PowerModelsDistribution (PMD) Transformations)
 
 ### Test Case #3
 
-In this example case, we want to solve the optimal power flow for integrated transmission-distribution (opfitd) problem for a case where we have the **PJM 5-bus system** (`case5_withload`) as the _transmission system_ and the **IEEE 4 Node Test Feeder** (`case3_unbalanced.dss`) as the _distribution system_. The boundary information that specifies the respective boundary buses for both the transmission and distribution systems can be found in `case5_case3_unbal.json`.
+In this example case, we want to solve the integrated T&D optimal power flow (opfitd) problem for a case where we have the **PJM 5-bus system** (`case5_withload`) as the _transmission system_ and the **IEEE 4 Node Test Feeder** (`case3_unbalanced.dss`) as the _distribution system_. The boundary information that specifies the respective boundary buses for both the transmission and distribution systems can be found in `case5_case3_unbal.json`.
 
 The formulation used to solve this optimization problem is the **ACP-ACPU** formulation.
 
-Additionally, we are specificying a `PMD` transformation for the **distribution system data**. This **transformation** applies **voltage bounds** to all the nodes in the distribution system(s). The function is called `apply_voltage_bounds!(...)`.
+Additionally, we are specifying a `PMD` transformation for the **distribution system data**. This **transformation** applies **voltage bounds** to all the nodes in the distribution system(s). The function is called `apply_voltage_bounds!(...)`.
 
 ### Julia Code for Test Case #3
 
@@ -160,15 +160,15 @@ After running the corresponding code, the user should get the following output d
 
 You can see in these results that the voltage magnitude values of the distribution system nodes is between the `0.99` and `1.01` bounds.
 
-## Example Case #4: Solving a simple OPFITD with Solution Processors (apply solution processor to convert voltage values solutions from `rectangular` to `polar` coordinates)
+## Example Case #4: Solving OPFITD with Solution Processors (apply solution processor to convert voltage values solutions from `rectangular` to `polar` coordinates)
 
 ### Test Case #4
 
-In this example case, we want to solve the optimal power flow for integrated transmission-distribution (opfitd) problem for a case where we have the **PJM 5-bus system** (`case5_withload`) as the _transmission system_ and the **IEEE 4 Node Test Feeder** (`case3_unbalanced.dss`) as the _distribution system_. The boundary information that specifies the respective boundary buses for both the transmission and distribution systems can be found in `case5_case3_unbal.json`.
+In this example case, we want to solve the integrated T&D optimal power flow (opfitd) problem for a case where we have the **PJM 5-bus system** (`case5_withload`) as the _transmission system_ and the **IEEE 4 Node Test Feeder** (`case3_unbalanced.dss`) as the _distribution system_. The boundary information that specifies the respective boundary buses for both the transmission and distribution systems can be found in `case5_case3_unbal.json`.
 
 Additionally, we are specificying a `PMD` transformation for the distribution system data. This **transformation** applies **voltage bounds** to all the nodes in the distribution system(s). The function is called `apply_voltage_bounds!(...)`.
 
-Finally, we also want to solve this problem using the **ACR-ACRU** formulation (i.e., AC OPF in **rectangular** coordinates) instead of the ACP-ACPU formulation used previously. We also want to show that by applying the `solution processor` to the `solve_opfitd(...)` function, we can convert the solution from **rectangular** to **polar** corrdinates (after the problem has been solved in **rectangular** coordinates).
+Finally, we also want to solve this problem using the **ACR-ACRU** formulation (i.e., AC OPF in **rectangular** coordinates) instead of the ACP-ACPU formulation used previously. We also want to show that by applying the `solution processor` to the `solve_opfitd(...)` function, we can convert the solution from **rectangular** to **polar** coordinates (after the problem has been solved in **rectangular** coordinates).
 
 ### Julia Code for Test Case #4
 
@@ -210,11 +210,11 @@ After running the corresponding code, the user should get the following output d
 [ Main | Info ] : Distribution system(s) voltages in polar coordinates: Dict{String, Any}("3bus_unbal.loadbus" => Dict{String, Any}("va" => [-0.8977463956228972, -120.78309686739179, 119.34177619725007], "vm" => [0.989999994979725, 0.9946672024445378, 0.9928991446530021]), "3bus_unbal.substation" => Dict{String, Any}("va" => [-0.7693363704348831, -120.76782279518537, 119.23219208076581], "vm" => [0.9997427336408314, 0.9997433113034004, 0.9997446617374346]), "3bus_unbal.primary" => Dict{String, Any}("va" => [-0.8297021010938084, -120.77556387092758, 119.28178890104428], "vm" => [0.9952384516880516, 0.9973943540560338, 0.9965725162491212]), "3bus_unbal.sourcebus" => Dict{String, Any}("va" => [-0.767115894005601, -120.7663133943784, 119.23370677869384], "vm" => [0.9997629941462579, 0.9997642010149662, 0.9997655311825235]))
 ```
 
-## Example Case #5: Solving a simple OPFITD with Results in `MATH` Model (instead of default `ENG`)
+## Example Case #5: Solving OPFITD with Results in `MATH` Model (instead of default `ENG`)
 
 ### Test Case #5
 
-In this example case, we want to solve the optimal power flow for integrated transmission-distribution (opfitd) problem for a case where we have the **PJM 5-bus system** (`case5_withload`) as the _transmission system_ and the **IEEE 4 Node Test Feeder** (`case3_unbalanced.dss`) as the _distribution system_. The boundary information that specifies the respective boundary buses for both the transmission and distribution systems can be found in `case5_case3_unbal.json`.
+In this example case, we want to solve the integrated T&D optimal power flow (opfitd) problem for a case where we have the **PJM 5-bus system** (`case5_withload`) as the _transmission system_ and the **IEEE 4 Node Test Feeder** (`case3_unbalanced.dss`) as the _distribution system_. The boundary information that specifies the respective boundary buses for both the transmission and distribution systems can be found in `case5_case3_unbal.json`.
 
 The formulation used to solve this optimization problem is the **ACP-ACPU** formulation.
 
@@ -258,3 +258,5 @@ After running the corresponding code, the user should get the following output d
 
 [ Main | Info ] : Solution Values (MATH model) for Boundary(ies): Dict{String, Any}("multinetwork" => false, "boundary" => Dict{String, Any}("(100001, 9, 5)" => Dict{String, Any}("pbound_to" => [-3367.1850486607445, -2346.4026604158908, -2354.8649645151804], "qbound_to" => [-1355.0096276913357, -1507.4706735124998, -1504.7037665348369]), "(100001, 5, 9)" => Dict{String, Any}("pbound_fr" => [8068.452673591816], "qbound_fr" => [4367.184067738673])))
 ```
+
+As seen in the console output, the nodes/buses are now referenced by their `MATH` names (i.e., numbers) and not their actual `ENG` name.
