@@ -237,7 +237,9 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
 
         # get boundary number
         boundary_keys = collect(keys(boundaries))
-        boundary_number = parse(Int64, boundary_keys[1])
+
+        # boundary_number = parse(Int64, boundary_keys[1])
+        boundary_number = boundary_keys[1]
 
         # create :boundary structure if does not exists; inserts to dictionary if it already exists
         if !haskey(nw_ref, :boundary)
@@ -250,17 +252,17 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
         _compute_boundary_power_start_values_distribution!(nw_ref)
 
         # modify default values with actual values coming from linking file information
-        nw_ref[:boundary][boundary_number]["f_bus"] = boundaries[string(boundary_number)]["transmission_boundary"]
-        nw_ref[:boundary][boundary_number]["t_bus"] = boundaries[string(boundary_number)]["distribution_boundary"]
+        nw_ref[:boundary][boundary_number]["f_bus"] = boundaries[boundary_number]["transmission_boundary"]
+        nw_ref[:boundary][boundary_number]["t_bus"] = boundaries[boundary_number]["distribution_boundary"]
         nw_ref[:boundary][boundary_number]["index"] = boundary_number
-        nw_ref[:boundary][boundary_number]["ckt_name"] = boundaries[string(boundary_number)]["ckt_name"]
+        nw_ref[:boundary][boundary_number]["ckt_name"] = boundaries[boundary_number]["ckt_name"]
         nw_ref[:boundary][boundary_number]["name"] = "_itd_boundary_$boundary_number"
-        nw_ref[:boundary][boundary_number]["pbound_aux_start"] = boundaries[string(boundary_number)]["pbound_aux_start"]
-        nw_ref[:boundary][boundary_number]["qbound_aux_start"] = boundaries[string(boundary_number)]["qbound_aux_start"]
+        nw_ref[:boundary][boundary_number]["pbound_aux_start"] = boundaries[boundary_number]["pbound_aux_start"]
+        nw_ref[:boundary][boundary_number]["qbound_aux_start"] = boundaries[boundary_number]["qbound_aux_start"]
 
         # Add bus reference from transmission (pm)
         # The dictionary represents Dict(original bus_index => boundary # that belongs to)
-        trans_bus = boundaries[string(boundary_number)]["transmission_boundary"]
+        trans_bus = boundaries[boundary_number]["transmission_boundary"]
         if !haskey(nw_ref, :boundary_bus_from)
             nw_ref[:boundary_bus_from] = Dict(trans_bus => Dict("boundary" => boundary_number))
         else
@@ -269,7 +271,7 @@ function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,
 
         # Add bus reference from distribution (pmd)
         # The dictionary represents Dict(original bus_index => boundary # that belongs to)
-        dist_bus = boundaries[string(boundary_number)]["distribution_boundary"]
+        dist_bus = boundaries[boundary_number]["distribution_boundary"]
         if !haskey(nw_ref, :boundary_bus_to)
             nw_ref[:boundary_bus_to] = Dict(dist_bus => Dict("boundary" => boundary_number))
         else
