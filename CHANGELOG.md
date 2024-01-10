@@ -2,7 +2,7 @@
 
 ## staged
 
-- none.
+- Added multiple functions to `objetive_helpers.jl` adapted from the implementation in PowerModels <= v0.19 due to their removal from >= v0.20.
 
 ## v0.8.0
 
