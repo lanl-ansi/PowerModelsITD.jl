@@ -32,6 +32,10 @@ module PowerModelsITD
     "BOUNDARY_NUMBER constant that determines the starting counter for the boundaries defined."
     const BOUNDARY_NUMBER = 100001
 
+    ### compat for PM v0.20
+    # enables support for v[1]
+    Base.getindex(v::JuMP.VariableRef, i::Int) = v
+
     # Files to include in module
     include("io/common.jl")
     include("core/base.jl")
@@ -40,6 +44,7 @@ module PowerModelsITD
     include("core/ref.jl")
     include("core/helpers.jl")
     include("core/variable.jl")
+    include("core/objective_helpers.jl")
     include("core/objective.jl")
     include("core/objective_dmld.jl")
     include("core/objective_dmld_simple.jl")

@@ -14,7 +14,7 @@ function objective_itd_min_fuel_cost(pmitd::AbstractPowerModelITD)
     pmd_model = _get_powermodeldistribution_from_powermodelitd(pmitd)
 
     # PM cost models
-    pm_cost_model = _PM.check_cost_models(pm_model)
+    pm_cost_model = _check_gen_cost_models(pm_model)
 
     # PMD cost models
     pmd_cost_model = _PMD.check_gen_cost_models(pmd_model)
@@ -43,8 +43,8 @@ Fuel cost minimization objective with piecewise linear terms.
 function objective_itd_min_fuel_cost_pwl(pmitd::AbstractPowerModelITD, pm::_PM.AbstractPowerModel, pmd::_PMD.AbstractUnbalancedPowerModel)
 
     # PM-section part
-    _PM.objective_variable_pg_cost(pm)
-    _PM.objective_variable_dc_cost(pm)
+    _objective_variable_pg_cost(pm)
+    _objective_variable_dc_cost(pm)
 
     # PMD-section part
     objective_mc_variable_pg_cost(pmd)
@@ -185,7 +185,7 @@ function _objective_itd_min_fuel_cost_polynomial_linquad(pmitd::AbstractPowerMod
 
     for (n, nw_ref) in _PM.nws(pm)
         for (i,gen) in nw_ref[:gen]
-            pg = sum( _PM.var(pm, n, :pg, i)[c] for c in _PM.conductor_ids(pm, n) )
+            pg = _PM.var(pm, n, :pg, i)
 
             if length(gen["cost"]) == 1
                 pm_gen_cost[(n,i)] = gen["cost"][1]
@@ -387,7 +387,7 @@ function _objective_itd_min_fuel_cost_polynomial_nl(pmitd::AbstractPowerModelITD
     pm_gen_cost = Dict()
     for (n, nw_ref) in _PM.nws(pm)
         for (i,gen) in nw_ref[:gen]
-            pg = sum( _PM.var(pm, n, :pg, i)[c] for c in _PM.conductor_ids(pm, n))
+            pg = _PM.var(pm, n, :pg, i)
 
             cost_rev = reverse(gen["cost"])
             if length(cost_rev) == 1
