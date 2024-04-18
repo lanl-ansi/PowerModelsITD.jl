@@ -270,7 +270,7 @@ function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; mul
     if (distribution_basekva == 0.0)
         resolve_units!(pmitd_data; multinetwork=multinetwork, number_multinetworks=number_multinetworks)
     else
-        resolve_units_decomposition!(pmitd_data, distribution_basekva=distribution_basekva; multinetwork=multinetwork, number_multinetworks=number_multinetworks)
+        resolve_units_decomposition!(pmitd_data, distribution_basekva; multinetwork=multinetwork, number_multinetworks=number_multinetworks)
     end
 
     # correct distribution system names in pmitd data structure if auto_rename=true (correction done sequentially)
