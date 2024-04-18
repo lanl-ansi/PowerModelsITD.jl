@@ -88,6 +88,10 @@
 
 ## staged Decomposition
 
+- In the `ref.jl` function `_ref_filter_transmission_integration_loads!`, the initialization of the variables causes a problem that does not allow for multiple distribution systems to connect to the same transmission system bus. So, we commented out this for now (WIP).
+- Added a new value that can be found in `pmitd` for the decomposition approach, called `base_conv_factor` that stores the conversion factor from transmission to distribution scaling.
+- Added new variables (`pbound_load_scaled`, `qbound_load_scaled`) and constraints (`pbound_load_scaled = 1000*Tbase/Dbase * pbound_load`, `qbound_load_scaled = 1000*Tbase/Dbase * qbound_load`) that allow solving the master-subproblems with different bases in the decomposition approach.
+- Added new way of defining different power bases (scales) for transmission and distribution systems in the decomposition approach. This can now be done by defining a new optional paramenter when parsing files or when solving opfitd decomposition `distribution_basekva=1000.0`. The transmission system will always (still) use the same base defined in the `.mat` file.
 - Added boundary constraints for the following decomposition-based formulations: `ACR-ACRU`, `ACR-FBSUBF`, `ACR-FOTRU`, `ACP-FOTPU`.
 - Refactored functions in `ref_decomposition.jl` by removing unnecessary loops.
 - Refactored unit tests in `opfitd_decomposition.jl` to comply with new dictionary structure.
