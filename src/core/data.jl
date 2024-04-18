@@ -260,6 +260,9 @@ function _assign_boundary_buses_decomposition!(data::Dict{String,<:Any}, conn; m
     # add ckt_name info (very important for ref_add_core_decomposition_distribution).
     conn["ckt_name"] = dist_bus_name_vector[1]
 
+    # add transmission to distribution power base conversion factor to the specific T&D connection (very important for allowing different bases between transmission and distribution systems)
+    conn["base_conv_factor"] = 1000.0*(data["it"][_PM.pm_it_name]["baseMVA"]/data["it"][_PMD.pmd_it_name][dist_bus_name_vector[1]]["settings"]["sbase_default"])
+
 end
 
 
@@ -283,6 +286,30 @@ function resolve_units!(data::Dict{String,<:Any}; multinetwork::Bool=false, numb
     else
         data["it"][_PMD.pmd_it_name]["settings"]["sbase_default"] = data["it"][_PM.pm_it_name]["baseMVA"]*data["it"][_PMD.pmd_it_name]["settings"]["power_scale_factor"]
     end
+end
+
+"""
+    function resolve_units_decomposition!(
+        data::Dict{String,<:Any},
+        distribution_basekva::Float64;
+        multinetwork::Bool=false,
+        number_multinetworks::Int=0,
+    )
+
+Resolve the units to be used for the distribution system(s) based on the distribution_basekva parameter.
+`data` is the pmitd dictionary to be corrected by resolving units, `multinetwork` is the boolean that defines if there are multiple
+networks that need to be corrected, and `number_multinetworks` defines the number of multinetworks.
+"""
+function resolve_units_decomposition!(data::Dict{String,<:Any}, distribution_basekva::Float64; multinetwork::Bool=false, number_multinetworks::Int=0)
+    # Change (if needed) the sbase_default based on the transmission system baseMVA
+    if (multinetwork)
+        for i in 1:number_multinetworks
+            data["it"][_PMD.pmd_it_name]["nw"][string(i)]["settings"]["sbase_default"] = distribution_basekva
+        end
+    else
+        data["it"][_PMD.pmd_it_name]["settings"]["sbase_default"] = distribution_basekva
+    end
+
 end
 
 

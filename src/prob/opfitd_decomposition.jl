@@ -12,13 +12,14 @@
         make_si::Bool=true,
         auto_rename::Bool=false,
         solution_model::String="eng",
+        distribution_basekva::Float64=0.0,
         kwargs...
 	)
 
 Solve Integrated T&D Decomposition-based Optimal Power Flow.
 """
-function solve_opfitd_decomposition(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", kwargs...)
-    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_opfitd_decomposition; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
+function solve_opfitd_decomposition(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", distribution_basekva::Float64=0.0, kwargs...)
+    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_opfitd_decomposition; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, distribution_basekva=distribution_basekva, kwargs...)
 end
 
 """
@@ -92,6 +93,11 @@ function build_opfitd_decomposition(pm_model::_PM.AbstractPowerModel)
         if !(i in boundary_buses)
             _PM.constraint_power_balance(pm_model, i)
         end
+    end
+
+    # Boundary constraints
+    for i in _PM.ids(pm_model, :boundary)
+        constraint_transmission_boundary_power_shared_vars_scaled(pm_model, i)
     end
 
     # PM cost function

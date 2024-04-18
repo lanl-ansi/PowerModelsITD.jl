@@ -127,6 +127,40 @@ function constraint_boundary_voltage_magnitude(pmd::_PMD.ACPUPowerModel, ::Int, 
 
 end
 
+
+"""
+    function constraint_transmission_boundary_power_shared_vars_scaled(
+        pm::_PM.AbstractACPModel,
+        i::Int;
+        nw::Int = nw_id_default
+    )
+
+ACPU power shared variables scaling constraints.
+"""
+function constraint_transmission_boundary_power_shared_vars_scaled(pm::_PM.AbstractACPModel, i::Int; nw::Int=nw_id_default)
+
+    boundary = _PM.ref(pm, nw, :boundary, i)
+    f_bus = boundary["f_bus"] # convention: from bus Transmission always!
+    t_bus = boundary["t_bus"] # convention: to bus Distribution always!
+
+    # Pbound_load vars
+    f_idx = (i, f_bus, t_bus)
+    pbound_load = _PM.var(pm, nw, :pbound_load, f_idx)
+    qbound_load = _PM.var(pm, nw, :qbound_load, f_idx)
+
+    pbound_load_scaled = _PM.var(pm, nw, :pbound_load_scaled, f_idx)
+    qbound_load_scaled = _PM.var(pm, nw, :qbound_load_scaled, f_idx)
+
+    # Get the base power conversion factor for T&D boundary connection
+    base_conv_factor = boundary["base_conv_factor"]
+
+    # Add scaling constraint
+    JuMP.@constraint(pm.model, pbound_load_scaled[1] == pbound_load[1]*(base_conv_factor))
+    JuMP.@constraint(pm.model, qbound_load_scaled[1] == qbound_load[1]*(base_conv_factor))
+
+end
+
+
 # TODO: multinetwork compatibility by using nw info.
 """
     function generate_boundary_linking_vars(
@@ -162,8 +196,8 @@ function generate_boundary_linking_vars(pm::_PM.ACPPowerModel, pmd::_PMD.ACPUPow
     Vm = _PM.var(pm, nw, :vm, f_bus)
 
     # Transmission: Pload & Qload (master)
-    P_load = _PM.var(pm, nw, :pbound_load, f_idx)
-    Q_load = _PM.var(pm, nw, :qbound_load, f_idx)
+    P_load = _PM.var(pm, nw, :pbound_load_scaled, f_idx)
+    Q_load = _PM.var(pm, nw, :qbound_load_scaled, f_idx)
 
     boundary_linking_vars = [[P_load[1], Q_load[1], Vm], [p_aux[1], q_aux[1], vm[1]]]
 

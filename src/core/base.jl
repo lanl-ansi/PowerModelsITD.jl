@@ -293,7 +293,7 @@ function instantiate_model_decomposition(
     # ----- IpoptDecomposition Optimizer ------
 
     # PM models
-    pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"]["pmitd"]         # add pmitd(boundary) info. to pm ref
+    pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"][pmitd_it_name]         # add pmitd(boundary) info. to pm ref
 
     # Instantiate the PM model
     pm_inst_model = _IM.instantiate_model(pmitd_data["it"][_PM.pm_it_name],
@@ -304,6 +304,7 @@ function instantiate_model_decomposition(
                                     _PM.pm_it_sym; kwargs...)
 
     decomposed_models.pm = pm_inst_model
+    # JuMP.write_to_file(pm_inst_model.model, "master_exported.nl")
     optimizer.master = pm_inst_model.model                                      # Add pm model to master
     JuMP.set_optimizer(optimizer.master, _IDEC.Optimizer; add_bridges = true)   # Set optimizer
 
@@ -311,7 +312,11 @@ function instantiate_model_decomposition(
     pmd_inst_models = []
     pmd_inst_JuMP_models = []
     boundary_vars_vect = []
+    # subproblem_number = 0
+
     for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+
+        # subproblem_number = subproblem_number+1
 
         # Obtain ckt boundary data
         boundary_info = pmitd_data["it"][pmitd_it_name]
@@ -328,6 +333,7 @@ function instantiate_model_decomposition(
                                         _PMD.pmd_it_sym; kwargs...)
 
         push!(pmd_inst_models, pmd_inst_model)                                              # Add pmd IM model to vector
+        # JuMP.write_to_file(pmd_inst_model.model, "subproblem_$(subproblem_number)_exported.nl")
         JuMP.set_optimizer(pmd_inst_model.model , _IDEC.Optimizer; add_bridges = true)      # Set the IDEC optimizer to the JuMP model
         push!(pmd_inst_JuMP_models, pmd_inst_model.model )                                  # push the subproblem JuMP model into the vector of subproblems
 
@@ -367,6 +373,7 @@ end
         make_si::Bool=true,
         auto_rename::Bool=false,
         solution_model::String="eng",
+        distribution_basekva::Float64=0.0,
         kwargs...
     )
 
@@ -381,6 +388,7 @@ the array of modeling extensions, and `make_si` is the boolean that determines i
 `eng2math_passthrough` are the passthrough vectors to be considered by the PMD MATH models.
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 `solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
+The parameter `distribution_basekva` is used to explicitly define the power base of the distribution system(s).
 Returns a dictionary of results.
 """
 function solve_model(
@@ -394,12 +402,13 @@ function solve_model(
     make_si::Bool=true,
     auto_rename::Bool=false,
     solution_model::String="eng",
+    distribution_basekva::Float64=0.0,
     kwargs...)
 
     pmd_files = [pmd_file] # convert to vector
 
     # Read power t&d and linkage data from files.
-    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
+    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename, distribution_basekva=distribution_basekva)
 
     # Instantiate and solve the PowerModelsITD modeling object.
     return solve_model(
@@ -431,6 +440,7 @@ end
         make_si::Bool=true,
         auto_rename::Bool=false,
         solution_model::String="eng",
+        distribution_basekva::Float64=0.0,
         kwargs...
     )
 
@@ -445,6 +455,7 @@ if the results are returned in SI or per-unit.
 `eng2math_passthrough` are the passthrough vectors to be considered by the PMD MATH models.
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 `solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
+The parameter `distribution_basekva` is used to explicitly define the power base of the distribution system(s).
 Returns a dictionary of results.
 """
 function solve_model(
@@ -458,10 +469,11 @@ function solve_model(
     make_si::Bool=true,
     auto_rename::Bool=false,
     solution_model::String="eng",
+    distribution_basekva::Float64=0.0,
     kwargs...)
 
     # Read power t&d and linkage data from files.
-    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file, multinetwork=multinetwork, auto_rename=auto_rename)
+    pmitd_data = parse_files(pm_file, pmd_files, pmitd_file, multinetwork=multinetwork, auto_rename=auto_rename, distribution_basekva=distribution_basekva)
 
     # Instantiate and solve the PowerModelsITD modeling object.
     return solve_model(

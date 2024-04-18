@@ -47,6 +47,8 @@ function _ref_filter_transmission_integration_loads_decomposition!(ref::Dict{Sym
             qd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
             conn["pbound_load_start"] = pd_start
             conn["qbound_load_start"] = qd_start
+            conn["pbound_load_scaled_start"] = pd_start*(conn["base_conv_factor"])
+            conn["qbound_load_scaled_start"] = qd_start*(conn["base_conv_factor"])
 
             nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
             nw_ref[:bus_loads][conn["transmission_boundary"]] = []
@@ -150,9 +152,9 @@ function _ref_connect_transmission_distribution_decomposition!(ref::Dict{Symbol,
 
             # create :boundary structure if does not exists; inserts to dictionary if it already exists
             if !haskey(nw_ref, :boundary)
-                nw_ref[:boundary] = Dict(boundary_number => Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_load_start" => 0, "qbound_load_start" => 0))
+                nw_ref[:boundary] = Dict(boundary_number => Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_load_start" => 0, "qbound_load_start" => 0, "base_conv_factor" => 0))
             else
-                nw_ref[:boundary][boundary_number] = Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_load_start" => 0, "qbound_load_start" => 0)
+                nw_ref[:boundary][boundary_number] = Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_load_start" => 0, "qbound_load_start" => 0, "base_conv_factor" => 0)
             end
 
             # modify default values with actual values coming from linking file information
@@ -163,6 +165,9 @@ function _ref_connect_transmission_distribution_decomposition!(ref::Dict{Symbol,
             nw_ref[:boundary][boundary_number]["name"] = "_itd_boundary_$boundary_number"
             nw_ref[:boundary][boundary_number]["pbound_load_start"] = boundaries[boundary_number]["pbound_load_start"]
             nw_ref[:boundary][boundary_number]["qbound_load_start"] = boundaries[boundary_number]["qbound_load_start"]
+            nw_ref[:boundary][boundary_number]["pbound_load_scaled_start"] = boundaries[boundary_number]["pbound_load_scaled_start"]
+            nw_ref[:boundary][boundary_number]["qbound_load_scaled_start"] = boundaries[boundary_number]["qbound_load_scaled_start"]
+            nw_ref[:boundary][boundary_number]["base_conv_factor"] = boundaries[boundary_number]["base_conv_factor"]
 
             # Add bus reference from transmission (pm)
             # The dictionary represents Dict(original bus_index => boundary # that belongs to)

@@ -201,9 +201,9 @@ end
 Parses PowerModels, PowerModelsDistribution, and PowerModelsITD boundary linkage input files and returns a data dictionary
 with the combined information of the inputted dictionaries.
 """
-function parse_files(pm_file::String, pmd_file::String, pmitd_file::String; multinetwork::Bool=false, auto_rename::Bool=false)
+function parse_files(pm_file::String, pmd_file::String, pmitd_file::String; multinetwork::Bool=false, auto_rename::Bool=false, distribution_basekva::Float64=0.0)
     pmd_files = [pmd_file] # convert to vector
-    return parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
+    return parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename, distribution_basekva=distribution_basekva)
 end
 
 
@@ -219,7 +219,7 @@ end
 Parses PowerModels, PowerModelsDistribution vector, and PowerModelsITD linkage input files and returns a data dictionary
 with the combined information of the inputted dictionaries.
 """
-function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; multinetwork::Bool=false, auto_rename::Bool=false)
+function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; multinetwork::Bool=false, auto_rename::Bool=false, distribution_basekva::Float64=0.0)
 
     # parse boundary data
     pmitd_data = parse_link_file(pmitd_file)    # Parse boundary linking file
@@ -266,8 +266,12 @@ function parse_files(pm_file::String, pmd_files::Vector, pmitd_file::String; mul
                                                 )
                     )
 
-    # Ensure all datasets use the same unit bases.
-    resolve_units!(pmitd_data; multinetwork=multinetwork, number_multinetworks=number_multinetworks)
+    # Ensure all datasets use the same unit bases (only if indicated).
+    if (distribution_basekva == 0.0)
+        resolve_units!(pmitd_data; multinetwork=multinetwork, number_multinetworks=number_multinetworks)
+    else
+        resolve_units_decomposition!(pmitd_data, distribution_basekva=distribution_basekva; multinetwork=multinetwork, number_multinetworks=number_multinetworks)
+    end
 
     # correct distribution system names in pmitd data structure if auto_rename=true (correction done sequentially)
     if (auto_rename==true)
