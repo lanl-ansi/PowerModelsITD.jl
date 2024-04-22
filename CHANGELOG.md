@@ -88,7 +88,8 @@
 
 ## staged Decomposition
 
-- Added option `export_models=true` that allow decomposition models to be exported as `.nl` files and shared variable indices as `shared_vars.txt`.
+- Added option `export_models=true` that allows integrated models to be exported as `.nl` file. Indices for all variables (including boundary vars) are exported into a `integrated_vars_indices.txt` file.
+- Added option `export_models=true` that allows decomposition models to be exported as `.nl` files and shared variable indices as `shared_vars.txt`.
 - In the `ref.jl` function `_ref_filter_transmission_integration_loads!`, the initialization of the variables causes a problem that does not allow for multiple distribution systems to connect to the same transmission system bus. So, we commented out this for now (WIP).
 - Added a new value that can be found in `pmitd` for the decomposition approach, called `base_conv_factor` that stores the conversion factor from transmission to distribution scaling.
 - Added new variables (`pbound_load_scaled`, `qbound_load_scaled`) and constraints (`pbound_load_scaled = 1000*Tbase/Dbase * pbound_load`, `qbound_load_scaled = 1000*Tbase/Dbase * qbound_load`) that allow solving the master-subproblems with different bases in the decomposition approach.

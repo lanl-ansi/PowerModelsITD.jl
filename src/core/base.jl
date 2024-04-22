@@ -344,7 +344,7 @@ function instantiate_model_decomposition(
                                         _PMD.pmd_it_sym; kwargs...)
 
         push!(pmd_inst_models, pmd_inst_model)                                              # Add pmd IM model to vector
-         # Export nl models
+        # Export nl models
         if (export_models == true)
             JuMP.write_to_file(pmd_inst_model.model, "subproblem_$(ckt_name)_$(boundary_number)_model_exported.nl")
         end
@@ -573,6 +573,22 @@ function solve_model(
             pmitd_ref_extensions=pmitd_ref_extensions,
             eng2math_passthrough=eng2math_passthrough,
             kwargs...)
+
+        # Export nl models
+        if (export_models == true)
+            # Export model to nl file
+            JuMP.write_to_file(pmitd.model, "integrated_$(build_method_name)_model_exported.nl")
+            # Open file where shared vars indices are going to be written
+            file = open("integrated_vars_indices.txt", "a")
+            # Loop through all variables and write them to a file
+            av = JuMP.all_variables(pmitd.model);
+            for v in av
+                str_to_write = "Variable: $(v), Index: $(_IDEC.column(v.index))\n"
+                write(file, str_to_write)
+            end
+            # Close the file
+            close(file)
+        end
 
         # Solve ITD Model
         result = _IM.optimize_model!(
