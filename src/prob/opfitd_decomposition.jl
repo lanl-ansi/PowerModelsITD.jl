@@ -13,13 +13,14 @@
         auto_rename::Bool=false,
         solution_model::String="eng",
         distribution_basekva::Float64=0.0,
+        export_models::Bool=false,
         kwargs...
 	)
 
 Solve Integrated T&D Decomposition-based Optimal Power Flow.
 """
-function solve_opfitd_decomposition(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", distribution_basekva::Float64=0.0, kwargs...)
-    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_opfitd_decomposition; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, distribution_basekva=distribution_basekva, kwargs...)
+function solve_opfitd_decomposition(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", distribution_basekva::Float64=0.0, export_models::Bool=false, kwargs...)
+    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_opfitd_decomposition; solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, distribution_basekva=distribution_basekva, export_models=export_models, kwargs...)
 end
 
 """
@@ -34,13 +35,14 @@ end
         make_si::Bool=true,
         auto_rename::Bool=false,
         solution_model::String="eng",
+        export_models::Bool=false,
         kwargs...
 	)
 
 Solve Multinetwork Integrated T&D Decomposition-based Optimal Power Flow.
 """
-function solve_mn_opfitd_decomposition(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", kwargs...)
-    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_mn_opfitd_decomposition; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, kwargs...)
+function solve_mn_opfitd_decomposition(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer; solution_processors::Vector{<:Function}=Function[], pmitd_ref_extensions::Vector{<:Function}=Vector{Function}([]), make_si::Bool=true, auto_rename::Bool=false, solution_model::String="eng", export_models::Bool=false, kwargs...)
+    return solve_model(pm_file, pmd_file, pmitd_file, pmitd_type, optimizer, build_mn_opfitd_decomposition; multinetwork=true, solution_processors=solution_processors, pmitd_ref_extensions=pmitd_ref_extensions, make_si=make_si, auto_rename=auto_rename, solution_model=solution_model, export_models=export_models, kwargs...)
 end
 
 """
