@@ -195,6 +195,7 @@ end
         multinetwork::Bool=false,
         pmitd_ref_extensions::Vector{<:Function}=Function[],
         auto_rename::Bool=false,
+        export_models::Bool=false,
         kwargs...
     )
 
@@ -204,10 +205,12 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 `build_method` is the build method for the problem specification being considered.
 `multinetwork` is the boolean that defines if the modeling object should be define as multinetwork.
 `pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
 """
 function instantiate_model_decomposition(
     pm_file::String, pmd_files::Vector{String}, pmitd_file::String, pmitd_type::Type, optimizer,
-    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
+    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[],
+    auto_rename::Bool=false, export_models::Bool=false, kwargs...)
 
     # Read power t&d and linkage data from files.
     pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; multinetwork=multinetwork, auto_rename=auto_rename)
@@ -216,7 +219,8 @@ function instantiate_model_decomposition(
     return instantiate_model_decomposition(
         pmitd_data, pmitd_type, optimizer, build_method;
         multinetwork=multinetwork,
-        pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
+        pmitd_ref_extensions=pmitd_ref_extensions,
+        export_models=export_models, kwargs...)
 end
 
 
@@ -230,6 +234,7 @@ end
         multinetwork::Bool=false,
         pmitd_ref_extensions::Vector{<:Function}=Function[],
         auto_rename::Bool=false,
+        export_models::Bool=false,
         kwargs...
     )
 
@@ -239,10 +244,12 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 `build_method` is the build method for the problem specification being considered.
 `multinetwork` is the boolean that defines if the modeling object should be define as multinetwork.
 `pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
 """
 function instantiate_model_decomposition(
     pm_file::String, pmd_file::String, pmitd_file::String, pmitd_type::Type, optimizer,
-    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], auto_rename::Bool=false, kwargs...)
+    build_method::Function; multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[],
+    auto_rename::Bool=false, export_models::Bool=false, kwargs...)
 
     pmd_files = [pmd_file] # convert to vector
 
@@ -253,7 +260,8 @@ function instantiate_model_decomposition(
     return instantiate_model_decomposition(
         pmitd_data, pmitd_type, optimizer, build_method;
         multinetwork=multinetwork,
-        pmitd_ref_extensions=pmitd_ref_extensions, kwargs...
+        pmitd_ref_extensions=pmitd_ref_extensions,
+        export_models=export_models, kwargs...
     )
 end
 
@@ -266,6 +274,7 @@ end
         build_method::Function;
         multinetwork::Bool=false,
         pmitd_ref_extensions::Vector{<:Function}=Function[],
+        export_models::Bool=false,
         kwargs...
     )
 
@@ -275,10 +284,12 @@ power transmission and distribution modeling type and `build_method` is the buil
 specification being considered. `multinetwork` is the boolean that defines if the modeling object
 should be define as multinetwork. `pmitd_ref_extensions` is an array of power transmission and
 distribution modeling extensions.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
 """
 function instantiate_model_decomposition(
     pmitd_data::Dict{String,<:Any}, pmitd_type::Type, optimizer, build_method::Function;
-    multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[], kwargs...)
+    multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[],
+    export_models::Bool=false, kwargs...)
 
     # Separate pmd ckts in a single dictionary to multiple dict entries
     pmd_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
@@ -304,7 +315,10 @@ function instantiate_model_decomposition(
                                     _PM.pm_it_sym; kwargs...)
 
     decomposed_models.pm = pm_inst_model
-    # JuMP.write_to_file(pm_inst_model.model, "master_exported.nl")
+    # Export nl models
+    if (export_models == true)
+        JuMP.write_to_file(pm_inst_model.model, "master_model_exported.nl")
+    end
     optimizer.master = pm_inst_model.model                                      # Add pm model to master
     JuMP.set_optimizer(optimizer.master, _IDEC.Optimizer; add_bridges = true)   # Set optimizer
 
@@ -312,11 +326,8 @@ function instantiate_model_decomposition(
     pmd_inst_models = []
     pmd_inst_JuMP_models = []
     boundary_vars_vect = []
-    # subproblem_number = 0
 
     for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-
-        # subproblem_number = subproblem_number+1
 
         # Obtain ckt boundary data
         boundary_info = pmitd_data["it"][pmitd_it_name]
@@ -333,12 +344,20 @@ function instantiate_model_decomposition(
                                         _PMD.pmd_it_sym; kwargs...)
 
         push!(pmd_inst_models, pmd_inst_model)                                              # Add pmd IM model to vector
-        # JuMP.write_to_file(pmd_inst_model.model, "subproblem_$(subproblem_number)_exported.nl")
+         # Export nl models
+        if (export_models == true)
+            JuMP.write_to_file(pmd_inst_model.model, "subproblem_$(ckt_name)_$(boundary_number)_model_exported.nl")
+        end
         JuMP.set_optimizer(pmd_inst_model.model , _IDEC.Optimizer; add_bridges = true)      # Set the IDEC optimizer to the JuMP model
         push!(pmd_inst_JuMP_models, pmd_inst_model.model )                                  # push the subproblem JuMP model into the vector of subproblems
 
         # Boundary linking vars.
-        linking_vars_vect = generate_boundary_linking_vars(pm_inst_model, pmd_inst_model, boundary_number)  # generates the respective (ACP, ACR, etc.) boundary linking vars vector.
+        if (export_models == true)
+            linking_vars_vect = generate_boundary_linking_vars(pm_inst_model, pmd_inst_model, boundary_number; export_models=export_models)  # generates the respective (ACP, ACR, etc.) boundary linking vars vector.
+        else
+            linking_vars_vect = generate_boundary_linking_vars(pm_inst_model, pmd_inst_model, boundary_number)  # generates the respective (ACP, ACR, etc.) boundary linking vars vector.
+        end
+
         push!(boundary_vars_vect, linking_vars_vect)                                                        # Add linking vars vector to vector containing all vectors of linking vars.
 
     end
@@ -374,6 +393,7 @@ end
         auto_rename::Bool=false,
         solution_model::String="eng",
         distribution_basekva::Float64=0.0,
+        export_models::Bool=false,
         kwargs...
     )
 
@@ -389,6 +409,7 @@ the array of modeling extensions, and `make_si` is the boolean that determines i
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 `solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
 The parameter `distribution_basekva` is used to explicitly define the power base of the distribution system(s).
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -403,6 +424,7 @@ function solve_model(
     auto_rename::Bool=false,
     solution_model::String="eng",
     distribution_basekva::Float64=0.0,
+    export_models::Bool=false,
     kwargs...)
 
     pmd_files = [pmd_file] # convert to vector
@@ -419,6 +441,7 @@ function solve_model(
         eng2math_passthrough=eng2math_passthrough,
         make_si=make_si,
         solution_model=solution_model,
+        export_models=export_models,
         kwargs...
     )
 end
@@ -441,6 +464,7 @@ end
         auto_rename::Bool=false,
         solution_model::String="eng",
         distribution_basekva::Float64=0.0,
+        export_models::Bool=false,
         kwargs...
     )
 
@@ -456,6 +480,7 @@ if the results are returned in SI or per-unit.
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 `solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
 The parameter `distribution_basekva` is used to explicitly define the power base of the distribution system(s).
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -470,6 +495,7 @@ function solve_model(
     auto_rename::Bool=false,
     solution_model::String="eng",
     distribution_basekva::Float64=0.0,
+    export_models::Bool=false,
     kwargs...)
 
     # Read power t&d and linkage data from files.
@@ -484,6 +510,7 @@ function solve_model(
         eng2math_passthrough=eng2math_passthrough,
         make_si=make_si,
         solution_model=solution_model,
+        export_models=export_models,
         kwargs...
     )
 end
@@ -501,6 +528,7 @@ end
         eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
         make_si::Bool=true,
         solution_model::String="eng",
+        export_models::Bool=false,
         kwargs...
     )
 
@@ -513,6 +541,7 @@ should be define as multinetwork`, solution_processors` is the vector of the mod
 if the results are returned in SI or per-unit. `eng2math_passthrough` are the passthrough vectors to be
 considered by the PMD MATH models. `solution_model` is a string that determines in which model,
 ENG or MATH, the solutions are presented.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -525,6 +554,7 @@ function solve_model(
     eng2math_passthrough::Dict{String,Vector{String}}=Dict{String,Vector{String}}(),
     make_si::Bool=true,
     solution_model::String="eng",
+    export_models::Bool=false,
     kwargs...)
 
     # extract build_method name (string)
@@ -536,13 +566,13 @@ function solve_model(
     # Solve standard ITD problem
     if (typeof(optimizer) == JuMP.MOI.OptimizerWithAttributes)
 
-    # Instantiate the PowerModelsITD object.
-    pmitd = instantiate_model(
-        pmitd_data, pmitd_type, build_method;
-        multinetwork=multinetwork,
-        pmitd_ref_extensions=pmitd_ref_extensions,
-        eng2math_passthrough=eng2math_passthrough,
-        kwargs...)
+        # Instantiate the PowerModelsITD object.
+        pmitd = instantiate_model(
+            pmitd_data, pmitd_type, build_method;
+            multinetwork=multinetwork,
+            pmitd_ref_extensions=pmitd_ref_extensions,
+            eng2math_passthrough=eng2math_passthrough,
+            kwargs...)
 
         # Solve ITD Model
         result = _IM.optimize_model!(
@@ -565,7 +595,9 @@ function solve_model(
         pmitd = instantiate_model_decomposition(
             pmitd_data, pmitd_type, optimizer, build_method;
             multinetwork=multinetwork,
-            pmitd_ref_extensions=pmitd_ref_extensions, kwargs...)
+            pmitd_ref_extensions=pmitd_ref_extensions,
+            export_models=export_models,
+            kwargs...)
 
         result = run_decomposition(pmitd)
 
