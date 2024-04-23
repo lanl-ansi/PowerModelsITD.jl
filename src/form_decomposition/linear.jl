@@ -83,19 +83,51 @@ function constraint_boundary_voltage_magnitude(pmd::_PMD.NFAUPowerModel, i::Int,
 end
 
 
+"""
+    function constraint_transmission_boundary_power_shared_vars_scaled(
+        pm::_PM.NFAPowerModel,
+        i::Int;
+        nw::Int = nw_id_default
+    )
+
+NFAU power shared variables scaling constraints.
+"""
+function constraint_transmission_boundary_power_shared_vars_scaled(pm::_PM.NFAPowerModel, i::Int; nw::Int=nw_id_default)
+
+    boundary = _PM.ref(pm, nw, :boundary, i)
+    f_bus = boundary["f_bus"] # convention: from bus Transmission always!
+    t_bus = boundary["t_bus"] # convention: to bus Distribution always!
+
+    # Pbound_load vars
+    f_idx = (i, f_bus, t_bus)
+    pbound_load = _PM.var(pm, nw, :pbound_load, f_idx)
+
+    pbound_load_scaled = _PM.var(pm, nw, :pbound_load_scaled, f_idx)
+
+    # Get the base power conversion factor for T&D boundary connection
+    base_conv_factor = boundary["base_conv_factor"]
+
+    # Add scaling constraint
+    JuMP.@constraint(pm.model, pbound_load_scaled[1] == pbound_load[1]*(base_conv_factor))
+
+end
+
+
+
 # TODO: multinetwork compatibility by using nw info.
 """
     function generate_boundary_linking_vars(
         pm::_PM.NFAPowerModel,
         pmd::_PMD.NFAUPowerModel,
         boundary_number::String;
-        nw::Int = nw_id_default
-
+        nw::Int = nw_id_default,
+        export_models::Bool=false
     )
 
 Generates the NFA-NFAU boundary linking vars vector to be used by the IDEC Optimizer.
+The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as `.nl` files.
 """
-function generate_boundary_linking_vars(pm::_PM.NFAPowerModel, pmd::_PMD.NFAUPowerModel, boundary_number::String; nw::Int=nw_id_default)
+function generate_boundary_linking_vars(pm::_PM.NFAPowerModel, pmd::_PMD.NFAUPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
 
     # Parse to Int
     boundary_number = parse(Int64, boundary_number)
@@ -111,9 +143,24 @@ function generate_boundary_linking_vars(pm::_PM.NFAPowerModel, pmd::_PMD.NFAUPow
     p_aux = _PMD.var(pmd, nw, :pbound_aux, f_idx)
 
     # Transmission: Pload & Qload (master)
-    P_load = _PM.var(pm, nw, :pbound_load, f_idx)
+    P_load = _PM.var(pm, nw, :pbound_load_scaled, f_idx)
 
     boundary_linking_vars = [[P_load[1]], [p_aux[1]]]
+
+    if (export_models == true)
+        # Open file where shared vars indices are going to be written
+        file = open("shared_vars.txt", "a")
+        # Loop through the vector of shared variables
+        for sh_vect in boundary_linking_vars
+            for sh_var in sh_vect
+                str_to_write = "Shared Variable ($(sh_var)) Index: $(sh_var.index)\n"
+                # Write the string to the file
+                write(file, str_to_write)
+            end
+        end
+        # Close the file
+        close(file)
+    end
 
     return boundary_linking_vars
 
