@@ -10,7 +10,7 @@ Runs decomposition process and returns organized result solution dictionary.
 function run_decomposition(pmitd::DecompositionStruct)
 
     # Calls the _IDEC optimize!(..) function and solves decomposition problem
-    _, solve_time, solve_bytes_alloc, sec_in_gc = @timed _IDEC.optimize!(pmitd.optimizer)
+    _, solve_time, solve_bytes_alloc, sec_in_gc = @timed _IDEC.optimize_serial!(pmitd.optimizer)
 
     # Build and organize the result dictionary
     result = Dict{String, Any}("solution" => Dict{String, Any}("it" => Dict{String, Any}(_PM.pm_it_name => Dict{String, Any}(), _PMD.pmd_it_name => Dict{String, Any}(), pmitd_it_name => Dict{String, Any}())))
