@@ -34,8 +34,9 @@ end
     )
 
 Generates the ACR-FBSUBF boundary linking vars vector to be used by the IDEC Optimizer.
+The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as `.nl` files.
 """
-function generate_boundary_linking_vars(pm::_PM.ACRPowerModel, pmd::_PMD.FBSUBFPowerModel, boundary_number::String; nw::Int=nw_id_default)
+function generate_boundary_linking_vars(pm::_PM.ACRPowerModel, pmd::_PMD.FBSUBFPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
 
     # Parse to Int
     boundary_number = parse(Int64, boundary_number)
@@ -60,10 +61,25 @@ function generate_boundary_linking_vars(pm::_PM.ACRPowerModel, pmd::_PMD.FBSUBFP
     Vi = _PM.var(pm, nw, :vi, f_bus)
 
     # Transmission: Pload & Qload (master)
-    P_load = _PM.var(pm, nw, :pbound_load, f_idx)
-    Q_load = _PM.var(pm, nw, :qbound_load, f_idx)
+    P_load = _PM.var(pm, nw, :pbound_load_scaled, f_idx)
+    Q_load = _PM.var(pm, nw, :qbound_load_scaled, f_idx)
 
     boundary_linking_vars = [[P_load[1], Q_load[1], Vr, Vi], [p_aux[1], q_aux[1], vr[1], vi[1]]]
+
+    if (export_models == true)
+        # Open file where shared vars indices are going to be written
+        file = open("shared_vars.txt", "a")
+        # Loop through the vector of shared variables
+        for sh_vect in boundary_linking_vars
+            for sh_var in sh_vect
+                str_to_write = "Shared Variable ($(sh_var)) Index: $(sh_var.index)\n"
+                # Write the string to the file
+                write(file, str_to_write)
+            end
+        end
+        # Close the file
+        close(file)
+    end
 
     return boundary_linking_vars
 
