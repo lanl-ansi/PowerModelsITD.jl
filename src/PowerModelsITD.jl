@@ -85,6 +85,7 @@ module PowerModelsITD
     include("form_decomposition/boundary.jl")
     include("form_decomposition/acr.jl")
     include("form_decomposition/acp.jl")
+    include("form_decomposition/ivr.jl")
     include("form_decomposition/linear.jl")
     include("form_decomposition/wmodels.jl")
     include("form_decomposition/fbs.jl")
