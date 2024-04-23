@@ -247,6 +247,11 @@ function build_opfitd_decomposition(pm_model::_PM.AbstractWModels)
         end
     end
 
+    # Boundary constraints
+    for i in _PM.ids(pm_model, :boundary)
+        constraint_transmission_boundary_power_shared_vars_scaled(pm_model, i)
+    end
+
     # PM cost function
     _PM.objective_min_fuel_and_flow_cost(pm_model)
 
