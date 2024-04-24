@@ -118,6 +118,25 @@ end
 
 
 """
+    function constraint_boundary_voltage_angle(
+        pmd::_PMD.AbstractUnbalancedPowerModel,
+        i::Int;
+        nw::Int=nw_id_default
+    )
+
+General voltage angle boundary constraint.
+"""
+function constraint_boundary_voltage_angle(pmd::_PMD.AbstractUnbalancedPowerModel, i::Int; nw::Int=nw_id_default)
+
+    boundary = _PMD.ref(pmd, nw, :boundary, i)
+    t_bus = boundary["t_bus"] # convention: to bus Distribution always!
+
+    constraint_boundary_voltage_angle(pmd, i, t_bus, boundary["f_connections"], boundary["t_connections"]; nw=nw)
+
+end
+
+
+"""
     function constraint_transmission_power_balance_boundary(
         pm::_PM.AbstractPowerModel,
         i::Int,
