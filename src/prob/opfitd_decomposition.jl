@@ -438,10 +438,11 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedIVRModel)
     # Decomposition-related vars
     variable_boundary_power(pmd_model)
 
-    # 0 angle ref for reference bus
-    for i in _PMD.ids(pmd_model, :ref_buses)
-        _PMD.constraint_mc_theta_ref(pmd_model, i)
-    end
+    # # This constraint can be replaced by the constraint_boundary_voltage_angle.
+    # # 0 angle ref for reference bus
+    # for i in _PMD.ids(pmd_model, :ref_buses)
+    #     _PMD.constraint_mc_theta_ref(pmd_model, i)
+    # end
 
     # --- PMD(Distribution) Constraints ---
     # gens should be constrained before KCL, or Pd/Qd undefined
