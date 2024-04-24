@@ -476,6 +476,7 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedIVRModel)
     for i in _PMD.ids(pmd_model, :boundary)
         constraint_boundary_power(pmd_model, i)
         constraint_boundary_voltage_magnitude(pmd_model, i)
+        constraint_boundary_voltage_angle(pmd_model, i)
     end
 
     # PMD objective
