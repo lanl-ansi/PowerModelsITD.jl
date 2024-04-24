@@ -84,6 +84,22 @@ end
 
 
 """
+    function constraint_boundary_voltage_angle(
+        pmd::_PMD.NFAUPowerModel,
+        i::Int,
+        f_idx::Tuple{Int,Int,Int},
+        f_connections::Vector{Int},
+        t_connections::Vector{Int};
+        nw::Int = nw_id_default
+    )
+
+NFAUPowerModel boundary bus voltage angle constraints.
+"""
+function constraint_boundary_voltage_angle(pmd::_PMD.NFAUPowerModel, ::Int, t_bus::Int, ::Vector{Int}, ::Vector{Int}; nw::Int=nw_id_default)
+end
+
+
+"""
     function constraint_transmission_boundary_power_shared_vars_scaled(
         pm::_PM.NFAPowerModel,
         i::Int;

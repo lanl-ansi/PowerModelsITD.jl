@@ -132,8 +132,8 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel
     # --- PMD(Distribution) Constraints ---
     _PMD.constraint_mc_model_voltage(pmd_model)
 
-    # # 0 angle ref for reference bus -
-    # # This constraint can replace the constraint_boundary_voltage_angle.
+    # # This constraint can be replaced by the constraint_boundary_voltage_angle.
+    # # 0 angle ref for reference bus
     # for i in _PMD.ids(pmd_model, :ref_buses)
     #     _PMD.constraint_mc_theta_ref(pmd_model, i)
     # end
@@ -286,10 +286,11 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUBFModels)
     # --- PMD(Distribution) Constraints ---
     _PMD.constraint_mc_model_current(pmd_model)
 
-    # 0 angle ref for reference bus
-    for i in _PMD.ids(pmd_model, :ref_buses)
-        _PMD.constraint_mc_theta_ref(pmd_model, i)
-    end
+    # # This constraint can be replaced by the constraint_boundary_voltage_angle.
+    # # 0 angle ref for reference bus
+    # for i in _PMD.ids(pmd_model, :ref_buses)
+    #     _PMD.constraint_mc_theta_ref(pmd_model, i)
+    # end
 
     # generators should be constrained before KCL, or Pd/Qd undefined
     for id in _PMD.ids(pmd_model, :gen)
@@ -339,6 +340,7 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUBFModels)
     for i in _PMD.ids(pmd_model, :boundary)
         constraint_boundary_power(pmd_model, i)
         constraint_boundary_voltage_magnitude(pmd_model, i)
+        constraint_boundary_voltage_angle(pmd_model, i)
     end
 
     # PMD objective

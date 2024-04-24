@@ -21,6 +21,24 @@ function constraint_boundary_voltage_magnitude(pmd::_PMD.LPUBFDiagPowerModel, i:
 end
 
 
+
+"""
+    function constraint_boundary_voltage_angle(
+        pmd::_PMD.LPUBFDiagPowerModel,
+        i::Int,
+        f_idx::Tuple{Int,Int,Int},
+        f_connections::Vector{Int},
+        t_connections::Vector{Int};
+        nw::Int = nw_id_default
+    )
+
+LinDist3FlowPowerModel boundary bus voltage angle constraints.
+"""
+function constraint_boundary_voltage_angle(pmd::_PMD.LPUBFDiagPowerModel, ::Int, t_bus::Int, ::Vector{Int}, ::Vector{Int}; nw::Int=nw_id_default)
+end
+
+
+
 """
     function constraint_transmission_boundary_power_shared_vars_scaled(
         pm::_PM.AbstractBFAModel,
