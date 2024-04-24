@@ -180,7 +180,6 @@ function generate_boundary_linking_vars(pm::_PM.AbstractIVRModel, pmd::_PMD.IVRU
     P_load = _PM.var(pm, nw, :pbound_load_scaled, f_idx)
     Q_load = _PM.var(pm, nw, :qbound_load_scaled, f_idx)
 
-    # boundary_linking_vars = [[P_load[1], Q_load[1]], [p_aux[1], q_aux[1]]]
     boundary_linking_vars = [[P_load[1], Q_load[1], Vr, Vi], [p_aux[1], q_aux[1], vr[1], vi[1]]]
 
     if (export_models == true)
