@@ -23,6 +23,44 @@ function constraint_boundary_voltage_magnitude(pmd::_PMD.FOTRUPowerModel, ::Int,
 
 end
 
+
+"""
+    function constraint_boundary_voltage_angle(
+        pmd::_PMD.FOTRUPowerModel,
+        i::Int,
+        f_idx::Tuple{Int,Int,Int},
+        f_connections::Vector{Int},
+        t_connections::Vector{Int};
+        nw::Int = nw_id_default
+    )
+
+FOTRU boundary bus voltage angle constraints.
+"""
+function constraint_boundary_voltage_angle(pmd::_PMD.FOTRUPowerModel, ::Int, t_bus::Int, ::Vector{Int}, ::Vector{Int}; nw::Int=nw_id_default)
+
+    vr_source = _PMD.var(pmd, nw, :vr, t_bus)
+    vi_source = _PMD.var(pmd, nw, :vi, t_bus)
+
+    # Add constraint(s): r->real, i->imaginary
+    JuMP.@constraint(pmd.model, vi_source[1] == 0.0)
+    # JuMP.@NLconstraint(pmd.model, tan(atan(vi_source[1]/vr_source[1])) == 0.0)
+
+    # Add constraints related to 120 degrees offset for the distribution b and c phases
+    shift_120degs_rad = deg2rad(120)
+
+    # TODO: These are non-linear constraints due to transformation to degrees of phase a angle (another way - non-linear may be possible)
+    JuMP.@NLconstraint(pmd.model, vi_source[2] == tan(atan(vi_source[1]/vr_source[1]) - shift_120degs_rad)*vr_source[2])
+    JuMP.@NLconstraint(pmd.model, vi_source[3] == tan(atan(vi_source[1]/vr_source[1]) + shift_120degs_rad)*vr_source[3])
+
+    # Alternative voltage angle constraints?
+    # JuMP.@NLconstraint(pmd.model, vi_source[1] == 0)
+    # JuMP.@NLconstraint(pmd.model, vi_source[2] == 0)
+    # JuMP.@NLconstraint(pmd.model, vi_source[3] == 0)
+
+end
+
+
+
 # TODO: multinetwork compatibility by using nw info.
 """
     function generate_boundary_linking_vars(
