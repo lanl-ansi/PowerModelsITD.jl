@@ -95,6 +95,37 @@ function constraint_boundary_voltage_magnitude(pmd::_PMD.ACRUPowerModel, ::Int, 
 end
 
 
+"""
+    function constraint_boundary_voltage_angle(
+        pmd::_PMD.ACRUPowerModel,
+        i::Int,
+        f_idx::Tuple{Int,Int,Int},
+        f_connections::Vector{Int},
+        t_connections::Vector{Int};
+        nw::Int = nw_id_default
+    )
+
+ACRU boundary bus voltage angle constraints.
+"""
+function constraint_boundary_voltage_angle(pmd::_PMD.ACRUPowerModel, ::Int, t_bus::Int, ::Vector{Int}, ::Vector{Int}; nw::Int=nw_id_default)
+
+    ## --- NOTE: These constraints seem to make ACR-ACRU decomposition formulation harder to solve! ---
+
+    vr_source = _PMD.var(pmd, nw, :vr, t_bus)
+    vi_source = _PMD.var(pmd, nw, :vi, t_bus)
+
+    # Add constraint(s): r->real, i->imaginary
+    # JuMP.@constraint(pmd.model, vi_source[1] == 0.0)
+
+    # Add constraints related to 120 degrees offset for the distribution b and c phases
+    shift_120degs_rad = deg2rad(120)
+
+    # TODO: These are non-linear constraints due to transformation to degrees of phase a angle (another way - non-linear may be possible)
+    JuMP.@NLconstraint(pmd.model, vi_source[2] == tan(atan(vi_source[1]/vr_source[1]) - shift_120degs_rad)*vr_source[2])
+    JuMP.@NLconstraint(pmd.model, vi_source[3] == tan(atan(vi_source[1]/vr_source[1]) + shift_120degs_rad)*vr_source[3])
+
+end
+
 
 """
     function constraint_transmission_boundary_power_shared_vars_scaled(
