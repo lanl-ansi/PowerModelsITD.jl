@@ -2,7 +2,11 @@
 
 ## staged
 
-- none.
+- Refactored code in `ref.jl` function `_ref_filter_transmission_integration_loads!` to allow connecting multiple distro. systems to same trans. system bus.
+- Refactored `/prob/` formulations to avoid unnecessary loops when deciding KCL contraints for boundary buses vs. regular buses.
+- This refactor significantly reduces loops and should reduce time to build ITD JuMP models.
+- This refactor also allows building ITD models where multiple distro. systems can be connected to same trans. system bus and KCL constraints are not duplicated.
+- Bumped PMITD compatibility of `PMD` to the latest version (i.e., v0.15.2).
 
 ## v0.8.1
 

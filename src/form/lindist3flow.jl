@@ -5,7 +5,6 @@
         pmitd::AbstractBFPowerModelITD,
         pmd::_PMD.LPUBFDiagPowerModel,
         n::Int,
-        j::Int,
         i::Int,
         terminals::Vector{Int},
         grounded::Vector{Bool},
@@ -21,7 +20,7 @@
 
 LinDist3FlowPowerModel distribution constraint power balance.
 """
-function constraint_distribution_power_balance(pmitd::AbstractBFPowerModelITD, pmd::_PMD.LPUBFDiagPowerModel, n::Int, j::Int, i::Int, terminals::Vector{Int}, grounded::Vector{Bool}, bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_gens::Vector{Tuple{Int,Vector{Int}}}, bus_storage::Vector{Tuple{Int,Vector{Int}}}, bus_loads::Vector{Tuple{Int,Vector{Int}}}, bus_shunts::Vector{Tuple{Int,Vector{Int}}}, bus_arcs_boundary_to)
+function constraint_distribution_power_balance(pmitd::AbstractBFPowerModelITD, pmd::_PMD.LPUBFDiagPowerModel, n::Int, i::Int, terminals::Vector{Int}, grounded::Vector{Bool}, bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_gens::Vector{Tuple{Int,Vector{Int}}}, bus_storage::Vector{Tuple{Int,Vector{Int}}}, bus_loads::Vector{Tuple{Int,Vector{Int}}}, bus_shunts::Vector{Tuple{Int,Vector{Int}}}, bus_arcs_boundary_to)
     w = _PMD.var(pmd, n, :w, i)
     p   = _PMD.get(_PMD.var(pmd, n),      :p,   Dict()); _PMD._check_var_keys(p,   bus_arcs, "active power", "branch")
     q   = _PMD.get(_PMD.var(pmd, n),      :q,   Dict()); _PMD._check_var_keys(q,   bus_arcs, "reactive power", "branch")

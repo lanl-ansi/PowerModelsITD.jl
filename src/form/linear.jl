@@ -5,7 +5,6 @@
         pmitd::AbstractPowerModelITD,
         pm::_PM.AbstractActivePowerModel,
         n::Int,
-        j::Int,
         i::Int,
         bus_arcs,
         bus_arcs_dc,
@@ -21,7 +20,7 @@
 
 DCP/NFA transmission constraint power balance.
 """
-function constraint_transmission_power_balance(pmitd::AbstractPowerModelITD, pm::_PM.AbstractActivePowerModel, n::Int, j::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
+function constraint_transmission_power_balance(pmitd::AbstractPowerModelITD, pm::_PM.AbstractActivePowerModel, n::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
 
     p    = _PM.get(_PM.var(pm, n),    :p, Dict()); _PM._check_var_keys(p, bus_arcs, "active power", "branch")
     pg   = _PM.get(_PM.var(pm, n),   :pg, Dict()); _PM._check_var_keys(pg, bus_gens, "active power", "generator")
@@ -57,7 +56,6 @@ end
         pmitd::AbstractPowerModelITD,
         pmd::_PMD.AbstractUnbalancedActivePowerModel,
         n::Int,
-        j::Int,
         i::Int,
         terminals::Vector{Int},
         grounded::Vector{Bool},
@@ -73,7 +71,7 @@ end
 
 DCPU/NFAU distribution constraint power balance.
 """
-function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd::_PMD.AbstractUnbalancedActivePowerModel, n::Int, j::Int, i::Int, terminals::Vector{Int}, grounded::Vector{Bool}, bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_gens::Vector{Tuple{Int,Vector{Int}}}, bus_storage::Vector{Tuple{Int,Vector{Int}}}, bus_loads::Vector{Tuple{Int,Vector{Int}}}, bus_shunts::Vector{Tuple{Int,Vector{Int}}}, bus_arcs_boundary_to)
+function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd::_PMD.AbstractUnbalancedActivePowerModel, n::Int, i::Int, terminals::Vector{Int}, grounded::Vector{Bool}, bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_gens::Vector{Tuple{Int,Vector{Int}}}, bus_storage::Vector{Tuple{Int,Vector{Int}}}, bus_loads::Vector{Tuple{Int,Vector{Int}}}, bus_shunts::Vector{Tuple{Int,Vector{Int}}}, bus_arcs_boundary_to)
     p    = _PMD.get(_PMD.var(pmd, n),    :p, Dict())#; _PMD._check_var_keys(p, bus_arcs, "active power", "branch")
     pg   = _PMD.get(_PMD.var(pmd, n),   :pg_bus, Dict())#; _PMD._check_var_keys(pg, bus_gens, "active power", "generator")
     ps   = _PMD.get(_PMD.var(pmd, n),   :ps, Dict())#; _PMD._check_var_keys(ps, bus_storage, "active power", "storage")

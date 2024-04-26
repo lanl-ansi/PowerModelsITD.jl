@@ -50,11 +50,16 @@ function _ref_filter_transmission_integration_loads!(ref::Dict{Symbol,<:Any})
     for (nw, nw_ref) in ref[:it][:pm][:nw]
         # Filters only the ones that have the "transmission_boundary" key
         for (i, conn) in filter(x -> "transmission_boundary" in keys(x.second), ref[:it][:pmitd][:nw][nw])
+
+            ## Note: This initialization causes error when solving problems where multiple distro. systems are connected to same transmission system.
             # Get init (start) values before deleting the boundary load info.
-            pbound_fr_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
-            qbound_fr_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
-            conn["pbound_fr_start"] = pbound_fr_start
-            conn["qbound_fr_start"] = qbound_fr_start
+            # pbound_fr_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
+            # qbound_fr_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
+            # conn["pbound_fr_start"] = pbound_fr_start
+            # conn["qbound_fr_start"] = qbound_fr_start
+
+            conn["pbound_fr_start"] = 0.0
+            conn["qbound_fr_start"] = 0.0
 
             # Remove loads
             nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )

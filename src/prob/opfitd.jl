@@ -200,25 +200,36 @@ function build_opfitd(pmitd::AbstractPowerModelITD)
         constraint_boundary_voltage_angle(pmitd, i)
     end
 
+    # -------------------------------------------------
+    # --- PMITD(T&D) KCL Constraints ----------
     # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+    boundary_buses_transmission = Vector{Int}() # vector to store the boundary buses transmission
+    boundary_buses_distribution = Vector{Int}() # vector to store the boundary buses distribution
+    for j in ids(pmitd, :boundary)
+        boundary_pmitd = ref(pmitd, nw_id_default, :boundary, j)
+        bus_pm = boundary_pmitd["f_bus"]
+        bus_pmd = boundary_pmitd["t_bus"]
+        push!(boundary_buses_transmission, bus_pm)
+        push!(boundary_buses_distribution, bus_pmd)
+    end
+    # Convert to Julia Set - Note: membership checks are faster in sets (vs. vectors) in Julia
+    boundary_buses_transmission_set = Set(boundary_buses_transmission)
+    boundary_buses_distribution_set = Set(boundary_buses_distribution)
+
     # # ---- Transmission Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
     for i in _PM.ids(pm_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_transmission_power_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
+        if i in boundary_buses_transmission_set
+            constraint_transmission_power_balance_boundary(pmitd, i)
+        else
             _PM.constraint_power_balance(pm_model, i)
         end
     end
 
-    # # ---- Distribution Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+    # ---- Distribution Power Balance ---
     for i in _PMD.ids(pmd_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_distribution_power_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
+        if i in boundary_buses_distribution_set
+            constraint_distribution_power_balance_boundary(pmitd, i)
+        else
             _PMD.constraint_mc_power_balance(pmd_model, i)
         end
     end
@@ -329,25 +340,36 @@ function build_opfitd(pmitd::AbstractIVRPowerModelITD)
         constraint_boundary_voltage_angle(pmitd, i)
     end
 
+    # -------------------------------------------------
+    # --- PMITD(T&D) KCL Constraints ----------
     # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+    boundary_buses_transmission = Vector{Int}() # vector to store the boundary buses transmission
+    boundary_buses_distribution = Vector{Int}() # vector to store the boundary buses distribution
+    for j in ids(pmitd, :boundary)
+        boundary_pmitd = ref(pmitd, nw_id_default, :boundary, j)
+        bus_pm = boundary_pmitd["f_bus"]
+        bus_pmd = boundary_pmitd["t_bus"]
+        push!(boundary_buses_transmission, bus_pm)
+        push!(boundary_buses_distribution, bus_pmd)
+    end
+    # Convert to Julia Set - Note: membership checks are faster in sets (vs. vectors) in Julia
+    boundary_buses_transmission_set = Set(boundary_buses_transmission)
+    boundary_buses_distribution_set = Set(boundary_buses_distribution)
+
     # # ---- Transmission Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
     for i in _PM.ids(pm_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_transmission_current_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
+        if i in boundary_buses_transmission_set
+            constraint_transmission_current_balance_boundary(pmitd, i)
+        else
             _PM.constraint_current_balance(pm_model, i)
         end
     end
 
-    # # ---- Distribution Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+    # ---- Distribution Power Balance ---
     for i in _PMD.ids(pmd_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_distribution_current_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
+        if i in boundary_buses_distribution_set
+            constraint_distribution_current_balance_boundary(pmitd, i)
+        else
             _PMD.constraint_mc_current_balance(pmd_model, i)
         end
     end
@@ -477,25 +499,36 @@ function build_opfitd(pmitd::AbstractBFPowerModelITD)
         constraint_boundary_voltage_angle(pmitd, i)
     end
 
+    # -------------------------------------------------
+    # --- PMITD(T&D) KCL Constraints ----------
     # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+    boundary_buses_transmission = Vector{Int}() # vector to store the boundary buses transmission
+    boundary_buses_distribution = Vector{Int}() # vector to store the boundary buses distribution
+    for j in ids(pmitd, :boundary)
+        boundary_pmitd = ref(pmitd, nw_id_default, :boundary, j)
+        bus_pm = boundary_pmitd["f_bus"]
+        bus_pmd = boundary_pmitd["t_bus"]
+        push!(boundary_buses_transmission, bus_pm)
+        push!(boundary_buses_distribution, bus_pmd)
+    end
+    # Convert to Julia Set - Note: membership checks are faster in sets (vs. vectors) in Julia
+    boundary_buses_transmission_set = Set(boundary_buses_transmission)
+    boundary_buses_distribution_set = Set(boundary_buses_distribution)
+
     # # ---- Transmission Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
     for i in _PM.ids(pm_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_transmission_power_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
+        if i in boundary_buses_transmission_set
+            constraint_transmission_power_balance_boundary(pmitd, i)
+        else
             _PM.constraint_power_balance(pm_model, i)
         end
     end
 
-    # # ---- Distribution Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+    # ---- Distribution Power Balance ---
     for i in _PMD.ids(pmd_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_distribution_power_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
+        if i in boundary_buses_distribution_set
+            constraint_distribution_power_balance_boundary(pmitd, i)
+        else
             _PMD.constraint_mc_power_balance(pmd_model, i)
         end
     end
@@ -623,25 +656,36 @@ function build_opfitd(pmitd::AbstractLNLBFPowerModelITD)
         constraint_boundary_voltage_angle(pmitd, i)
     end
 
+    # -------------------------------------------------
+    # --- PMITD(T&D) KCL Constraints ----------
     # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+    boundary_buses_transmission = Vector{Int}() # vector to store the boundary buses transmission
+    boundary_buses_distribution = Vector{Int}() # vector to store the boundary buses distribution
+    for j in ids(pmitd, :boundary)
+        boundary_pmitd = ref(pmitd, nw_id_default, :boundary, j)
+        bus_pm = boundary_pmitd["f_bus"]
+        bus_pmd = boundary_pmitd["t_bus"]
+        push!(boundary_buses_transmission, bus_pm)
+        push!(boundary_buses_distribution, bus_pmd)
+    end
+    # Convert to Julia Set - Note: membership checks are faster in sets (vs. vectors) in Julia
+    boundary_buses_transmission_set = Set(boundary_buses_transmission)
+    boundary_buses_distribution_set = Set(boundary_buses_distribution)
+
     # # ---- Transmission Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
     for i in _PM.ids(pm_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_transmission_power_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
+        if i in boundary_buses_transmission_set
+            constraint_transmission_power_balance_boundary(pmitd, i)
+        else
             _PM.constraint_power_balance(pm_model, i)
         end
     end
 
-    # # ---- Distribution Power Balance ---
-    boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+    # ---- Distribution Power Balance ---
     for i in _PMD.ids(pmd_model, :bus)
-        for j in ids(pmitd, :boundary)
-            constraint_distribution_power_balance_boundary(pmitd, i, j, boundary_buses)
-        end
-        if !(i in boundary_buses)
+        if i in boundary_buses_distribution_set
+            constraint_distribution_power_balance_boundary(pmitd, i)
+        else
             _PMD.constraint_mc_power_balance(pmd_model, i)
         end
     end
@@ -770,29 +814,39 @@ function build_mn_opfitd(pmitd::AbstractPowerModelITD)
             constraint_boundary_voltage_angle(pmitd, i; nw=n)
         end
 
+        # -------------------------------------------------
+        # --- PMITD(T&D) KCL Constraints ----------
         # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+        boundary_buses_transmission = Vector{Int}() # vector to store the boundary buses transmission
+        boundary_buses_distribution = Vector{Int}() # vector to store the boundary buses distribution
+        for j in ids(pmitd, :boundary; nw=n)
+            boundary_pmitd = ref(pmitd, n, :boundary, j)
+            bus_pm = boundary_pmitd["f_bus"]
+            bus_pmd = boundary_pmitd["t_bus"]
+            push!(boundary_buses_transmission, bus_pm)
+            push!(boundary_buses_distribution, bus_pmd)
+        end
+        # Convert to Julia Set - Note: membership checks are faster in sets (vs. vectors) in Julia
+        boundary_buses_transmission_set = Set(boundary_buses_transmission)
+        boundary_buses_distribution_set = Set(boundary_buses_distribution)
+
         # # ---- Transmission Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
         for i in _PM.ids(pm_model, :bus, nw=n)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_transmission_power_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
+            if i in boundary_buses_transmission_set
+                constraint_transmission_power_balance_boundary(pmitd, i; nw_pmitd=n)
+            else
                 _PM.constraint_power_balance(pm_model, i, nw=n)
             end
         end
 
-        # # ---- Distribution Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+        # ---- Distribution Power Balance ---
         for i in _PMD.ids(pmd_model, n, :bus)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_distribution_power_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
+            if i in boundary_buses_distribution_set
+                constraint_distribution_power_balance_boundary(pmitd, i; nw_pmitd=n)
+            else
                 _PMD.constraint_mc_power_balance(pmd_model, i; nw=n)
             end
         end
-
 
     end
 
@@ -941,28 +995,40 @@ function build_mn_opfitd(pmitd::AbstractIVRPowerModelITD)
             constraint_boundary_voltage_angle(pmitd, i; nw=n)
         end
 
+        # -------------------------------------------------
+        # --- PMITD(T&D) KCL Constraints ----------
         # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+        boundary_buses_transmission = Vector{Int}() # vector to store the boundary buses transmission
+        boundary_buses_distribution = Vector{Int}() # vector to store the boundary buses distribution
+        for j in ids(pmitd, :boundary; nw=n)
+            boundary_pmitd = ref(pmitd, n, :boundary, j)
+            bus_pm = boundary_pmitd["f_bus"]
+            bus_pmd = boundary_pmitd["t_bus"]
+            push!(boundary_buses_transmission, bus_pm)
+            push!(boundary_buses_distribution, bus_pmd)
+        end
+        # Convert to Julia Set - Note: membership checks are faster in sets (vs. vectors) in Julia
+        boundary_buses_transmission_set = Set(boundary_buses_transmission)
+        boundary_buses_distribution_set = Set(boundary_buses_distribution)
+
         # # ---- Transmission Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
         for i in _PM.ids(pm_model, :bus, nw=n)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_transmission_current_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
+            if i in boundary_buses_transmission_set
+                constraint_transmission_current_balance_boundary(pmitd, i; nw_pmitd=n)
+            else
                 _PM.constraint_current_balance(pm_model, i, nw=n)
             end
         end
 
-        # # ---- Distribution Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+        # ---- Distribution Power Balance ---
         for i in _PMD.ids(pmd_model, n, :bus)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_distribution_current_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
+            if i in boundary_buses_distribution_set
+                constraint_distribution_current_balance_boundary(pmitd, i; nw_pmitd=n)
+            else
                 _PMD.constraint_mc_current_balance(pmd_model, i; nw=n)
             end
         end
+
     end
 
     # --- PM energy storage state constraint ---
@@ -1119,28 +1185,40 @@ function build_mn_opfitd(pmitd::AbstractBFPowerModelITD)
             constraint_boundary_voltage_angle(pmitd, i; nw=n)
         end
 
+        # -------------------------------------------------
+        # --- PMITD(T&D) KCL Constraints ----------
         # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+        boundary_buses_transmission = Vector{Int}() # vector to store the boundary buses transmission
+        boundary_buses_distribution = Vector{Int}() # vector to store the boundary buses distribution
+        for j in ids(pmitd, :boundary; nw=n)
+            boundary_pmitd = ref(pmitd, n, :boundary, j)
+            bus_pm = boundary_pmitd["f_bus"]
+            bus_pmd = boundary_pmitd["t_bus"]
+            push!(boundary_buses_transmission, bus_pm)
+            push!(boundary_buses_distribution, bus_pmd)
+        end
+        # Convert to Julia Set - Note: membership checks are faster in sets (vs. vectors) in Julia
+        boundary_buses_transmission_set = Set(boundary_buses_transmission)
+        boundary_buses_distribution_set = Set(boundary_buses_distribution)
+
         # # ---- Transmission Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
         for i in _PM.ids(pm_model, :bus, nw=n)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_transmission_power_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
+            if i in boundary_buses_transmission_set
+                constraint_transmission_power_balance_boundary(pmitd, i; nw_pmitd=n)
+            else
                 _PM.constraint_power_balance(pm_model, i, nw=n)
             end
         end
 
-        # # ---- Distribution Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+        # ---- Distribution Power Balance ---
         for i in _PMD.ids(pmd_model, n, :bus)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_distribution_power_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
+            if i in boundary_buses_distribution_set
+                constraint_distribution_power_balance_boundary(pmitd, i; nw_pmitd=n)
+            else
                 _PMD.constraint_mc_power_balance(pmd_model, i; nw=n)
             end
         end
+
     end
 
     # --- PM energy storage state constraint ---
@@ -1296,28 +1374,40 @@ function build_mn_opfitd(pmitd::AbstractLNLBFPowerModelITD)
             constraint_boundary_voltage_angle(pmitd, i; nw=n)
         end
 
+        # -------------------------------------------------
+        # --- PMITD(T&D) KCL Constraints ----------
         # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+        boundary_buses_transmission = Vector{Int}() # vector to store the boundary buses transmission
+        boundary_buses_distribution = Vector{Int}() # vector to store the boundary buses distribution
+        for j in ids(pmitd, :boundary; nw=n)
+            boundary_pmitd = ref(pmitd, n, :boundary, j)
+            bus_pm = boundary_pmitd["f_bus"]
+            bus_pmd = boundary_pmitd["t_bus"]
+            push!(boundary_buses_transmission, bus_pm)
+            push!(boundary_buses_distribution, bus_pmd)
+        end
+        # Convert to Julia Set - Note: membership checks are faster in sets (vs. vectors) in Julia
+        boundary_buses_transmission_set = Set(boundary_buses_transmission)
+        boundary_buses_distribution_set = Set(boundary_buses_distribution)
+
         # # ---- Transmission Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
         for i in _PM.ids(pm_model, :bus, nw=n)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_transmission_power_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
+            if i in boundary_buses_transmission_set
+                constraint_transmission_power_balance_boundary(pmitd, i; nw_pmitd=n)
+            else
                 _PM.constraint_power_balance(pm_model, i, nw=n)
             end
         end
 
-        # # ---- Distribution Power Balance ---
-        boundary_buses = Vector{Int}() # empty vector that stores the boundary buses, so they are not repeated by the other constraint
+        # ---- Distribution Power Balance ---
         for i in _PMD.ids(pmd_model, n, :bus)
-            for j in ids(pmitd, :boundary; nw=n)
-                constraint_distribution_power_balance_boundary(pmitd, i, j, boundary_buses; nw_pmitd=n)
-            end
-            if !(i in boundary_buses)
+            if i in boundary_buses_distribution_set
+                constraint_distribution_power_balance_boundary(pmitd, i; nw_pmitd=n)
+            else
                 _PMD.constraint_mc_power_balance(pmd_model, i; nw=n)
             end
         end
+
     end
 
     # --- PM energy storage state constraint ---

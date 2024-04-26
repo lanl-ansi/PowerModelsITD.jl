@@ -363,8 +363,8 @@ function solve_model(
     result = _IM.optimize_model!(
         pmitd, optimizer=optimizer, solution_processors=solution_processors)
 
-     # Inform about the time for solving the problem (*change to @debug)
-     @info "pmitd model solution time (instantiate + optimization): $(time() - start_time)"
+    # Inform about the time for solving the problem (*change to @debug)
+    @info "pmitd model solution time (instantiate + optimization): $(time() - start_time)"
 
     # Transform solution (both T&D) - SI or per unit - MATH or ENG.
     if (make_si == false)

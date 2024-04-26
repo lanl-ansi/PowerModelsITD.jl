@@ -5,7 +5,6 @@
         pmitd::AbstractPowerModelITD,
         pm::_PM.AbstractWModels,
         n::Int,
-        j::Int,
         i::Int,
         bus_arcs,
         bus_arcs_dc,
@@ -21,7 +20,7 @@
 
 W Models (e.g., SOCBF) transmission constraint power balance.
 """
-function constraint_transmission_power_balance(pmitd::AbstractPowerModelITD, pm::_PM.AbstractWModels, n::Int, j::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
+function constraint_transmission_power_balance(pmitd::AbstractPowerModelITD, pm::_PM.AbstractWModels, n::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
     w    = _PM.var(pm, n, :w, i)
     p    = _PM.get(_PM.var(pm, n),    :p, Dict()); _PM._check_var_keys(p, bus_arcs, "active power", "branch")
     q    = _PM.get(_PM.var(pm, n),    :q, Dict()); _PM._check_var_keys(q, bus_arcs, "reactive power", "branch")
@@ -73,7 +72,6 @@ end
         pmitd::AbstractPowerModelITD,
         pmd::_PMD.AbstractUnbalancedWModels,
         n::Int,
-        j::Int,
         i::Int,
         terminals::Vector{Int},
         grounded::Vector{Bool},
@@ -89,7 +87,7 @@ end
 
 Unbalanced W models distribution constraint power balance.
 """
-function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd::_PMD.AbstractUnbalancedWModels, n::Int, j::Int, i::Int, terminals::Vector{Int}, grounded::Vector{Bool}, bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_gens::Vector{Tuple{Int,Vector{Int}}}, bus_storage::Vector{Tuple{Int,Vector{Int}}}, bus_loads::Vector{Tuple{Int,Vector{Int}}}, bus_shunts::Vector{Tuple{Int,Vector{Int}}}, bus_arcs_boundary_to)
+function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd::_PMD.AbstractUnbalancedWModels, n::Int, i::Int, terminals::Vector{Int}, grounded::Vector{Bool}, bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_gens::Vector{Tuple{Int,Vector{Int}}}, bus_storage::Vector{Tuple{Int,Vector{Int}}}, bus_loads::Vector{Tuple{Int,Vector{Int}}}, bus_shunts::Vector{Tuple{Int,Vector{Int}}}, bus_arcs_boundary_to)
     Wr =  _PMD.var(pmd, n, :Wr, i)
     Wi =  _PMD.var(pmd, n, :Wi, i)
     P =  _PMD.get(_PMD.var(pmd, n), :P, Dict()); _PMD._check_var_keys(P, bus_arcs, "active power", "branch")
