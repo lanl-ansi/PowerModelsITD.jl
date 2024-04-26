@@ -617,6 +617,9 @@ function solve_model(
 
         result = run_decomposition(pmitd)
 
+        # Inform about the time for solving the problem (*change to @debug)
+        @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
+
         # Transform solution (both T&D) - SI or per unit - MATH or ENG.
         if (make_si == false)
             _transform_decomposition_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
@@ -628,9 +631,6 @@ function solve_model(
         @error "The problem specification (build_method) or optimizer defined is not supported! Please use a supported optimizer or build_method."
         throw(error())
     end
-
-    # Inform about the time for solving the problem (*change to @debug)
-    @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
 
     return result
 end
