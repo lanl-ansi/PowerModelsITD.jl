@@ -7,6 +7,7 @@
 - This refactor significantly reduces loops and should reduce time to build ITD JuMP models.
 - This refactor also allows building ITD models where multiple distro. systems can be connected to same trans. system bus and KCL constraints are not duplicated.
 - Bumped PMITD compatibility of `PMD` to the latest version (i.e., v0.15.2).
+- Updated `README.md` with minor revisions.
 
 ## v0.8.1
 
