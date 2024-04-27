@@ -139,40 +139,31 @@ end
 """
     function constraint_transmission_power_balance_boundary(
         pm::_PM.AbstractPowerModel,
-        i::Int,
-        j::Int,
-        boundary_buses::Vector;
+        i::Int;
         nw_pm::Int=nw_id_default
     )
 
 General power balance contraints for boundary buses in the transmission system-side for decomposition.
 """
-function constraint_transmission_power_balance_boundary(pm::_PM.AbstractPowerModel, i::Int, j::Int, boundary_buses::Vector; nw_pm::Int=nw_id_default)
+function constraint_transmission_power_balance_boundary(pm::_PM.AbstractPowerModel, i::Int; nw_pm::Int=nw_id_default)
 
-    bus = _PM.ref(pm, nw_pm, :bus, i)
+    bus_arcs = _PM.ref(pm, nw_pm, :bus_arcs, i)
+    bus_arcs_dc = _PM.ref(pm, nw_pm, :bus_arcs_dc, i)
+    bus_arcs_sw = _PM.ref(pm, nw_pm, :bus_arcs_sw, i)
+    bus_gens = _PM.ref(pm, nw_pm, :bus_gens, i)
+    bus_loads = _PM.ref(pm, nw_pm, :bus_loads, i)
+    bus_shunts = _PM.ref(pm, nw_pm, :bus_shunts, i)
+    bus_storage = _PM.ref(pm, nw_pm, :bus_storage, i)
 
-    boundary_pm = _PM.ref(pm, nw_pm, :boundary, j)
-    bus_pm = boundary_pm["f_bus"]
+    bus_pd = Dict(k => _PM.ref(pm, nw_pm, :load, k, "pd") for k in bus_loads)
+    bus_qd = Dict(k => _PM.ref(pm, nw_pm, :load, k, "qd") for k in bus_loads)
 
-    if bus["bus_i"] == bus_pm # consider Power flowing through respective boundary connection
-        bus_arcs = _PM.ref(pm, nw_pm, :bus_arcs, i)
-        bus_arcs_dc = _PM.ref(pm, nw_pm, :bus_arcs_dc, i)
-        bus_arcs_sw = _PM.ref(pm, nw_pm, :bus_arcs_sw, i)
-        bus_gens = _PM.ref(pm, nw_pm, :bus_gens, i)
-        bus_loads = _PM.ref(pm, nw_pm, :bus_loads, i)
-        bus_shunts = _PM.ref(pm, nw_pm, :bus_shunts, i)
-        bus_storage = _PM.ref(pm, nw_pm, :bus_storage, i)
+    bus_gs = Dict(k => _PM.ref(pm, nw_pm, :shunt, k, "gs") for k in bus_shunts)
+    bus_bs = Dict(k => _PM.ref(pm, nw_pm, :shunt, k, "bs") for k in bus_shunts)
 
-        bus_pd = Dict(k => _PM.ref(pm, nw_pm, :load, k, "pd") for k in bus_loads)
-        bus_qd = Dict(k => _PM.ref(pm, nw_pm, :load, k, "qd") for k in bus_loads)
+    bus_arcs_boundary_from = _PM.ref(pm, nw_pm, :bus_arcs_boundary_from, i)
+    constraint_transmission_power_balance(pm, nw_pm, i, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
 
-        bus_gs = Dict(k => _PM.ref(pm, nw_pm, :shunt, k, "gs") for k in bus_shunts)
-        bus_bs = Dict(k => _PM.ref(pm, nw_pm, :shunt, k, "bs") for k in bus_shunts)
-
-        bus_arcs_boundary_from = _PM.ref(pm, nw_pm, :bus_arcs_boundary_from, i)
-        constraint_transmission_power_balance(pm, nw_pm, j, i, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
-        push!(boundary_buses, bus_pm) # add to vector storage
-    end
 end
 
 
@@ -180,45 +171,34 @@ end
 """
     function constraint_transmission_current_balance_boundary(
         pm::_PM.AbstractIVRModel,
-        i::Int,
-        j::Int,
-        boundary_buses::Vector;
+        i::Int;
         nw_pm::Int=nw_id_default
     )
 
 General current balance contraints for boundary buses in the transmission system-side for decomposition.
 """
-function constraint_transmission_current_balance_boundary(pm::_PM.AbstractIVRModel, i::Int, j::Int, boundary_buses::Vector; nw_pm::Int=nw_id_default)
+function constraint_transmission_current_balance_boundary(pm::_PM.AbstractIVRModel, i::Int; nw_pm::Int=nw_id_default)
 
-    # Extract the transmission model
-    bus = _PM.ref(pm, nw_pm, :bus, i)
-
-    boundary_pm = _PM.ref(pm, nw_pm, :boundary, j)
-    bus_pm = boundary_pm["f_bus"]
-
-    if bus["bus_i"] == bus_pm # consider Current flowing through respective boundary connection
-
-        if !haskey(_PM.con(pm, nw_pm), :kcl_cr)
-            _PM.con(pm, nw_pm)[:kcl_cr] = Dict{Int,JuMP.ConstraintRef}()
-        end
-        if !haskey(_PM.con(pm, nw_pm), :kcl_ci)
-            _PM.con(pm, nw_pm)[:kcl_ci] = Dict{Int,JuMP.ConstraintRef}()
-        end
-
-        bus_arcs = _PM.ref(pm, nw_pm, :bus_arcs, i)
-        bus_arcs_dc = _PM.ref(pm, nw_pm, :bus_arcs_dc, i)
-        bus_gens = _PM.ref(pm, nw_pm, :bus_gens, i)
-        bus_loads = _PM.ref(pm, nw_pm, :bus_loads, i)
-        bus_shunts = _PM.ref(pm, nw_pm, :bus_shunts, i)
-
-        bus_pd = Dict(k => _PM.ref(pm, nw_pm, :load, k, "pd") for k in bus_loads)
-        bus_qd = Dict(k => _PM.ref(pm, nw_pm, :load, k, "qd") for k in bus_loads)
-
-        bus_gs = Dict(k => _PM.ref(pm, nw_pm, :shunt, k, "gs") for k in bus_shunts)
-        bus_bs = Dict(k => _PM.ref(pm, nw_pm, :shunt, k, "bs") for k in bus_shunts)
-
-        bus_arcs_boundary_from = _PM.ref(pm, nw_pm, :bus_arcs_boundary_from, i)
-        constraint_transmission_current_balance(pm, nw_pm, j, i, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
-        push!(boundary_buses, bus_pm) # add to vector storage
+    if !haskey(_PM.con(pm, nw_pm), :kcl_cr)
+        _PM.con(pm, nw_pm)[:kcl_cr] = Dict{Int,JuMP.ConstraintRef}()
     end
+    if !haskey(_PM.con(pm, nw_pm), :kcl_ci)
+        _PM.con(pm, nw_pm)[:kcl_ci] = Dict{Int,JuMP.ConstraintRef}()
+    end
+
+    bus_arcs = _PM.ref(pm, nw_pm, :bus_arcs, i)
+    bus_arcs_dc = _PM.ref(pm, nw_pm, :bus_arcs_dc, i)
+    bus_gens = _PM.ref(pm, nw_pm, :bus_gens, i)
+    bus_loads = _PM.ref(pm, nw_pm, :bus_loads, i)
+    bus_shunts = _PM.ref(pm, nw_pm, :bus_shunts, i)
+
+    bus_pd = Dict(k => _PM.ref(pm, nw_pm, :load, k, "pd") for k in bus_loads)
+    bus_qd = Dict(k => _PM.ref(pm, nw_pm, :load, k, "qd") for k in bus_loads)
+
+    bus_gs = Dict(k => _PM.ref(pm, nw_pm, :shunt, k, "gs") for k in bus_shunts)
+    bus_bs = Dict(k => _PM.ref(pm, nw_pm, :shunt, k, "bs") for k in bus_shunts)
+
+    bus_arcs_boundary_from = _PM.ref(pm, nw_pm, :bus_arcs_boundary_from, i)
+    constraint_transmission_current_balance(pm, nw_pm, i, bus_arcs, bus_arcs_dc, bus_gens, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
+
 end

@@ -4,7 +4,6 @@
     function constraint_transmission_power_balance(
         pm::_PM.AbstractACRModel,
         n::Int,
-        j::Int,
         i::Int,
         bus_arcs,
         bus_arcs_dc,
@@ -20,7 +19,7 @@
 
 ACR transmission constraint power balance for decomposition model.
 """
-function constraint_transmission_power_balance(pm::_PM.AbstractACRModel, n::Int, j::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
+function constraint_transmission_power_balance(pm::_PM.AbstractACRModel, n::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
 
     vr = _PM.var(pm, n, :vr, i)
     vi = _PM.var(pm, n, :vi, i)

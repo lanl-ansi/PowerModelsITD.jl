@@ -4,7 +4,6 @@
     function constraint_transmission_power_balance(
         pm::_PM.AbstractWModels,
         n::Int,
-        j::Int,
         i::Int,
         bus_arcs,
         bus_arcs_dc,
@@ -20,7 +19,7 @@
 
 W Models (e.g., SOCBF) transmission constraint power balance.
 """
-function constraint_transmission_power_balance(pm::_PM.AbstractWModels, n::Int, j::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
+function constraint_transmission_power_balance(pm::_PM.AbstractWModels, n::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
     w    = _PM.var(pm, n, :w, i)
     p    = _PM.get(_PM.var(pm, n),    :p, Dict()); _PM._check_var_keys(p, bus_arcs, "active power", "branch")
     q    = _PM.get(_PM.var(pm, n),    :q, Dict()); _PM._check_var_keys(q, bus_arcs, "reactive power", "branch")
