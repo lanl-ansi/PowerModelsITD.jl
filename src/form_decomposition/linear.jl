@@ -4,7 +4,6 @@
     function constraint_transmission_power_balance(
         pm::_PM.AbstractActivePowerModel,
         n::Int,
-        j::Int,
         i::Int,
         bus_arcs,
         bus_arcs_dc,
@@ -20,7 +19,7 @@
 
 NFA transmission constraint power balance for decomposition.
 """
-function constraint_transmission_power_balance(pm::_PM.AbstractActivePowerModel, n::Int, j::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
+function constraint_transmission_power_balance(pm::_PM.AbstractActivePowerModel, n::Int, i::Int, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
 
     p    = _PM.get(_PM.var(pm, n),    :p, Dict()); _PM._check_var_keys(p, bus_arcs, "active power", "branch")
     pg   = _PM.get(_PM.var(pm, n),   :pg, Dict()); _PM._check_var_keys(pg, bus_gens, "active power", "generator")
