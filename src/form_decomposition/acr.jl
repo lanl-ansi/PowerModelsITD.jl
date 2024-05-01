@@ -70,6 +70,81 @@ function constraint_transmission_power_balance(pm::_PM.AbstractACRModel, n::Int,
 end
 
 
+function constraint_distribution_power_balance(pmd::_PMD.ACRUPowerModel, n::Int, i::Int, terminals::Vector{Int}, grounded::Vector{Bool}, bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_gens::Vector{Tuple{Int,Vector{Int}}}, bus_storage::Vector{Tuple{Int,Vector{Int}}}, bus_loads::Vector{Tuple{Int,Vector{Int}}}, bus_shunts::Vector{Tuple{Int,Vector{Int}}}, bus_arcs_boundary_to)
+
+    vr = _PMD.var(pmd, n, :vr, i)
+    vi = _PMD.var(pmd, n, :vi, i)
+
+    p    = _PMD.get(_PMD.var(pmd, n), :p,      Dict()); _PMD._check_var_keys(p,   bus_arcs,       "active power",   "branch")
+    q    = _PMD.get(_PMD.var(pmd, n), :q,      Dict()); _PMD._check_var_keys(q,   bus_arcs,       "reactive power", "branch")
+    pg   = _PMD.get(_PMD.var(pmd, n), :pg_bus, Dict()); _PMD._check_var_keys(pg,  bus_gens,       "active power",   "generator")
+    qg   = _PMD.get(_PMD.var(pmd, n), :qg_bus, Dict()); _PMD._check_var_keys(qg,  bus_gens,       "reactive power", "generator")
+    ps   = _PMD.get(_PMD.var(pmd, n), :ps,     Dict()); _PMD._check_var_keys(ps,  bus_storage,    "active power",   "storage")
+    qs   = _PMD.get(_PMD.var(pmd, n), :qs,     Dict()); _PMD._check_var_keys(qs,  bus_storage,    "reactive power", "storage")
+    psw  = _PMD.get(_PMD.var(pmd, n), :psw,    Dict()); _PMD._check_var_keys(psw, bus_arcs_sw,    "active power",   "switch")
+    qsw  = _PMD.get(_PMD.var(pmd, n), :qsw,    Dict()); _PMD._check_var_keys(qsw, bus_arcs_sw,    "reactive power", "switch")
+    pt   = _PMD.get(_PMD.var(pmd, n), :pt,     Dict()); _PMD._check_var_keys(pt,  bus_arcs_trans, "active power",   "transformer")
+    qt   = _PMD.get(_PMD.var(pmd, n), :qt,     Dict()); _PMD._check_var_keys(qt,  bus_arcs_trans, "reactive power", "transformer")
+    pd   = _PMD.get(_PMD.var(pmd, n), :pd_bus, Dict()); _PMD._check_var_keys(pd,  bus_loads,      "active power",   "load")
+    qd   = _PMD.get(_PMD.var(pmd, n), :qd_bus, Dict()); _PMD._check_var_keys(pd,  bus_loads,      "reactive power", "load")
+
+    Gt, Bt = _PMD._build_bus_shunt_matrices(pmd, n, terminals, bus_shunts)
+
+    # Boundary
+    pbound_aux_phases    = get(_PMD.var(pmd, n),    :pbound_aux_phases, Dict()); _PMD._check_var_keys(pbound_aux_phases, bus_arcs_boundary_to, "active power", "boundary")
+    qbound_aux_phases    = get(_PMD.var(pmd, n),    :qbound_aux_phases, Dict()); _PMD._check_var_keys(qbound_aux_phases, bus_arcs_boundary_to, "reactive power", "boundary")
+
+    cstr_p = []
+    cstr_q = []
+
+    ungrounded_terminals = [(idx,t) for (idx,t) in enumerate(terminals) if !grounded[idx]]
+
+
+    # pd/qd can be NLexpressions, so cannot be vectorized
+    for (idx, t) in ungrounded_terminals
+        cp = @smart_constraint(pmd.model, [p, q, pg, qg, ps, qs, psw, qsw, pt, qt, pd, qd, pbound_aux_phases, qbound_aux_phases, vr, vi],
+              sum(  p[arc][t] for (arc, conns) in bus_arcs if t in conns)
+            + sum(psw[arc][t] for (arc, conns) in bus_arcs_sw if t in conns)
+            + sum( pt[arc][t] for (arc, conns) in bus_arcs_trans if t in conns)
+            - sum( pbound_aux_phases[a_pbound_aux][t] for a_pbound_aux in bus_arcs_boundary_to)
+            ==
+              sum(pg[gen][t] for (gen, conns) in bus_gens if t in conns)
+            - sum(ps[strg][t] for (strg, conns) in bus_storage if t in conns)
+            - sum(pd[load][t] for (load, conns) in bus_loads if t in conns)
+            + ( -vr[t] * sum(Gt[idx,jdx]*vr[u]-Bt[idx,jdx]*vi[u] for (jdx,u) in ungrounded_terminals)
+                -vi[t] * sum(Gt[idx,jdx]*vi[u]+Bt[idx,jdx]*vr[u] for (jdx,u) in ungrounded_terminals)
+            )
+        )
+        push!(cstr_p, cp)
+
+        cq = @smart_constraint(pmd.model, [p, q, pg, qg, ps, qs, psw, qsw, pt, qt, pd, qd, pbound_aux_phases, qbound_aux_phases, vr, vi],
+              sum(  q[arc][t] for (arc, conns) in bus_arcs if t in conns)
+            + sum(qsw[arc][t] for (arc, conns) in bus_arcs_sw if t in conns)
+            + sum( qt[arc][t] for (arc, conns) in bus_arcs_trans if t in conns)
+            - sum( qbound_aux_phases[a_qbound_aux][t] for a_qbound_aux in bus_arcs_boundary_to)
+            ==
+              sum(qg[gen][t] for (gen, conns) in bus_gens if t in conns)
+            - sum(qd[load][t] for (load, conns) in bus_loads if t in conns)
+            - sum(qs[strg][t] for (strg, conns) in bus_storage if t in conns)
+            + ( vr[t] * sum(Gt[idx,jdx]*vi[u]+Bt[idx,jdx]*vr[u] for (jdx,u) in ungrounded_terminals)
+               -vi[t] * sum(Gt[idx,jdx]*vr[u]-Bt[idx,jdx]*vi[u] for (jdx,u) in ungrounded_terminals)
+            )
+        )
+        push!(cstr_q, cq)
+    end
+
+    _PMD.con(pmd, n, :lam_kcl_r)[i] = cstr_p
+    _PMD.con(pmd, n, :lam_kcl_i)[i] = cstr_q
+
+    if _IM.report_duals(pmd)
+        sol(pmd, n, :bus, i)[:lam_kcl_r] = cstr_p
+        sol(pmd, n, :bus, i)[:lam_kcl_i] = cstr_q
+    end
+
+end
+
+
+
 """
     function constraint_boundary_voltage_magnitude(
         pmd::_PMD.ACRUPowerModel,

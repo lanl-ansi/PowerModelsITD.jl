@@ -15,20 +15,17 @@ function constraint_boundary_power(pmd::_PMD.AbstractUnbalancedPowerModel, i::In
     f_bus = boundary["f_bus"] # convention: from bus Transmission always!
     t_bus = boundary["t_bus"] # convention: to bus Distribution always!
 
-    # Aux vars
+    # Aux vars (shared vars)
     f_idx = (i, f_bus, t_bus)
     p_aux = _PMD.var(pmd, nw, :pbound_aux, f_idx)
     q_aux = _PMD.var(pmd, nw, :qbound_aux, f_idx)
 
-    # Get pg vars from slack gen
-    slack_gen_data = Dict(x for x in _PMD.ref(pmd, nw, :gen) if x.second["gen_bus"] == t_bus)
-    slack_gen_keys = collect(keys(slack_gen_data))
-    slack_gen_number = slack_gen_keys[1]
-    spg = _PMD.var(pmd, nw, :pg, slack_gen_number)
-    sqg = _PMD.var(pmd, nw, :qg, slack_gen_number)
+    t_idx = (i, t_bus, f_bus)
+    p_aux_phases = _PMD.var(pmd, nw, :pbound_aux_phases, t_idx)
+    q_aux_phases = _PMD.var(pmd, nw, :qbound_aux_phases, t_idx)
 
-    JuMP.@constraint(pmd.model, p_aux[1] == sum(spg[phase] for phase in boundary["t_connections"]))
-    JuMP.@constraint(pmd.model, q_aux[1] == sum(sqg[phase] for phase in boundary["t_connections"]))
+    JuMP.@constraint(pmd.model, p_aux[1] == sum(p_aux_phases[phase] for phase in boundary["t_connections"]))
+    JuMP.@constraint(pmd.model, q_aux[1] == sum(q_aux_phases[phase] for phase in boundary["t_connections"]))
 
 end
 
@@ -48,21 +45,17 @@ function constraint_boundary_power(pmd::_PMD.IVRUPowerModel, i::Int; nw::Int=nw_
     f_bus = boundary["f_bus"] # convention: from bus Transmission always!
     t_bus = boundary["t_bus"] # convention: to bus Distribution always!
 
-    # Aux vars
+    # Aux vars (shared vars)
     f_idx = (i, f_bus, t_bus)
     p_aux = _PMD.var(pmd, nw, :pbound_aux, f_idx)
     q_aux = _PMD.var(pmd, nw, :qbound_aux, f_idx)
 
-    # Get pg vars from slack gen
-    slack_gen_data = Dict(x for x in _PMD.ref(pmd, nw, :gen) if x.second["gen_bus"] == t_bus)
-    slack_gen_keys = collect(keys(slack_gen_data))
-    slack_gen_number = slack_gen_keys[1]
+    t_idx = (i, t_bus, f_bus)
+    p_aux_phases = _PMD.var(pmd, nw, :pbound_aux_phases, t_idx)
+    q_aux_phases = _PMD.var(pmd, nw, :qbound_aux_phases, t_idx)
 
-    spg = _PMD.var(pmd, nw, :pg, slack_gen_number)
-    sqg = _PMD.var(pmd, nw, :qg, slack_gen_number)
-
-    JuMP.@NLconstraint(pmd.model, p_aux[1] == sum(spg[phase] for phase in boundary["t_connections"]))
-    JuMP.@NLconstraint(pmd.model, q_aux[1] == sum(sqg[phase] for phase in boundary["t_connections"]))
+    JuMP.@constraint(pmd.model, p_aux[1] == sum(p_aux_phases[phase] for phase in boundary["t_connections"]))
+    JuMP.@constraint(pmd.model, q_aux[1] == sum(q_aux_phases[phase] for phase in boundary["t_connections"]))
 
 end
 
@@ -83,17 +76,14 @@ function constraint_boundary_power(pmd::_PMD.AbstractUnbalancedNFAModel, i::Int;
     f_bus = boundary["f_bus"] # convention: from bus Transmission always!
     t_bus = boundary["t_bus"] # convention: to bus Distribution always!
 
-    # Aux vars
+    # Aux vars (shared vars)
     f_idx = (i, f_bus, t_bus)
     p_aux = _PMD.var(pmd, nw, :pbound_aux, f_idx)
 
-    # Get pg vars from slack gen
-    slack_gen_data = Dict(x for x in _PMD.ref(pmd, nw, :gen) if x.second["gen_bus"] == t_bus)
-    slack_gen_keys = collect(keys(slack_gen_data))
-    slack_gen_number = slack_gen_keys[1]
-    spg = _PMD.var(pmd, nw, :pg, slack_gen_number)
+    t_idx = (i, t_bus, f_bus)
+    p_aux_phases = _PMD.var(pmd, nw, :pbound_aux_phases, t_idx)
 
-    JuMP.@constraint(pmd.model, p_aux[1] == sum(spg[phase] for phase in boundary["t_connections"]))
+    JuMP.@constraint(pmd.model, p_aux[1] == sum(p_aux_phases[phase] for phase in boundary["t_connections"]))
 
 end
 
@@ -163,6 +153,32 @@ function constraint_transmission_power_balance_boundary(pm::_PM.AbstractPowerMod
 
     bus_arcs_boundary_from = _PM.ref(pm, nw_pm, :bus_arcs_boundary_from, i)
     constraint_transmission_power_balance(pm, nw_pm, i, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
+
+end
+
+
+function constraint_distribution_power_balance_boundary(pmd::_PMD.AbstractUnbalancedPowerModel, i::Int; nw_pmd::Int=nw_id_default)
+
+    bus = _PMD.ref(pmd, nw_pmd, :bus, i)
+
+    bus_arcs = _PMD.ref(pmd, nw_pmd, :bus_arcs_conns_branch, i)
+    bus_arcs_sw = _PMD.ref(pmd, nw_pmd, :bus_arcs_conns_switch, i)
+    bus_arcs_trans = _PMD.ref(pmd, nw_pmd, :bus_arcs_conns_transformer, i)
+    bus_gens = _PMD.ref(pmd, nw_pmd, :bus_conns_gen, i)
+    bus_storage = _PMD.ref(pmd, nw_pmd, :bus_conns_storage, i)
+    bus_loads = _PMD.ref(pmd, nw_pmd, :bus_conns_load, i)
+    bus_shunts = _PMD.ref(pmd, nw_pmd, :bus_conns_shunt, i)
+
+    if !haskey(_PMD.con(pmd, nw_pmd), :lam_kcl_r)
+        _PMD.con(pmd, nw_pmd)[:lam_kcl_r] = Dict{Int,Array{JuMP.ConstraintRef}}()
+    end
+
+    if !haskey(_PMD.con(pmd, nw_pmd), :lam_kcl_i)
+        _PMD.con(pmd, nw_pmd)[:lam_kcl_i] = Dict{Int,Array{JuMP.ConstraintRef}}()
+    end
+
+    bus_arcs_boundary_to = _PMD.ref(pmd, nw_pmd, :bus_arcs_boundary_to, i)
+    constraint_distribution_power_balance(pmd, nw_pmd, i, bus["terminals"], bus["grounded"], bus_arcs, bus_arcs_sw, bus_arcs_trans, bus_gens, bus_storage, bus_loads, bus_shunts, bus_arcs_boundary_to)
 
 end
 

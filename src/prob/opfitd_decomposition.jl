@@ -157,10 +157,28 @@ function build_opfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel
         _PMD.constraint_mc_load_power(pmd_model, id)
     end
 
-    # Power balance for PMD buses.
-    for i in _PMD.ids(pmd_model, :bus)
-        _PMD.constraint_mc_power_balance(pmd_model, i)
+    # -------------------------------------------------
+    # --- PMITD(T&D) KCL Constraints ----------
+    # Note: Both of these need to consider flow on boundaries if bus is connected to boundary
+    boundary_buses_distribution = Vector{Int}() # vector to store the boundary buses distribution
+    for j in _PMD.ids(pmd_model, :boundary)
+        boundary_pmitd = _PMD.ref(pmd_model, nw_id_default, :boundary, j)
+        bus_pmd = boundary_pmitd["t_bus"]
+        push!(boundary_buses_distribution, bus_pmd)
     end
+    # Convert to Julia Set - Note: membership checks are faster in sets (vs. vectors) in Julia
+    boundary_buses_distribution_set = Set(boundary_buses_distribution)
+
+    # ---- Distribution Power Balance ---
+    for i in _PMD.ids(pmd_model, :bus)
+        if i in boundary_buses_distribution_set
+            constraint_distribution_power_balance_boundary(pmd_model, i)
+        else
+            _PMD.constraint_mc_power_balance(pmd_model, i)
+        end
+    end
+
+    #---------------------------------
 
     for i in _PMD.ids(pmd_model, :storage)
         _PMD.constraint_storage_state(pmd_model, i)

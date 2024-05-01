@@ -100,13 +100,13 @@ function _ref_filter_distribution_slack_generators_decomposition!(ref::Dict{Symb
     # Loops over all nws
     for (nw, nw_ref) in ref[:it][:pmd][:nw]
 
-        # # Unrestrict buspairs connected to reference bus - (Seems to not be needed!)
-        # for (j, bus_pair) in nw_ref[:buspairs]
-        #     if (bus_pair["vm_fr_min"] == 1.0) # only need to check one
-        #         bus_pair["vm_fr_min"] = 0.0
-        #         bus_pair["vm_fr_max"] = Inf
-        #     end
-        # end
+        # Unrestrict buspairs connected to reference bus - (Seems to not be needed!)
+        for (j, bus_pair) in nw_ref[:buspairs]
+            if (bus_pair["vm_fr_min"] == 1.0) # only need to check one
+                bus_pair["vm_fr_min"] = 0.0
+                bus_pair["vm_fr_max"] = Inf
+            end
+        end
 
         # Modify v_min and v_max, remove va and vm, and change bus type for reference bus
         boundary = nw_ref[:pmitd]   # boundary info.
@@ -116,15 +116,28 @@ function _ref_filter_distribution_slack_generators_decomposition!(ref::Dict{Symb
         boundary_number = boundary_keys[1]
         boundary_data = boundary[boundary_number]
 
-        # These limits are extremely important. If not present, subproblems has a lot of problems converging
-        nw_ref[:bus][boundary_data["distribution_boundary"]]["vmin"] = [0.7, 0.7, 0.7]
-        nw_ref[:bus][boundary_data["distribution_boundary"]]["vmax"] = [1.5, 1.5, 1.5]
+        # # These limits are extremely important. If not present, subproblems has a lot of problems converging
+        # nw_ref[:bus][boundary_data["distribution_boundary"]]["vmin"] = [0.7, 0.7, 0.7]
+        # nw_ref[:bus][boundary_data["distribution_boundary"]]["vmax"] = [1.5, 1.5, 1.5]
 
-        # Modify slack gen cost.
+        nw_ref[:bus][boundary_data["distribution_boundary"]]["vmin"] = [0.0, 0.0, 0.0]
+        nw_ref[:bus][boundary_data["distribution_boundary"]]["vmax"] = [1.5, 1.5, 1.5]
+        nw_ref[:bus][boundary_data["distribution_boundary"]]["bus_type"] = 1
+
+        # # Modify slack gen cost.
+        # for (gen_indx, gen_data) in  nw_ref[:gen]
+        #     if (gen_data["gen_bus"] == boundary_data["distribution_boundary"])
+        #         cost_length = length(gen_data["cost"])
+        #         gen_data["cost"] = zeros(cost_length)
+        #     end
+        # end
+
+        # Remove slack gen.
         for (gen_indx, gen_data) in  nw_ref[:gen]
             if (gen_data["gen_bus"] == boundary_data["distribution_boundary"])
-                cost_length = length(gen_data["cost"])
-                gen_data["cost"] = zeros(cost_length)
+                delete!(nw_ref[:gen], gen_indx)
+                nw_ref[:bus_conns_gen][boundary_data["distribution_boundary"]] = []
+                nw_ref[:bus_gens][boundary_data["distribution_boundary"]] = []
             end
         end
 

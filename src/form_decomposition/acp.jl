@@ -104,6 +104,117 @@ function constraint_transmission_power_balance(pm::_PM.AbstractACPModel, n::Int,
 end
 
 
+function constraint_distribution_power_balance(pmd::_PMD.AbstractUnbalancedACPModel, n::Int, i::Int, terminals::Vector{Int}, grounded::Vector{Bool}, bus_arcs::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_sw::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_arcs_trans::Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}, bus_gens::Vector{Tuple{Int,Vector{Int}}}, bus_storage::Vector{Tuple{Int,Vector{Int}}}, bus_loads::Vector{Tuple{Int,Vector{Int}}}, bus_shunts::Vector{Tuple{Int,Vector{Int}}}, bus_arcs_boundary_to)
+
+    vm = _PMD.var(pmd, n, :vm, i)
+    va = _PMD.var(pmd, n, :va, i)
+
+    p    = _PMD.get(_PMD.var(pmd, n),      :p, Dict()); _PMD._check_var_keys(  p, bus_arcs, "active power", "branch")
+    q    = _PMD.get(_PMD.var(pmd, n),      :q, Dict()); _PMD._check_var_keys(  q, bus_arcs, "reactive power", "branch")
+    pg   = _PMD.get(_PMD.var(pmd, n), :pg_bus, Dict()); _PMD._check_var_keys( pg, bus_gens, "active power", "generator")
+    qg   = _PMD.get(_PMD.var(pmd, n), :qg_bus, Dict()); _PMD._check_var_keys( qg, bus_gens, "reactive power", "generator")
+    ps   = _PMD.get(_PMD.var(pmd, n),     :ps, Dict()); _PMD._check_var_keys( ps, bus_storage, "active power", "storage")
+    qs   = _PMD.get(_PMD.var(pmd, n),     :qs, Dict()); _PMD._check_var_keys( qs, bus_storage, "reactive power", "storage")
+    psw  = _PMD.get(_PMD.var(pmd, n),    :psw, Dict()); _PMD._check_var_keys(psw, bus_arcs_sw, "active power", "switch")
+    qsw  = _PMD.get(_PMD.var(pmd, n),    :qsw, Dict()); _PMD._check_var_keys(qsw, bus_arcs_sw, "reactive power", "switch")
+    pt   = _PMD.get(_PMD.var(pmd, n),     :pt, Dict()); _PMD._check_var_keys( pt, bus_arcs_trans, "active power", "transformer")
+    qt   = _PMD.get(_PMD.var(pmd, n),     :qt, Dict()); _PMD._check_var_keys( qt, bus_arcs_trans, "reactive power", "transformer")
+    pd   = _PMD.get(_PMD.var(pmd, n), :pd_bus, Dict()); _PMD._check_var_keys( pd, bus_loads, "active power", "load")
+    qd   = _PMD.get(_PMD.var(pmd, n), :qd_bus, Dict()); _PMD._check_var_keys( pd, bus_loads, "reactive power", "load")
+
+    # Boundary
+    pbound_aux_phases    = get(_PMD.var(pmd, n),    :pbound_aux_phases, Dict()); _PMD._check_var_keys(pbound_aux_phases, bus_arcs_boundary_to, "active power", "boundary")
+    qbound_aux_phases    = get(_PMD.var(pmd, n),    :qbound_aux_phases, Dict()); _PMD._check_var_keys(qbound_aux_phases, bus_arcs_boundary_to, "reactive power", "boundary")
+
+    Gs, Bs = _PMD._build_bus_shunt_matrices(pmd, n, terminals, bus_shunts)
+
+    cstr_p = []
+    cstr_q = []
+
+    ungrounded_terminals = [(idx,t) for (idx,t) in enumerate(terminals) if !grounded[idx]]
+
+    for (idx,t) in ungrounded_terminals
+        if any(Bs[idx,jdx] != 0 for (jdx, u) in ungrounded_terminals if idx != jdx) || any(Gs[idx,jdx] != 0 for (jdx, u) in ungrounded_terminals if idx != jdx)
+            cp = JuMP.@NLconstraint(pmd.model,
+                  sum(  p[a][t] for (a, conns) in bus_arcs if t in conns)
+                + sum(psw[a][t] for (a, conns) in bus_arcs_sw if t in conns)
+                + sum( pt[a][t] for (a, conns) in bus_arcs_trans if t in conns)
+                - sum( pg[g][t] for (g, conns) in bus_gens if t in conns)
+                + sum( ps[s][t] for (s, conns) in bus_storage if t in conns)
+                + sum( pd[l][t] for (l, conns) in bus_loads if t in conns)
+                - sum( pbound_aux_phases[a_pbound_aux][t] for a_pbound_aux in bus_arcs_boundary_to)
+                + ( # shunt
+                    +Gs[idx,idx] * vm[t]^2
+                    +sum( Gs[idx,jdx] * vm[t]*vm[u] * cos(va[t]-va[u])
+                         +Bs[idx,jdx] * vm[t]*vm[u] * sin(va[t]-va[u])
+                        for (jdx,u) in ungrounded_terminals if idx != jdx)
+                )
+                ==
+                0.0
+            )
+            push!(cstr_p, cp)
+
+            cq = JuMP.@NLconstraint(pmd.model,
+                  sum(  q[a][t] for (a, conns) in bus_arcs if t in conns)
+                + sum(qsw[a][t] for (a, conns) in bus_arcs_sw if t in conns)
+                + sum( qt[a][t] for (a, conns) in bus_arcs_trans if t in conns)
+                - sum( qg[g][t] for (g, conns) in bus_gens if t in conns)
+                + sum( qs[s][t] for (s, conns) in bus_storage if t in conns)
+                + sum( qd[l][t] for (l, conns) in bus_loads if t in conns)
+                - sum( qbound_aux_phases[a_qbound_aux][t] for a_qbound_aux in bus_arcs_boundary_to)
+                + ( # shunt
+                    -Bs[idx,idx] * vm[t]^2
+                    -sum( Bs[idx,jdx] * vm[t]*vm[u] * cos(va[t]-va[u])
+                         -Gs[idx,jdx] * vm[t]*vm[u] * sin(va[t]-va[u])
+                         for (jdx,u) in ungrounded_terminals if idx != jdx)
+                )
+                ==
+                0.0
+            )
+            push!(cstr_q, cq)
+        else
+            cp = @smart_constraint(pmd.model, [p, pg, ps, psw, pt, pd, pbound_aux_phases, vm],
+                  sum(  p[a][t] for (a, conns) in bus_arcs if t in conns)
+                + sum(psw[a][t] for (a, conns) in bus_arcs_sw if t in conns)
+                + sum( pt[a][t] for (a, conns) in bus_arcs_trans if t in conns)
+                - sum( pg[g][t] for (g, conns) in bus_gens if t in conns)
+                + sum( ps[s][t] for (s, conns) in bus_storage if t in conns)
+                + sum( pd[l][t] for (l, conns) in bus_loads if t in conns)
+                - sum( pbound_aux_phases[a_pbound_aux][t] for a_pbound_aux in bus_arcs_boundary_to)
+                + Gs[idx,idx] * vm[t]^2
+                ==
+                0.0
+            )
+            push!(cstr_p, cp)
+
+            cq = @smart_constraint(pmd.model, [q, qg, qs, qsw, qt, qd, qbound_aux_phases, vm],
+                  sum(  q[a][t] for (a, conns) in bus_arcs if t in conns)
+                + sum(qsw[a][t] for (a, conns) in bus_arcs_sw if t in conns)
+                + sum( qt[a][t] for (a, conns) in bus_arcs_trans if t in conns)
+                - sum( qg[g][t] for (g, conns) in bus_gens if t in conns)
+                + sum( qs[s][t] for (s, conns) in bus_storage if t in conns)
+                + sum( qd[l][t] for (l, conns) in bus_loads if t in conns)
+                - sum( qbound_aux_phases[a_qbound_aux][t] for a_qbound_aux in bus_arcs_boundary_to)
+                - Bs[idx,idx] * vm[t]^2
+                ==
+                0.0
+            )
+            push!(cstr_q, cq)
+        end
+    end
+
+    _PMD.con(pmd, n, :lam_kcl_r)[i] = cstr_p
+    _PMD.con(pmd, n, :lam_kcl_i)[i] = cstr_q
+
+    if _IM.report_duals(pmd)
+        sol(pmd, n, :bus, i)[:lam_kcl_r] = cstr_p
+        sol(pmd, n, :bus, i)[:lam_kcl_i] = cstr_q
+    end
+
+end
+
+
+
 """
     function constraint_boundary_voltage_magnitude(
         pmd::_PMD.ACPUPowerModel,
@@ -145,18 +256,18 @@ function constraint_boundary_voltage_angle(pmd::_PMD.ACPUPowerModel, ::Int, t_bu
     ## if the  _PMD.constraint_mc_theta_ref(pmd_model, i) is kept ---
 
     # --- Either this constraint ---
-    _PMD.constraint_mc_theta_ref(pmd, t_bus)
+    # _PMD.constraint_mc_theta_ref(pmd, t_bus)
 
     # --- Or these constraints ---.
 
-    # va_source = _PMD.var(pmd, nw, :va, t_bus)
-    # # Add constraint(s): angles
-    # JuMP.@constraint(pmd.model, va_source[1] == 0.0)
-    # # Add constraints related to 120 degrees offset for the distribution b and c phases
-    # shift_120degs_rad = deg2rad(120)
-    # # Offset constraints for other phases (-+120 degrees)
-    # JuMP.@constraint(pmd.model, va_source[2] == (va_source[1] - shift_120degs_rad))
-    # JuMP.@constraint(pmd.model, va_source[3] == (va_source[1] + shift_120degs_rad))
+    va_source = _PMD.var(pmd, nw, :va, t_bus)
+    # Add constraint(s): angles
+    JuMP.@constraint(pmd.model, va_source[1] == 0.0)
+    # Add constraints related to 120 degrees offset for the distribution b and c phases
+    shift_120degs_rad = deg2rad(120)
+    # Offset constraints for other phases (-+120 degrees)
+    JuMP.@constraint(pmd.model, va_source[2] == (va_source[1] - shift_120degs_rad))
+    JuMP.@constraint(pmd.model, va_source[3] == (va_source[1] + shift_120degs_rad))
 
 end
 

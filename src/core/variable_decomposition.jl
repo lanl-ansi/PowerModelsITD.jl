@@ -99,6 +99,7 @@ end
 "Boundary power flow variables in Distribution - Linear Active cases (P-only)"
 function variable_boundary_power(pmd::_PMD.AbstractUnbalancedActivePowerModel; nw::Int=nw_id_default, report::Bool=true)
     variable_boundary_power_real_aux(pmd; nw, report)
+    variable_boundary_power_real_aux_phases(pmd; nw, report)
 end
 
 
@@ -106,6 +107,8 @@ end
 function variable_boundary_power(pmd::_PMD.AbstractUnbalancedPowerModel; nw::Int=nw_id_default, report::Bool=true)
     variable_boundary_power_real_aux(pmd; nw, report)
     variable_boundary_power_imaginary_aux(pmd; nw, report)
+    variable_boundary_power_real_aux_phases(pmd; nw, report)
+    variable_boundary_power_imaginary_aux_phases(pmd; nw, report)
 end
 
 
@@ -145,6 +148,46 @@ function variable_boundary_power_imaginary_aux(pmd::_PMD.AbstractUnbalancedPower
     _PMD.var(pmd, nw)[:qbound_aux] = qbound_aux
 
     report && _IM.sol_component_value(pmd, _PMD.pmd_it_sym, nw, :boundary, :qbound_aux, _PMD.ref(pmd, nw, :arcs_boundary_from), qbound_aux)
+
+end
+
+
+"Variable: `pbound_aux_phases[l,i,j]` for `(l,i,j)` in `arcs bus_arcs_conns_boundary_to`"
+function variable_boundary_power_real_aux_phases(pmd::_PMD.AbstractUnbalancedPowerModel; nw::Int=nw_id_default, report::Bool=true)
+
+    connections = Dict((l,i,j) => connections for (bus,entry) in _PMD.ref(pmd, nw, :bus_arcs_conns_boundary_to) for ((l,i,j), connections) in entry)
+
+    # creating the variables
+    pbound_aux_phases = Dict{Any,Any}((l,i,j) => JuMP.@variable(pmd.model,
+            [c in connections[(l,i,j)]], base_name="$(nw)_pbound_aux_phases_$((l,i,j))",
+            start = _PMD.comp_start_value(_PMD.ref(pmd, nw, :boundary, l), "pbound_aux_start_phases", c, 0.0)
+        ) for (l,i,j) in _PMD.ref(pmd, nw, :arcs_boundary_to)
+    )
+
+    # this explicit type erasure is necessary
+    _PMD.var(pmd, nw)[:pbound_aux_phases] = pbound_aux_phases
+
+    report && _IM.sol_component_value(pmd, _PMD.pmd_it_sym, nw, :boundary, :pbound_aux_phases, _PMD.ref(pmd, nw, :arcs_boundary_to), pbound_aux_phases)
+
+end
+
+
+"Variable: `qbound_aux_phases[l,i,j]` for `(l,i,j)` in `bus_arcs_conns_boundary_to`"
+function variable_boundary_power_imaginary_aux_phases(pmd::_PMD.AbstractUnbalancedPowerModel; nw::Int=nw_id_default, report::Bool=true)
+
+    connections = Dict((l,i,j) => connections for (bus,entry) in _PMD.ref(pmd, nw, :bus_arcs_conns_boundary_to) for ((l,i,j), connections) in entry)
+
+    # creating the variables
+    qbound_aux_phases = Dict{Any,Any}((l,i,j) => JuMP.@variable(pmd.model,
+            [c in connections[(l,i,j)]], base_name="$(nw)_qbound_aux_phases_$((l,i,j))",
+            start = _PMD.comp_start_value(_PMD.ref(pmd, nw, :boundary, l), "qbound_aux_start_phases", c, 0.0)
+        ) for (l,i,j) in _PMD.ref(pmd, nw, :arcs_boundary_to)
+    )
+
+    # this explicit type erasure is necessary
+    _PMD.var(pmd, nw)[:qbound_aux_phases] = qbound_aux_phases
+
+    report && _IM.sol_component_value(pmd, _PMD.pmd_it_sym, nw, :boundary, :qbound_aux_phases, _PMD.ref(pmd, nw, :arcs_boundary_to), qbound_aux_phases)
 
 end
 
