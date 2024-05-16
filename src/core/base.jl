@@ -301,7 +301,7 @@ function instantiate_model_decomposition(
     # Initialize DecompositionStruct
     decomposed_models = DecompositionStruct() # intialize empty struct
 
-    # ----- IpoptDecomposition Optimizer ------
+    # ----- StsDOpt Optimizer ------
 
     # PM models
     pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"][pmitd_it_name]         # add pmitd(boundary) info. to pm ref
@@ -320,7 +320,7 @@ function instantiate_model_decomposition(
         JuMP.write_to_file(pm_inst_model.model, "master_model_exported.nl")
     end
     optimizer.master = pm_inst_model.model                                      # Add pm model to master
-    JuMP.set_optimizer(optimizer.master, _IDEC.Optimizer; add_bridges = true)   # Set optimizer
+    JuMP.set_optimizer(optimizer.master, _SDO.Optimizer; add_bridges = true)   # Set optimizer
 
     # PMD models & Boundary linking vars
     pmd_inst_models = []
@@ -348,7 +348,7 @@ function instantiate_model_decomposition(
         if (export_models == true)
             JuMP.write_to_file(pmd_inst_model.model, "subproblem_$(ckt_name)_$(boundary_number)_model_exported.nl")
         end
-        JuMP.set_optimizer(pmd_inst_model.model , _IDEC.Optimizer; add_bridges = true)      # Set the IDEC optimizer to the JuMP model
+        JuMP.set_optimizer(pmd_inst_model.model , _SDO.Optimizer; add_bridges = true)      # Set the IDEC optimizer to the JuMP model
         push!(pmd_inst_JuMP_models, pmd_inst_model.model )                                  # push the subproblem JuMP model into the vector of subproblems
 
         # Boundary linking vars.
@@ -583,7 +583,7 @@ function solve_model(
             # Loop through all variables and write them to a file
             av = JuMP.all_variables(pmitd.model);
             for v in av
-                str_to_write = "Variable: $(v), Index: $(_IDEC.column(v.index))\n"
+                str_to_write = "Variable: $(v), Index: $(_SDO.column(v.index))\n"
                 write(file, str_to_write)
             end
             # Close the file
@@ -605,7 +605,7 @@ function solve_model(
         end
 
     # Solve decomposition ITD problem
-    elseif (typeof(optimizer) == _IDEC.MetaOptimizer)
+    elseif (typeof(optimizer) == _SDO.MetaOptimizer)
 
         # Instantiate the Decomposition PowerModelsITD object.
         pmitd = instantiate_model_decomposition(

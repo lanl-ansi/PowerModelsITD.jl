@@ -5,7 +5,7 @@ using Test
 const _IM = PowerModelsITD._IM
 const _PM = PowerModelsITD._PM
 const _PMD = PowerModelsITD._PMD
-const _IDEC = PowerModelsITD._IDEC
+const _SDO = PowerModelsITD._SDO
 
 # Setup optimizers
 import Ipopt
@@ -18,7 +18,7 @@ bound_path = joinpath(dirname(pathof(PowerModelsITD)), "../test/data/json/")
 
 ipopt = optimizer_with_attributes(Ipopt.Optimizer, "acceptable_tol"=>1.0e-8, "print_level"=>5, "sb"=>"yes")
 scs_solver = optimizer_with_attributes(SCS.Optimizer, "verbose"=>0)
-ipopt_decomposition =  _IDEC.MetaOptimizer()    # decomposition optimizer
+ipopt_decomposition =  _SDO.MetaOptimizer()    # decomposition optimizer
 
 # Silence warnings from PM and PMD in test cases
 PowerModelsITD.silence!()
