@@ -205,7 +205,7 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 `build_method` is the build method for the problem specification being considered.
 `multinetwork` is the boolean that defines if the modeling object should be define as multinetwork.
 `pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
-The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
 """
 function instantiate_model_decomposition(
     pm_file::String, pmd_files::Vector{String}, pmitd_file::String, pmitd_type::Type, optimizer,
@@ -244,7 +244,7 @@ respectively. Here, `pmitd_type` is the integrated power transmission-distributi
 `build_method` is the build method for the problem specification being considered.
 `multinetwork` is the boolean that defines if the modeling object should be define as multinetwork.
 `pmitd_ref_extensions` are the arrays of power transmission and distribution modeling extensions.
-The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
 """
 function instantiate_model_decomposition(
     pm_file::String, pmd_file::String, pmitd_file::String, pmitd_type::Type, optimizer,
@@ -284,7 +284,7 @@ power transmission and distribution modeling type and `build_method` is the buil
 specification being considered. `multinetwork` is the boolean that defines if the modeling object
 should be define as multinetwork. `pmitd_ref_extensions` is an array of power transmission and
 distribution modeling extensions.
-The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
 """
 function instantiate_model_decomposition(
     pmitd_data::Dict{String,<:Any}, pmitd_type::Type, optimizer, build_method::Function;
@@ -317,7 +317,7 @@ function instantiate_model_decomposition(
     decomposed_models.pm = pm_inst_model
     # Export nl models
     if (export_models == true)
-        JuMP.write_to_file(pm_inst_model.model, "master_model_exported.nl")
+        JuMP.write_to_file(pm_inst_model.model, "master_model_exported.mof.json")
     end
     optimizer.master = pm_inst_model.model                                      # Add pm model to master
     JuMP.set_optimizer(optimizer.master, _SDO.Optimizer; add_bridges = true)   # Set optimizer
@@ -346,7 +346,7 @@ function instantiate_model_decomposition(
         push!(pmd_inst_models, pmd_inst_model)                                              # Add pmd IM model to vector
         # Export nl models
         if (export_models == true)
-            JuMP.write_to_file(pmd_inst_model.model, "subproblem_$(ckt_name)_$(boundary_number)_model_exported.nl")
+            JuMP.write_to_file(pmd_inst_model.model, "subproblem_$(ckt_name)_$(boundary_number)_model_exported.mof.json")
         end
         JuMP.set_optimizer(pmd_inst_model.model , _SDO.Optimizer; add_bridges = true)      # Set the IDEC optimizer to the JuMP model
         push!(pmd_inst_JuMP_models, pmd_inst_model.model )                                  # push the subproblem JuMP model into the vector of subproblems
@@ -409,7 +409,7 @@ the array of modeling extensions, and `make_si` is the boolean that determines i
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 `solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
 The parameter `distribution_basekva` is used to explicitly define the power base of the distribution system(s).
-The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -480,7 +480,7 @@ if the results are returned in SI or per-unit.
 The variable `auto_rename` indicates if the user wants PMITD to automatically rename distribution systems with repeated ckt names.
 `solution_model` is a string that determines in which model, ENG or MATH, the solutions are presented.
 The parameter `distribution_basekva` is used to explicitly define the power base of the distribution system(s).
-The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -541,7 +541,7 @@ should be define as multinetwork`, solution_processors` is the vector of the mod
 if the results are returned in SI or per-unit. `eng2math_passthrough` are the passthrough vectors to be
 considered by the PMD MATH models. `solution_model` is a string that determines in which model,
 ENG or MATH, the solutions are presented.
-The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.nl` files.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
 Returns a dictionary of results.
 """
 function solve_model(
@@ -577,7 +577,7 @@ function solve_model(
         # Export nl models
         if (export_models == true)
             # Export model to nl file
-            JuMP.write_to_file(pmitd.model, "integrated_$(build_method_name)_model_exported.nl")
+            JuMP.write_to_file(pmitd.model, "integrated_$(build_method_name)_model_exported.mof.json")
             # Open file where shared vars indices are going to be written
             file = open("integrated_vars_indices.txt", "a")
             # Loop through all variables and write them to a file

@@ -144,19 +144,19 @@ function constraint_boundary_voltage_angle(pmd::_PMD.ACPUPowerModel, ::Int, t_bu
     ## --- NOTE: These constraints seem to make ACP-ACPU decomposition formulation harder to solve
     ## if the  _PMD.constraint_mc_theta_ref(pmd_model, i) is kept ---
 
-    # --- Either this constraint ---
-    _PMD.constraint_mc_theta_ref(pmd, t_bus)
+    # # --- Either this constraint ---
+    # _PMD.constraint_mc_theta_ref(pmd, t_bus)
 
     # --- Or these constraints ---.
 
-    # va_source = _PMD.var(pmd, nw, :va, t_bus)
-    # # Add constraint(s): angles
-    # JuMP.@constraint(pmd.model, va_source[1] == 0.0)
-    # # Add constraints related to 120 degrees offset for the distribution b and c phases
-    # shift_120degs_rad = deg2rad(120)
-    # # Offset constraints for other phases (-+120 degrees)
-    # JuMP.@constraint(pmd.model, va_source[2] == (va_source[1] - shift_120degs_rad))
-    # JuMP.@constraint(pmd.model, va_source[3] == (va_source[1] + shift_120degs_rad))
+    va_source = _PMD.var(pmd, nw, :va, t_bus)
+    # Add constraint(s): angles
+    JuMP.@constraint(pmd.model, va_source[1] == 0.0)
+    # Add constraints related to 120 degrees offset for the distribution b and c phases
+    shift_120degs_rad = deg2rad(120)
+    # Offset constraints for other phases (-+120 degrees)
+    JuMP.@constraint(pmd.model, va_source[2] == (va_source[1] - shift_120degs_rad))
+    JuMP.@constraint(pmd.model, va_source[3] == (va_source[1] + shift_120degs_rad))
 
 end
 

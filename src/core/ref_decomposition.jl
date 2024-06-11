@@ -117,7 +117,7 @@ function _ref_filter_distribution_slack_generators_decomposition!(ref::Dict{Symb
         boundary_data = boundary[boundary_number]
 
         # These limits are extremely important. If not present, subproblems has a lot of problems converging
-        nw_ref[:bus][boundary_data["distribution_boundary"]]["vmin"] = [0.7, 0.7, 0.7]
+        nw_ref[:bus][boundary_data["distribution_boundary"]]["vmin"] = [0.9, 0.9, 0.9]
         nw_ref[:bus][boundary_data["distribution_boundary"]]["vmax"] = [1.5, 1.5, 1.5]
 
         # Modify slack gen cost.
