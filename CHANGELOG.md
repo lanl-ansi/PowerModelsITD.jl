@@ -88,6 +88,7 @@
 
 ## staged Decomposition
 
+- Refactored the `instantiate_model_decomposition(..)` function to instantiate subproblem models in a multi-threaded fashion.
 - Added voltage limits (0.7-1.5) to slack/ref bus/nodes for the subproblems in the decomposition approach. This addition seems to make a ton of difference for improvong the convergence of the subproblems.
 - Added option `export_models=true` that allows integrated models to be exported as `.nl` file. Indices for all variables (including boundary vars) are exported into a `integrated_vars_indices.txt` file.
 - Added option `export_models=true` that allows decomposition models to be exported as `.nl` files and shared variable indices as `shared_vars.txt`.
