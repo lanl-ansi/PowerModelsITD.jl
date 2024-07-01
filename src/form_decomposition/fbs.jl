@@ -41,9 +41,6 @@ function constraint_boundary_voltage_angle(pmd::_PMD.FBSUBFPowerModel, ::Int, t_
     vr_source = _PMD.var(pmd, nw, :vr, t_bus)
     vi_source = _PMD.var(pmd, nw, :vi, t_bus)
 
-    # Add constraint(s): r->real, i->imaginary
-    JuMP.@constraint(pmd.model, vi_source[1] == 0.0)
-
     # Add constraints related to 120 degrees offset for the distribution b and c phases
     shift_120degs_rad = deg2rad(120)
 
