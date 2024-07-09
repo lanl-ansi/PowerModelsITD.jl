@@ -38,20 +38,41 @@ Removes/filters-out the loads at buses (i.e., boundary buses) where distribution
 function _ref_filter_transmission_integration_loads_decomposition!(ref::Dict{Symbol,<:Any})
     # Loops over all nws
     for (nw, nw_ref) in ref[:it][:pm][:nw]
+
         # boundary info.
         boundaries = nw_ref[:pmitd]
+
+        # Dictionary (temporary) to store the boundary buses transmission where loads have already been removed
+        boundary_buses_transmission = Dict{String, Any}()
+
         # Filters only the ones that have the "transmission_boundary" key
         for (i, conn) in filter(x -> "transmission_boundary" in keys(x.second), boundaries)
-            # Get init (start) values before deleting the boundary load info.
-            pd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
-            qd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
-            conn["pbound_load_start"] = pd_start
-            conn["qbound_load_start"] = qd_start
-            conn["pbound_load_scaled_start"] = pd_start*(conn["base_conv_factor"])
-            conn["qbound_load_scaled_start"] = qd_start*(conn["base_conv_factor"])
 
-            nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
-            nw_ref[:bus_loads][conn["transmission_boundary"]] = []
+            if !haskey(boundary_buses_transmission, string(conn["transmission_boundary"]))
+                # Get init (start) values before deleting the boundary load info.
+                pd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
+                qd_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
+                conn["pbound_load_start"] = pd_start
+                conn["qbound_load_start"] = qd_start
+                conn["pbound_load_scaled_start"] = pd_start*(conn["base_conv_factor"])
+                conn["qbound_load_scaled_start"] = qd_start*(conn["base_conv_factor"])
+
+                # Add start values to local dict to use only when a conn (boundary) is repeated
+                boundary_buses_transmission[string(conn["transmission_boundary"])] = Dict("pbound_load_start" => pd_start,
+                                                                                        "qbound_load_start" => qd_start,
+                                                                                        "pbound_load_scaled_start" => conn["pbound_load_scaled_start"],
+                                                                                        "qbound_load_scaled_start" => conn["qbound_load_scaled_start"]
+                                                                                    )
+
+                # Remove loads - Delete the boundary load info.
+                nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
+                nw_ref[:bus_loads][conn["transmission_boundary"]] = []
+            else
+                conn["pbound_load_start"] = boundary_buses_transmission[string(conn["transmission_boundary"])]["pbound_load_start"]
+                conn["qbound_load_start"] = boundary_buses_transmission[string(conn["transmission_boundary"])]["qbound_load_start"]
+                conn["pbound_load_scaled_start"] = boundary_buses_transmission[string(conn["transmission_boundary"])]["pbound_load_scaled_start"]
+                conn["qbound_load_scaled_start"] = boundary_buses_transmission[string(conn["transmission_boundary"])]["qbound_load_scaled_start"]
+            end
         end
     end
 end

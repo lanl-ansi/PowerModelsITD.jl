@@ -48,22 +48,32 @@ Removes/filters-out the loads at buses (i.e., boundary buses) where distribution
 function _ref_filter_transmission_integration_loads!(ref::Dict{Symbol,<:Any})
     # Loops over all nws
     for (nw, nw_ref) in ref[:it][:pm][:nw]
+
+        # Dictionary (temporary) to store the boundary buses transmission where loads have already been removed
+        boundary_buses_transmission = Dict{String, Any}()
+
         # Filters only the ones that have the "transmission_boundary" key
         for (i, conn) in filter(x -> "transmission_boundary" in keys(x.second), ref[:it][:pmitd][:nw][nw])
 
-            ## Note: This initialization causes error when solving problems where multiple distro. systems are connected to same transmission system.
-            # Get init (start) values before deleting the boundary load info.
-            # pbound_fr_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
-            # qbound_fr_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
-            # conn["pbound_fr_start"] = pbound_fr_start
-            # conn["qbound_fr_start"] = qbound_fr_start
+            if !haskey(boundary_buses_transmission, string(conn["transmission_boundary"]))
+                # Get init (start) values before deleting the boundary load info.
+                pbound_fr_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["pd"]
+                qbound_fr_start = nw_ref[:load][nw_ref[:bus_loads][conn["transmission_boundary"]][1]]["qd"]
+                conn["pbound_fr_start"] = pbound_fr_start
+                conn["qbound_fr_start"] = qbound_fr_start
 
-            conn["pbound_fr_start"] = 0.0
-            conn["qbound_fr_start"] = 0.0
+                # Add start values to local dict to use only when a conn (boundary) is repeated
+                boundary_buses_transmission[string(conn["transmission_boundary"])] = Dict("pbound_fr_start" => pbound_fr_start,
+                                                                                        "qbound_fr_start" => qbound_fr_start
+                                                                                    )
 
-            # Remove loads
-            nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
-            nw_ref[:bus_loads][conn["transmission_boundary"]] = []
+                # Remove loads - Delete the boundary load info.
+                nw_ref[:load] = Dict(x for x in nw_ref[:load] if x.second["load_bus"] != conn["transmission_boundary"] )
+                nw_ref[:bus_loads][conn["transmission_boundary"]] = []
+            else
+                conn["pbound_fr_start"] = boundary_buses_transmission[string(conn["transmission_boundary"])]["pbound_fr_start"]
+                conn["qbound_fr_start"] = boundary_buses_transmission[string(conn["transmission_boundary"])]["qbound_fr_start"]
+            end
         end
     end
 end
