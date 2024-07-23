@@ -387,10 +387,30 @@ function _compute_boundary_power_start_values_distribution!(nw_ref::Dict{Symbol,
         qload_total = qload_total + sum(load["qd"])
     end
 
+    # Vars to store summation of load
+    pgen_total = 0
+    qgen_total = 0
+
+    # loop thorugh all the gens to add them up.
+    for (_, gen) in nw_ref[:gen]
+        pgen_total = pgen_total + sum(gen["pg_start"])
+        qgen_total = qgen_total + sum(gen["qg_start"])
+    end
+
     # Filters only the ones that have the "distribution_boundary" key. Add start value.
     for (_, conn) in filter(x -> "distribution_boundary" in keys(x.second), nw_ref[:pmitd])
-        conn["pbound_aux_start"] = round(pload_total; digits=5)
-        conn["qbound_aux_start"] = round(qload_total; digits=5)
+        conn["pbound_aux_start"] = round(pload_total; digits=5) - (round(pgen_total; digits=5))
+        conn["qbound_aux_start"] = round(qload_total; digits=5) - (round(qgen_total; digits=5))
+        # conn["pbound_aux_start"] = round(pload_total; digits=5) - (round(pgen_total; digits=5)/2)
+        # conn["qbound_aux_start"] = round(qload_total; digits=5) - (round(qgen_total; digits=5)/2)
+        # conn["pbound_aux_start"] = round(pload_total; digits=5)
+        # conn["qbound_aux_start"] = round(qload_total; digits=5)
+        # conn["pbound_aux_start"] = round(pgen_total; digits=5)
+        # conn["qbound_aux_start"] = round(qgen_total; digits=5)
+        # conn["pbound_aux_start"] = 0.0
+        # conn["qbound_aux_start"] = 0.0
     end
+
+    @info "$(nw_ref[:pmitd])"
 
 end

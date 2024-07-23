@@ -506,6 +506,45 @@ function instantiate_model_decomposition(
         ckt_data["ckt_name"] = ckt_name
         ckt_data[pmitd_it_name] = boundary_for_ckt
 
+        # --- Presolve Admittance PF ---
+        try
+            presolve_pf = _PMD.compute_mc_pf(ckts_data_vector[i])
+            # Initialize the voltage and angles based on PF presolve
+            for (bus_num, bus_data) in presolve_pf["solution"]["bus"]
+                ckts_data_vector[i]["bus"][bus_num]["vm_start"] = bus_data["vm"]
+                ckts_data_vector[i]["bus"][bus_num]["va_start"] = bus_data["va"]
+            end
+
+            # Initialize the generators based on PF presolve
+            for (gen_num, gen_data) in presolve_pf["solution"]["gen"]
+                gen_bus = ckts_data_vector[i]["gen"][gen_num]["gen_bus"]
+                vr = ckts_data_vector[i]["bus"]["$(gen_bus)"]["vr_start"]
+                vi = ckts_data_vector[i]["bus"]["$(gen_bus)"]["vi_start"]
+                crg = presolve_pf["solution"]["gen"][gen_num]["crg"]
+                cig = presolve_pf["solution"]["gen"][gen_num]["cig"]
+                length_of_pg = length(ckts_data_vector[i]["gen"][gen_num]["pg"])
+                pg_start = Vector{Float64}(undef, length_of_pg)
+                qg_start = Vector{Float64}(undef, length_of_pg)
+                for phase in 1:1:length_of_pg
+                    pg = vr[phase]*crg[phase] + vi[phase]*cig[phase]
+                    qg = vi[phase]*crg[phase] - vr[phase]*cig[phase]
+                    pg_start[phase] = pg
+                    qg_start[phase] = qg
+                end
+                ckts_data_vector[i]["gen"][gen_num]["pg_start"] = -pg_start
+                ckts_data_vector[i]["gen"][gen_num]["qg_start"] = -qg_start
+            end
+        catch
+            @info "Couldn't solve the PF for $(ckts_names_vector[i])"
+             # Initialize the generators using zeros when PF fails
+            for (gen_num, _) in ckts_data_vector[i]["gen"]
+                length_of_pg = length(ckts_data_vector[i]["gen"][gen_num]["pg"])
+                ckts_data_vector[i]["gen"][gen_num]["pg_start"] = zeros(length_of_pg)
+                ckts_data_vector[i]["gen"][gen_num]["qg_start"] = zeros(length_of_pg)
+            end
+        end
+        # -------------------------------------------------------------
+
         # Instantiate the PMD model
         subproblem_instantiated = _IM.instantiate_model(ckt_data,
                                         pmitd_type.parameters[2],
