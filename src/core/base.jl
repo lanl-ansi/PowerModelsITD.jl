@@ -508,7 +508,7 @@ function instantiate_model_decomposition(
 
         # --- Presolve Admittance PF ---
         try
-            presolve_pf = _PMD.compute_mc_pf(ckts_data_vector[i])
+            presolve_pf = _PMD.compute_mc_pf(ckts_data_vector[i]; max_iter=20)
             # Initialize the voltage and angles based on PF presolve
             for (bus_num, bus_data) in presolve_pf["solution"]["bus"]
                 ckts_data_vector[i]["bus"][bus_num]["vm_start"] = bus_data["vm"]
@@ -534,8 +534,52 @@ function instantiate_model_decomposition(
                 ckts_data_vector[i]["gen"][gen_num]["pg_start"] = -pg_start
                 ckts_data_vector[i]["gen"][gen_num]["qg_start"] = -qg_start
             end
+
+            # Initialize the branches based on PF presolve
+            for (branch_num, branch_data) in presolve_pf["solution"]["branch"]
+                branch_fbus = ckts_data_vector[i]["branch"][branch_num]["f_bus"]
+                branch_tbus = ckts_data_vector[i]["branch"][branch_num]["t_bus"]
+
+                vr_fbus = ckts_data_vector[i]["bus"]["$(branch_fbus)"]["vr_start"]
+                vi_fbus = ckts_data_vector[i]["bus"]["$(branch_fbus)"]["vi_start"]
+
+                vr_tbus = ckts_data_vector[i]["bus"]["$(branch_tbus)"]["vr_start"]
+                vi_tbus = ckts_data_vector[i]["bus"]["$(branch_tbus)"]["vi_start"]
+
+                cr = presolve_pf["solution"]["branch"][branch_num]["cr"]
+                ci = presolve_pf["solution"]["branch"][branch_num]["ci"]
+
+                length_of_conns_f = length(ckts_data_vector[i]["branch"][branch_num]["f_connections"])
+                length_of_conns_t = length(ckts_data_vector[i]["branch"][branch_num]["t_connections"])
+
+                pf_start = Vector{Float64}(undef, length_of_conns_f)
+                qf_start = Vector{Float64}(undef, length_of_conns_f)
+
+                pt_start = Vector{Float64}(undef, length_of_conns_t)
+                qt_start = Vector{Float64}(undef, length_of_conns_t)
+
+                for phase in 1:1:length_of_conns_f
+                    pf = vr_fbus[phase]*cr[phase] + vi_fbus[phase]*ci[phase]
+                    qf = vi_fbus[phase]*cr[phase] - vr_fbus[phase]*ci[phase]
+                    pf_start[phase] = pf
+                    qf_start[phase] = qf
+                end
+
+                for phase in 1:1:length_of_conns_t
+                    pt = vr_tbus[phase]*cr[phase] + vi_tbus[phase]*ci[phase]
+                    qt = vi_tbus[phase]*cr[phase] - vr_tbus[phase]*ci[phase]
+                    pt_start[phase] = pt
+                    qt_start[phase] = qt
+                end
+
+                ckts_data_vector[i]["branch"][branch_num]["pf_start"] = pf_start
+                ckts_data_vector[i]["branch"][branch_num]["qf_start"] = qf_start
+
+                ckts_data_vector[i]["branch"][branch_num]["pt_start"] = pt_start
+                ckts_data_vector[i]["branch"][branch_num]["qt_start"] = qt_start
+            end
         catch
-            @info "Couldn't solve the PF for $(ckts_names_vector[i])"
+            @warn "Couldn't solve the PF for $(ckts_names_vector[i])"
              # Initialize the generators using zeros when PF fails
             for (gen_num, _) in ckts_data_vector[i]["gen"]
                 length_of_pg = length(ckts_data_vector[i]["gen"][gen_num]["pg"])
