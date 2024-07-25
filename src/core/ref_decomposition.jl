@@ -162,7 +162,7 @@ Creates the boundary `refs` that integrate/connect the transmission and distribu
 """
 function _ref_connect_transmission_distribution_decomposition!(ref::Dict{Symbol,<:Any})
 
-    # Loops over all T-D pmitd available
+    # Loops over all nw available for specific pm
     for (nw, nw_ref) in ref[:it][:pm][:nw]
 
         # boundary info.
@@ -255,7 +255,7 @@ Creates the boundary `refs` that integrate/connect the distribution system bus w
 """
 function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,<:Any})
 
-    # Loops over all T-D pmitd available
+    # Loops over all nw available for specific pmd
     for (nw, nw_ref) in ref[:it][:pmd][:nw]
 
         # boundary info.

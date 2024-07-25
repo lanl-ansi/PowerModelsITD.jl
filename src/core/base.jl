@@ -295,6 +295,9 @@ function instantiate_model_decomposition(
     distro_systems_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
     pmitd_data["it"][_PMD.pmd_it_name] = distro_systems_separated
 
+    # Force call Garbage collector to reduce RAM usage
+    GC.gc()
+
     # Correct the network data and assign the respective boundary number values.
     correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
 
@@ -329,6 +332,9 @@ function instantiate_model_decomposition(
     # Set master optimizer
     JuMP.set_optimizer(optimizer.master, _SDO.Optimizer; add_bridges = true)
 
+    # Force call Garbage collector to reduce RAM usage
+    GC.gc()
+
     # Get the number of subproblems
     number_of_subproblems = length(pmitd_data["it"][_PMD.pmd_it_name])
 
@@ -347,6 +353,9 @@ function instantiate_model_decomposition(
     subproblems_JuMP_models = Vector{JuMP.Model}(undef, number_of_subproblems)
     boundary_vars_vector = Vector{Vector{Vector{JuMP.VariableRef}}}(undef, number_of_subproblems)
 
+
+    # ************** 1.64GB ********************
+
     # Threaded loop for instantiating subproblems
     Threads.@threads for i in 1:1:number_of_subproblems
 
@@ -358,6 +367,8 @@ function instantiate_model_decomposition(
         # add pmitd(boundary) info. to pmd ref
         ckts_data_vector[i][pmitd_it_name] = boundary_for_ckt
 
+        # ************** 1.65GB ********************
+
         # Instantiate the PMD model
         subproblem_instantiated = _IM.instantiate_model(ckts_data_vector[i],
                                         pmitd_type.parameters[2],
@@ -366,6 +377,12 @@ function instantiate_model_decomposition(
                                         _PMD._pmd_global_keys,
                                         _PMD.pmd_it_sym; kwargs...
         )
+
+        # ************** 3.00GB - Without refs in _ref_connect_distribution_transmission_decomposition! ********************
+
+        # ************** 3.58GB - With everything and GC.gc() ********************
+
+        # ************** 4.00GB ********************
 
         # Add instantiated subproblem to vector of instantiated subproblems
         subproblems_instantiated_models[i] = subproblem_instantiated
@@ -381,6 +398,8 @@ function instantiate_model_decomposition(
         # Add the subproblem JuMP model into the vector of instantiated subproblems
         subproblems_JuMP_models[i] = subproblem_instantiated.model
 
+        # ************** 4.23GB ********************
+
         # Generate the boundary linking vars. (ACP, ACR, etc.)
         if (export_models == true)
             linking_vars_vector = generate_boundary_linking_vars(master_instantiated, subproblem_instantiated, boundary_number; export_models=export_models)
@@ -392,6 +411,8 @@ function instantiate_model_decomposition(
         boundary_vars_vector[i] = linking_vars_vector
 
     end
+
+    # ************** 4.46GB ********************
 
     # Add all instantiated subproblem models to DecompositionStruct
     decomposed_models.pmd = subproblems_instantiated_models
@@ -646,7 +667,11 @@ function solve_model(
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions,
             export_models=export_models,
-            kwargs...)
+            kwargs...
+        )
+
+        # Force call Garbage collector to reduce RAM usage
+        GC.gc()
 
         result = run_decomposition(pmitd)
 
