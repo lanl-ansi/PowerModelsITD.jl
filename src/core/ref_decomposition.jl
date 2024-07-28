@@ -121,14 +121,6 @@ function _ref_filter_distribution_slack_generators_decomposition!(ref::Dict{Symb
     # Loops over all nws
     for (nw, nw_ref) in ref[:it][:pmd][:nw]
 
-        # # Unrestrict buspairs connected to reference bus - (Seems to not be needed!)
-        # for (j, bus_pair) in nw_ref[:buspairs]
-        #     if (bus_pair["vm_fr_min"] == 1.0) # only need to check one
-        #         bus_pair["vm_fr_min"] = 0.0
-        #         bus_pair["vm_fr_max"] = Inf
-        #     end
-        # end
-
         # Modify v_min and v_max, remove va and vm, and change bus type for reference bus
         boundary = nw_ref[:pmitd]   # boundary info.
 
@@ -162,82 +154,103 @@ Creates the boundary `refs` that integrate/connect the transmission and distribu
 """
 function _ref_connect_transmission_distribution_decomposition!(ref::Dict{Symbol,<:Any})
 
-    # Loops over all nw available for specific pm
-    for (nw, nw_ref) in ref[:it][:pm][:nw]
+    boundary_keys = ["f_bus", "t_bus", "index", "name", "f_connections", "t_connections", 
+                        "ckt_name", "pbound_load_start", "qbound_load_start", "base_conv_factor", 
+                        "pbound_load_scaled_start", "qbound_load_scaled_start"
+    ]
+    boundary_defaults = [0, 0, 0, "empty", [1], [1, 2, 3], "empty", 0, 0, 0, 0, 0]
 
-        # boundary info.
+    for (_, nw_ref) in ref[:it][:pm][:nw]
+
         boundaries = nw_ref[:pmitd]
 
-        for i in 1:length(boundaries)   # loop through all boundary objects
-            boundary_number = BOUNDARY_NUMBER - 1 + i # boundary number index
+        for i in 1:length(boundaries)
+            boundary_number = BOUNDARY_NUMBER - 1 + i
 
-            # create :boundary structure if does not exists; inserts to dictionary if it already exists
             if !haskey(nw_ref, :boundary)
-                nw_ref[:boundary] = Dict(boundary_number => Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_load_start" => 0, "qbound_load_start" => 0, "base_conv_factor" => 0))
+                nw_ref[:boundary] = Dict(boundary_number => Dict(boundary_keys .=> boundary_defaults))
             else
-                nw_ref[:boundary][boundary_number] = Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_load_start" => 0, "qbound_load_start" => 0, "base_conv_factor" => 0)
+                nw_ref[:boundary][boundary_number] = Dict(boundary_keys .=> boundary_defaults)
             end
 
-            # modify default values with actual values coming from linking file information
-            nw_ref[:boundary][boundary_number]["f_bus"] = boundaries[boundary_number]["transmission_boundary"]
-            nw_ref[:boundary][boundary_number]["t_bus"] = boundaries[boundary_number]["distribution_boundary"]
-            nw_ref[:boundary][boundary_number]["index"] = boundary_number
-            nw_ref[:boundary][boundary_number]["ckt_name"] = boundaries[boundary_number]["ckt_name"]
-            nw_ref[:boundary][boundary_number]["name"] = "_itd_boundary_$boundary_number"
-            nw_ref[:boundary][boundary_number]["pbound_load_start"] = boundaries[boundary_number]["pbound_load_start"]
-            nw_ref[:boundary][boundary_number]["qbound_load_start"] = boundaries[boundary_number]["qbound_load_start"]
-            nw_ref[:boundary][boundary_number]["pbound_load_scaled_start"] = boundaries[boundary_number]["pbound_load_scaled_start"]
-            nw_ref[:boundary][boundary_number]["qbound_load_scaled_start"] = boundaries[boundary_number]["qbound_load_scaled_start"]
-            nw_ref[:boundary][boundary_number]["base_conv_factor"] = boundaries[boundary_number]["base_conv_factor"]
+            boundary = nw_ref[:boundary][boundary_number]
+            boundary_info = boundaries[boundary_number]
 
-            # Add bus reference from transmission (pm)
-            # The dictionary represents Dict(original bus_index => boundary # that belongs to)
-            trans_bus = boundaries[boundary_number]["transmission_boundary"]
+            boundary["f_bus"] = get(boundary_info, "transmission_boundary", 0)
+            boundary["t_bus"] = get(boundary_info, "distribution_boundary", 0)
+            boundary["index"] = boundary_number
+            boundary["ckt_name"] = get(boundary_info, "ckt_name", "empty")
+            boundary["name"] = "_itd_boundary_$boundary_number"
+            boundary["pbound_load_start"] = get(boundary_info, "pbound_load_start", 0)
+            boundary["qbound_load_start"] = get(boundary_info, "qbound_load_start", 0)
+            boundary["pbound_load_scaled_start"] = get(boundary_info, "pbound_load_scaled_start", 0)
+            boundary["qbound_load_scaled_start"] = get(boundary_info, "qbound_load_scaled_start", 0)
+            boundary["base_conv_factor"] = get(boundary_info, "base_conv_factor", 0)
+
+            trans_bus = boundary["f_bus"]
+            dist_bus = boundary["t_bus"]
+
             if !haskey(nw_ref, :boundary_bus_from)
                 nw_ref[:boundary_bus_from] = Dict(trans_bus => Dict("boundary" => boundary_number))
             else
                 nw_ref[:boundary_bus_from][trans_bus] = Dict("boundary" => boundary_number)
             end
 
-            # Add bus reference from distribution (pmd)
-            # The dictionary represents Dict(original bus_index => boundary # that belongs to)
-            dist_bus = boundaries[boundary_number]["distribution_boundary"]
             if !haskey(nw_ref, :boundary_bus_to)
                 nw_ref[:boundary_bus_to] = Dict(dist_bus => Dict("boundary" => boundary_number))
             else
                 nw_ref[:boundary_bus_to][dist_bus] = Dict("boundary" => boundary_number)
             end
 
-            # :arcs_boundary_from for boundary
-            nw_ref[:arcs_boundary_from] = [(boundary_number, boundary["f_bus"], boundary["t_bus"]) for (boundary_number, boundary) in nw_ref[:boundary]]
-            # :arcs_boundary_to for boundary
-            nw_ref[:arcs_boundary_to]   = [(boundary_number, boundary["t_bus"], boundary["f_bus"]) for (boundary_number, boundary) in nw_ref[:boundary]]
-            # :arcs_boundary
-            nw_ref[:arcs_boundary] = [nw_ref[:arcs_boundary_from]; nw_ref[:arcs_boundary_to]]
+            arcs_boundary_from = Vector{Tuple{Int, Int, Int}}(undef, length(nw_ref[:boundary]))
+            arcs_boundary_to = Vector{Tuple{Int, Int, Int}}(undef, length(nw_ref[:boundary]))
 
-            # bus_arcs for boundary connections
+            i = 1
+            for (num, b) in nw_ref[:boundary]
+                arcs_boundary_from[i] = (num, b["f_bus"], b["t_bus"])
+                arcs_boundary_to[i] = (num, b["t_bus"], b["f_bus"])
+                i += 1
+            end
+
+            nw_ref[:arcs_boundary_from] = arcs_boundary_from
+            nw_ref[:arcs_boundary_to] = arcs_boundary_to
+            nw_ref[:arcs_boundary] = vcat(arcs_boundary_from, arcs_boundary_to)
+
             type = "boundary"
 
-            # bus_arcs_from for boundary objects
-            bus_arcs_from = Dict((i, Tuple{Int,Int,Int}[]) for (i,bus) in nw_ref[:boundary_bus_from])
-            for (l,i,j) in nw_ref[Symbol("arcs_$(type)_from")]
-                push!(bus_arcs_from[i], (l,i,j))
+            bus_arcs_from = Dict{Int, Vector{Tuple{Int, Int, Int}}}()
+            bus_arcs_to = Dict{Int, Vector{Tuple{Int, Int, Int}}}()
+
+            for (l, i, j) in arcs_boundary_from
+                if !haskey(bus_arcs_from, i)
+                    bus_arcs_from[i] = Tuple{Int, Int, Int}[]
+                end
+                push!(bus_arcs_from[i], (l, i, j))
             end
             nw_ref[Symbol("bus_arcs_$(type)_from")] = bus_arcs_from
 
-            # bus_arcs_to for boundary objects
-            bus_arcs_to = Dict((i, Tuple{Int,Int,Int}[]) for (i,bus) in nw_ref[:boundary_bus_to])
-            for (l,i,j) in nw_ref[Symbol("arcs_$(type)_to")]
-                push!(bus_arcs_to[i], (l,i,j))
+            for (l, i, j) in arcs_boundary_to
+                if !haskey(bus_arcs_to, i)
+                    bus_arcs_to[i] = Tuple{Int, Int, Int}[]
+                end
+                push!(bus_arcs_to[i], (l, i, j))
             end
             nw_ref[Symbol("bus_arcs_$(type)_to")] = bus_arcs_to
 
-            # branch boundary connections (by the number of connections, you can distinguish if is transmission (1phase) or distribution (3phase))
-            conns_from = Dict{Int,Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}}([(i, []) for (i, bus) in nw_ref[:boundary_bus_from]])
-            conns_to = Dict{Int,Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}}([(i, []) for (i, bus) in nw_ref[:boundary_bus_to]])
-            for (i, obj) in nw_ref[Symbol(type)]
-                push!(conns_from[obj["f_bus"]], ((obj["index"], obj["f_bus"], obj["t_bus"]), obj["f_connections"]))
-                push!(conns_to[obj["t_bus"]], ((obj["index"], obj["t_bus"], obj["f_bus"]), obj["t_connections"]))
+            conns_from = Dict{Int, Vector{Tuple{Tuple{Int, Int, Int}, Vector{Int}}}}()
+            conns_to = Dict{Int, Vector{Tuple{Tuple{Int, Int, Int}, Vector{Int}}}}()
+
+            for obj in values(nw_ref[:boundary])
+                f_bus = obj["f_bus"]
+                t_bus = obj["t_bus"]
+                if !haskey(conns_from, f_bus)
+                    conns_from[f_bus] = []
+                end
+                if !haskey(conns_to, t_bus)
+                    conns_to[t_bus] = []
+                end
+                push!(conns_from[f_bus], ((obj["index"], f_bus, t_bus), obj["f_connections"]))
+                push!(conns_to[t_bus], ((obj["index"], t_bus, f_bus), obj["t_connections"]))
             end
             nw_ref[Symbol("bus_arcs_conns_$(type)_from")] = conns_from
             nw_ref[Symbol("bus_arcs_conns_$(type)_to")] = conns_to
@@ -254,90 +267,103 @@ end
 Creates the boundary `refs` that integrate/connect the distribution system bus with the transmission system bus.
 """
 function _ref_connect_distribution_transmission_decomposition!(ref::Dict{Symbol,<:Any})
-
-    # Loops over all nw available for specific pmd
-    for (nw, nw_ref) in ref[:it][:pmd][:nw]
-
-        # boundary info.
+    for (_, nw_ref) in ref[:it][:pmd][:nw]
         boundaries = nw_ref[:pmitd]
+        boundary_number = first(keys(boundaries))
 
-        # get boundary number
-        boundary_keys = collect(keys(boundaries))
-
-        # boundary_number = parse(Int64, boundary_keys[1])
-        boundary_number = boundary_keys[1]
-
-        # create :boundary structure if does not exists; inserts to dictionary if it already exists
         if !haskey(nw_ref, :boundary)
-            nw_ref[:boundary] = Dict(boundary_number => Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_aux_start" => 0, "qbound_aux_start" => 0))
+            nw_ref[:boundary] = Dict(boundary_number => Dict(
+                "f_bus" => 0, "t_bus" => 0, "index" => boundary_number, 
+                "name" => "empty", "f_connections" => [1], 
+                "t_connections" => [1, 2, 3], "ckt_name" => "empty", 
+                "pbound_aux_start" => 0, "qbound_aux_start" => 0))
         else
-            nw_ref[:boundary][boundary_number] = Dict("f_bus" => 0, "t_bus" => 0, "index" => 0, "name" => "empty", "f_connections" => [1], "t_connections" => [1, 2, 3], "ckt_name" => "empty", "pbound_aux_start" => 0, "qbound_aux_start" => 0)
+            nw_ref[:boundary][boundary_number] = Dict(
+                "f_bus" => 0, "t_bus" => 0, "index" => boundary_number, 
+                "name" => "empty", "f_connections" => [1], 
+                "t_connections" => [1, 2, 3], "ckt_name" => "empty", 
+                "pbound_aux_start" => 0, "qbound_aux_start" => 0)
         end
 
-        # Compute pbound_aux and qbound_aux start values and adds them to [:pmitd]
         _compute_boundary_power_start_values_distribution!(nw_ref)
 
-        # modify default values with actual values coming from linking file information
-        nw_ref[:boundary][boundary_number]["f_bus"] = boundaries[boundary_number]["transmission_boundary"]
-        nw_ref[:boundary][boundary_number]["t_bus"] = boundaries[boundary_number]["distribution_boundary"]
-        nw_ref[:boundary][boundary_number]["index"] = boundary_number
-        nw_ref[:boundary][boundary_number]["ckt_name"] = boundaries[boundary_number]["ckt_name"]
-        nw_ref[:boundary][boundary_number]["name"] = "_itd_boundary_$boundary_number"
-        nw_ref[:boundary][boundary_number]["pbound_aux_start"] = boundaries[boundary_number]["pbound_aux_start"]
-        nw_ref[:boundary][boundary_number]["qbound_aux_start"] = boundaries[boundary_number]["qbound_aux_start"]
+        boundary = nw_ref[:boundary][boundary_number]
+        boundary_info = boundaries[boundary_number]
 
-        # Add bus reference from transmission (pm)
-        # The dictionary represents Dict(original bus_index => boundary # that belongs to)
-        trans_bus = boundaries[boundary_number]["transmission_boundary"]
+        boundary["f_bus"] = get(boundary_info, "transmission_boundary", 0)
+        boundary["t_bus"] = get(boundary_info, "distribution_boundary", 0)
+        boundary["ckt_name"] = get(boundary_info, "ckt_name", "empty")
+        boundary["name"] = "_itd_boundary_$boundary_number"
+        boundary["pbound_aux_start"] = get(boundary_info, "pbound_aux_start", 0)
+        boundary["qbound_aux_start"] = get(boundary_info, "qbound_aux_start", 0)
+
+        trans_bus = boundary["f_bus"]
+        dist_bus = boundary["t_bus"]
+
         if !haskey(nw_ref, :boundary_bus_from)
             nw_ref[:boundary_bus_from] = Dict(trans_bus => Dict("boundary" => boundary_number))
         else
             nw_ref[:boundary_bus_from][trans_bus] = Dict("boundary" => boundary_number)
         end
 
-        # Add bus reference from distribution (pmd)
-        # The dictionary represents Dict(original bus_index => boundary # that belongs to)
-        dist_bus = boundaries[boundary_number]["distribution_boundary"]
         if !haskey(nw_ref, :boundary_bus_to)
             nw_ref[:boundary_bus_to] = Dict(dist_bus => Dict("boundary" => boundary_number))
         else
             nw_ref[:boundary_bus_to][dist_bus] = Dict("boundary" => boundary_number)
         end
 
-        # :arcs_boundary_from for boundary
-        nw_ref[:arcs_boundary_from] = [(boundary_number, boundary["f_bus"], boundary["t_bus"]) for (boundary_number, boundary) in nw_ref[:boundary]]
-        # :arcs_boundary_to for boundary
-        nw_ref[:arcs_boundary_to]   = [(boundary_number, boundary["t_bus"], boundary["f_bus"]) for (boundary_number, boundary) in nw_ref[:boundary]]
-        # :arcs_boundary
-        nw_ref[:arcs_boundary] = [nw_ref[:arcs_boundary_from]; nw_ref[:arcs_boundary_to]]
+        arcs_boundary_from = Vector{Tuple{Int, Int, Int}}(undef, length(nw_ref[:boundary]))
+        arcs_boundary_to = Vector{Tuple{Int, Int, Int}}(undef, length(nw_ref[:boundary]))
 
-        # bus_arcs for boundary connections
+        i = 1
+        for (num, b) in nw_ref[:boundary]
+            arcs_boundary_from[i] = (num, b["f_bus"], b["t_bus"])
+            arcs_boundary_to[i] = (num, b["t_bus"], b["f_bus"])
+            i += 1
+        end
+
+        nw_ref[:arcs_boundary_from] = arcs_boundary_from
+        nw_ref[:arcs_boundary_to] = arcs_boundary_to
+        nw_ref[:arcs_boundary] = vcat(arcs_boundary_from, arcs_boundary_to)
+
         type = "boundary"
 
-        # bus_arcs_from for boundary objects
-        bus_arcs_from = Dict((i, Tuple{Int,Int,Int}[]) for (i,bus) in nw_ref[:boundary_bus_from])
-        for (l,i,j) in nw_ref[Symbol("arcs_$(type)_from")]
-            push!(bus_arcs_from[i], (l,i,j))
+        bus_arcs_from = Dict{Int, Vector{Tuple{Int, Int, Int}}}()
+        bus_arcs_to = Dict{Int, Vector{Tuple{Int, Int, Int}}}()
+
+        for (l, i, j) in arcs_boundary_from
+            if !haskey(bus_arcs_from, i)
+                bus_arcs_from[i] = Tuple{Int, Int, Int}[]
+            end
+            push!(bus_arcs_from[i], (l, i, j))
         end
         nw_ref[Symbol("bus_arcs_$(type)_from")] = bus_arcs_from
 
-        # bus_arcs_to for boundary objects
-        bus_arcs_to = Dict((i, Tuple{Int,Int,Int}[]) for (i,bus) in nw_ref[:boundary_bus_to])
-        for (l,i,j) in nw_ref[Symbol("arcs_$(type)_to")]
-            push!(bus_arcs_to[i], (l,i,j))
+        for (l, i, j) in arcs_boundary_to
+            if !haskey(bus_arcs_to, i)
+                bus_arcs_to[i] = Tuple{Int, Int, Int}[]
+            end
+            push!(bus_arcs_to[i], (l, i, j))
         end
         nw_ref[Symbol("bus_arcs_$(type)_to")] = bus_arcs_to
 
-        # branch boundary connections (by the number of connections, you can distinguish if is transmission (1phase) or distribution (3phase))
-        conns_from = Dict{Int,Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}}([(i, []) for (i, bus) in nw_ref[:boundary_bus_from]])
-        conns_to = Dict{Int,Vector{Tuple{Tuple{Int,Int,Int},Vector{Int}}}}([(i, []) for (i, bus) in nw_ref[:boundary_bus_to]])
-        for (i, obj) in nw_ref[Symbol(type)]
-            push!(conns_from[obj["f_bus"]], ((obj["index"], obj["f_bus"], obj["t_bus"]), obj["f_connections"]))
-            push!(conns_to[obj["t_bus"]], ((obj["index"], obj["t_bus"], obj["f_bus"]), obj["t_connections"]))
+        conns_from = Dict{Int, Vector{Tuple{Tuple{Int, Int, Int}, Vector{Int}}}}()
+        conns_to = Dict{Int, Vector{Tuple{Tuple{Int, Int, Int}, Vector{Int}}}}()
+
+        for obj in values(nw_ref[:boundary])
+            f_bus = obj["f_bus"]
+            t_bus = obj["t_bus"]
+            if !haskey(conns_from, f_bus)
+                conns_from[f_bus] = []
+            end
+            if !haskey(conns_to, t_bus)
+                conns_to[t_bus] = []
+            end
+            push!(conns_from[f_bus], ((obj["index"], f_bus, t_bus), obj["f_connections"]))
+            push!(conns_to[t_bus], ((obj["index"], t_bus, f_bus), obj["t_connections"]))
         end
         nw_ref[Symbol("bus_arcs_conns_$(type)_from")] = conns_from
         nw_ref[Symbol("bus_arcs_conns_$(type)_to")] = conns_to
-
     end
 end
 

@@ -381,6 +381,7 @@ function instantiate_model_decomposition(
         # ************** 3.00GB - Without refs in _ref_connect_distribution_transmission_decomposition! ********************
 
         # ************** 3.58GB - With everything and GC.gc() ********************
+        # GC.gc()
 
         # ************** 4.00GB ********************
 
