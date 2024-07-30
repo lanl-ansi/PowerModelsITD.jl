@@ -287,9 +287,14 @@ distribution modeling extensions.
 The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
 """
 function instantiate_model_decomposition(
-    pmitd_data::Dict{String,<:Any}, pmitd_type::Type, optimizer, build_method::Function;
-    multinetwork::Bool=false, pmitd_ref_extensions::Vector{<:Function}=Function[],
-    export_models::Bool=false, kwargs...)
+    pmitd_data::Dict{String,<:Any},
+    pmitd_type::Type,
+    optimizer::_SDO.ParallelOptimizer,
+    build_method::Function;
+    multinetwork::Bool=false,
+    pmitd_ref_extensions::Vector{<:Function}=Function[],
+    export_models::Bool=false, kwargs...
+)
 
     # Separate distro. ckts from a single dictionary to multiple dictionary entries
     distro_systems_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
@@ -416,7 +421,142 @@ function instantiate_model_decomposition(
     optimizer.mp_string_vector_channel = mp_string_vector_rcs
     optimizer.sp_string_vector_channel = sp_string_vector_rcs
 
+    # return optimizer, master model
     return optimizer, master_instantiated
+
+end
+
+
+function instantiate_model_decomposition(
+    pmitd_data::Dict{String,<:Any},
+    pmitd_type::Type,
+    optimizer::_SDO.MultiThreadOptimizer,
+    build_method::Function;
+    multinetwork::Bool=false,
+    pmitd_ref_extensions::Vector{<:Function}=Function[],
+    export_models::Bool=false, kwargs...
+)
+
+    # Separate distro. ckts from a single dictionary to multiple dictionary entries
+    distro_systems_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
+    pmitd_data["it"][_PMD.pmd_it_name] = distro_systems_separated
+
+    # Force call Garbage collector to reduce RAM usage
+    GC.gc()
+
+    # Correct the network data and assign the respective boundary number values.
+    correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
+
+    # ----- StsDOpt Optimizer ------
+
+    # Add pmitd(boundary) info. to pm ref
+    pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"][pmitd_it_name]
+
+    # Instantiate the PM model
+    master_instantiated = _IM.instantiate_model(pmitd_data["it"][_PM.pm_it_name],
+                                    pmitd_type.parameters[1],
+                                    build_method,
+                                    ref_add_core_decomposition_transmission!,
+                                    _PM._pm_global_keys,
+                                    _PM.pm_it_sym; kwargs...
+    )
+
+    # Export mof.json models
+    if (export_models == true)
+        JuMP.write_to_file(master_instantiated.model, "master_model_exported.mof.json")
+    end
+
+    # Add master model to optimizer master
+    optimizer.master = master_instantiated.model
+
+    # Set master optimizer
+    JuMP.set_optimizer(optimizer.master, _SDO.Optimizer; add_bridges = true)
+
+    # Force call Garbage collector to reduce RAM usage
+    GC.gc()
+
+    # Get the number of subproblems
+    number_of_subproblems = length(pmitd_data["it"][_PMD.pmd_it_name])
+
+    # Convert distro. dictionary to vectors of dictionaries so it can be used in threaded version
+    ckts_names_vector = Vector{String}(undef, number_of_subproblems)
+    ckts_data_vector = Vector{Dict}(undef, number_of_subproblems)
+    ckt_number = 0
+    for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+        ckt_number = ckt_number + 1
+        ckts_names_vector[ckt_number] = ckt_name
+        ckts_data_vector[ckt_number] = ckt_data
+    end
+
+    # Set-up and instantiate subproblem models & boundary linking vars
+    subproblems_instantiated_models = Vector{pmitd_type.parameters[2]}(undef, number_of_subproblems)
+    subproblems_JuMP_models = Vector{JuMP.Model}(undef, number_of_subproblems)
+    boundary_vars_vector = Vector{Vector{Vector{JuMP.VariableRef}}}(undef, number_of_subproblems)
+
+    # Threaded loop for instantiating subproblems
+    Threads.@threads for i in 1:1:number_of_subproblems
+
+        # Obtain ckt boundary data
+        boundary_info = pmitd_data["it"][pmitd_it_name]
+        boundary_number = findfirst(x -> ckts_names_vector[i] == x["ckt_name"], boundary_info)
+        boundary_for_ckt = Dict(boundary_number => boundary_info[boundary_number])
+
+        # Add ckt_name to ckt_data for instantiation
+        ckts_data_vector[i]["ckt_name"] = ckts_names_vector[i]
+
+        # add pmitd(boundary) info. to pmd ref
+        ckts_data_vector[i][pmitd_it_name] = boundary_for_ckt
+
+        # Instantiate the PMD model
+        subproblem_instantiated = _IM.instantiate_model(ckts_data_vector[i],
+                                        pmitd_type.parameters[2],
+                                        build_method,
+                                        ref_add_core_decomposition_distribution!,
+                                        _PMD._pmd_global_keys,
+                                        _PMD.pmd_it_sym; kwargs...
+        )
+
+        # Add instantiated subproblem to vector of instantiated subproblems
+        subproblems_instantiated_models[i] = subproblem_instantiated
+
+        # Export mof.json models
+        if (export_models == true)
+            JuMP.write_to_file(subproblem_instantiated.model, "subproblem_$(i)_$(ckts_names_vector[i])_$(boundary_number)_model_exported.mof.json")
+        end
+
+        # Set the optimizer to the instantiated subproblem JuMP model
+        JuMP.set_optimizer(subproblem_instantiated.model, _SDO.Optimizer; add_bridges = true)
+
+        # Add the subproblem JuMP model into the vector of instantiated subproblems
+        subproblems_JuMP_models[i] = subproblem_instantiated.model
+
+        # Generate the boundary linking vars. (ACP, ACR, etc.)
+        if (export_models == true)
+            linking_vars_vector = generate_boundary_linking_vars(master_instantiated,
+                                                                subproblem_instantiated,
+                                                                boundary_number;
+                                                                export_models=export_models
+            )
+        else
+            linking_vars_vector = generate_boundary_linking_vars(master_instantiated,
+                                                                subproblem_instantiated,
+                                                                boundary_number
+            )
+        end
+
+        # Add linking vars vector to vector containing all vectors of linking vars.
+        boundary_vars_vector[i] = linking_vars_vector
+
+    end
+
+    # Add vector of subproblems JuMP models to Optimizer
+    optimizer.subproblems = subproblems_JuMP_models
+
+    # Add vecor of boundary linking vars to Optimizer
+    optimizer.list_linking_vars = boundary_vars_vector
+
+    # return optimizer, master model, and subproblem models
+    return optimizer, master_instantiated, subproblems_instantiated_models
 
 end
 
@@ -649,23 +789,25 @@ function solve_model(
         end
 
     # Solve decomposition ITD problem
-    elseif (typeof(optimizer) == _SDO.MetaOptimizer)
+    elseif (typeof(optimizer) == _SDO.ParallelOptimizer)
 
         # Instantiate the Decomposition PowerModelsITD object.
-        pmitd_optimizer, master_prob_instantiated = instantiate_model_decomposition(
-            pmitd_data, pmitd_type, optimizer, build_method;
+        pmitd_optimizer, transmission_instantiated = instantiate_model_decomposition(
+            pmitd_data,
+            pmitd_type,
+            optimizer,
+            build_method;
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions,
             export_models=export_models,
             kwargs...
         )
 
-
         # Calls the _SDO optimize!(..) function and solves decomposition problem
         _, solve_time, solve_bytes_alloc, sec_in_gc = @timed _SDO.optimize!(pmitd_optimizer)
 
         # Build the master decomposition solution
-        result = build_pm_decomposition_solution(master_prob_instantiated, solve_time)
+        result = build_pm_decomposition_solution(transmission_instantiated, solve_time)
 
         # Inform about the time for solving the problem (*change to @debug)
         @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
@@ -679,6 +821,52 @@ function solve_model(
         # else
         #     _transform_decomposition_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
         # end
+
+    elseif (typeof(optimizer) == _SDO.MultiThreadOptimizer)
+
+        # Instantiate the Decomposition PowerModelsITD object.
+        pmitd_optimizer, transmission_instantiated, subproblems_instantiated = instantiate_model_decomposition(
+            pmitd_data,
+            pmitd_type,
+            optimizer,
+            build_method;
+            multinetwork=multinetwork,
+            pmitd_ref_extensions=pmitd_ref_extensions,
+            export_models=export_models,
+            kwargs...
+        )
+
+        # Calls the _SDO optimize!(..) function and solves decomposition problem
+        _, solve_time, solve_bytes_alloc, sec_in_gc = @timed _SDO.optimize!(pmitd_optimizer)
+
+        # Build the decomposition result/solution
+        result = build_pm_decomposition_solution(transmission_instantiated, solve_time)
+        result["solution"]["it"][_PMD.pmd_it_name] = Dict()
+        for d in subproblems_instantiated
+            ckt_name = d.data["ckt_name"]
+            build_soln = build_pmd_decomposition_solution(d, solve_time)
+            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = build_soln["solution"]["it"]["pmd"]["solution"]
+
+            # Add boundary info. to PMITD dict.
+            for (b_name, b_data) in result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["boundary"]
+                result["solution"]["it"][pmitd_it_name]["boundary"][b_name]["pbound_aux"] = b_data["pbound_aux"]
+                result["solution"]["it"][pmitd_it_name]["boundary"][b_name]["qbound_aux"] = b_data["qbound_aux"]
+            end
+
+        end
+
+        # Inform about the time for solving the problem (*change to @debug)
+        @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
+
+        # Transform solution (both T&D) - SI or per unit - MATH or ENG.
+        if (make_si == false)
+            _transform_decomposition_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        else
+            _transform_decomposition_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        end
+
+        # Force call Garbage collector to reduce RAM usage
+        GC.gc()
 
     else
         @error "The problem specification (build_method) or optimizer defined is not supported! Please use a supported optimizer or build_method."

@@ -8,7 +8,7 @@
 
 Runs decomposition process and returns organized result solution dictionary.
 """
-function build_pm_decomposition_solution(pm, solve_time)
+function build_pm_decomposition_solution(pm, solve_time::Float64=0.0)
 
     # Build and organize the result dictionary
     result = Dict{String, Any}("solution" => Dict{String, Any}("it" => Dict{String, Any}(_PM.pm_it_name => Dict{String, Any}(), pmitd_it_name => Dict{String, Any}())))
@@ -19,10 +19,8 @@ function build_pm_decomposition_solution(pm, solve_time)
 end
 
 
-function build_pmd_decomposition_solution(pmd)
+function build_pmd_decomposition_solution(pmd, solve_time::Float64=0.0)
 
-    # solve_time default
-    solve_time = 0.0
     # Build and organize the result dictionary
     result = Dict{String, Any}("solution" => Dict{String, Any}("it" => Dict{String, Any}(_PMD.pmd_it_name => Dict{String, Any}(), pmitd_it_name => Dict{String, Any}())))
     result["solution"]["it"][_PMD.pmd_it_name] = _IM.build_result(pmd, solve_time)
@@ -33,7 +31,8 @@ end
 
 
 # ----------------- Custom-made parallelize multiprocessing function ------------------------
-
+# TODO: Move this function to its own file
+# TODO: add export_models=true option to export models
 function optimize_subproblem_multiprocessing(
     data::Dict{String, Any},
     type,
@@ -71,28 +70,14 @@ function optimize_subproblem_multiprocessing(
     # Setup and initilize the subproblem
     JuMP.optimize!(subproblem_instantiated.model) # Setup the Subproblem model
 
-    # Initialize Subproblem
-    retval_init_sub = _SDO.InitializeSubproblemSolver(
-        subproblem_instantiated.model.moi_backend.optimizer.model.inner
+    # Solve the subproblem
+    _SDO.solve_subproblem!(subproblem_instantiated.model,
+                        status_signal,
+                        mp_string_rc,
+                        sp_string_rc,
+                        i,
+                        number_of_subprobs
     )
-
-    # Check initialization
-    @assert retval_init_sub == 1
-
-    # Keep alive the process with persistent subproblem data
-    while true
-
-        # Retrieve 'status' signal
-        status_sig = Distributed.take!(status_signal)
-
-        if (status_sig == "continue")
-            _SDO.solve_subproblem(subproblem_instantiated.model.moi_backend.optimizer.model.inner, mp_string_rc, sp_string_rc, i, number_of_subprobs) # Solve
-        else
-            sub_final_status =  _SDO.SubproblemSolverFinalize(subproblem_instantiated.model.moi_backend.optimizer.model.inner)    # Finalize Subproblem
-            break   # break from while-true
-        end
-
-    end
 
     # Build, transform, and write result to file
     result = build_pmd_decomposition_solution(subproblem_instantiated)
@@ -112,228 +97,7 @@ function optimize_subproblem_multiprocessing(
 
 end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-# ----------------- Custom-made build_result and build_solution_values function ------------------------
-
-""
-function build_result_subproblems(aim::_IM.AbstractInfrastructureModel, solve_time; solution_processors=[])
-    # try-catch is needed until solvers reliably support ResultCount()
-    result_count = 1
-    try
-        result_count = JuMP.result_count(aim.model)
-    catch
-        @warn("the given optimizer does not provide the ResultCount() attribute, assuming the solver returned a solution which may be incorrect.");
-    end
-
-    solution = Dict{String,Any}()
-
-    if result_count > 0
-        solution = build_solution_subproblem(aim, post_processors=solution_processors)
-    else
-        @warn("model has no results, solution cannot be built")
-    end
-
-    result = Dict{String,Any}(
-        "optimizer" => JuMP.solver_name(aim.model),
-        "termination_status" => JuMP.termination_status(aim.model),
-        "primal_status" => JuMP.primal_status(aim.model),
-        "dual_status" => JuMP.dual_status(aim.model),
-        "objective" => _guard_objective_value(aim.model),
-        "objective_lb" => _guard_objective_bound(aim.model),
-        "solve_time" => solve_time,
-        "solution" => solution,
-    )
-
-    return result
-end
-
-
-""
-function _guard_objective_value(model)
-    obj_val = NaN
-
-    try
-        obj_val = JuMP.objective_value(model)
-    catch
-    end
-
-    return obj_val
-end
-
-
-""
-function _guard_objective_bound(model)
-    obj_lb = -Inf
-
-    try
-        obj_lb = JuMP.objective_bound(model)
-    catch
-    end
-
-    return obj_lb
-end
-
-
-
-""
-function build_solution_subproblem(aim::_IM.AbstractInfrastructureModel; post_processors=[])
-
-    sol = Dict{String, Any}("it" => Dict{String, Any}())
-    sol["multiinfrastructure"] = true
-
-    for it in  _IM.it_ids(aim)
-        sol["it"][string(it)] = build_solution_values_subproblem(aim.model, aim.sol[:it][it])
-        sol["it"][string(it)]["multinetwork"] = true
-    end
-
-    _IM.solution_preprocessor(aim, sol)
-
-    for post_processor in post_processors
-        post_processor(aim, sol)
-    end
-
-    for it in _IM.it_ids(aim)
-        it_str = string(it)
-        data_it = _IM.ismultiinfrastructure(aim) ? aim.data["it"][it_str] : aim.data
-
-        if _IM.ismultinetwork(data_it)
-            sol["it"][it_str]["multinetwork"] = true
-        else
-            for (k, v) in sol["it"][it_str]["nw"]["$(nw_id_default)"]
-                sol["it"][it_str][k] = v
-            end
-
-            sol["it"][it_str]["multinetwork"] = false
-            delete!(sol["it"][it_str], "nw")
-        end
-
-        if !_IM.ismultiinfrastructure(aim)
-            for (k, v) in sol["it"][it_str]
-                sol[k] = v
-            end
-
-            delete!(sol["it"], it_str)
-        end
-    end
-
-    if !_IM.ismultiinfrastructure(aim)
-        sol["multiinfrastructure"] = false
-        delete!(sol, "it")
-    end
-
-    return sol
-end
-
-
-""
-function build_solution_values_subproblem(model::JuMP.Model, var::Dict)
-    return build_solution_values(model, var)
-end
-
-
-""
-function build_solution_values(model::JuMP.Model, var::Dict)
-    sol = Dict{String, Any}()
-    for (key, val) in var
-        sol[string(key)] = build_solution_values(model, val)
-    end
-    return sol
-end
-
-""
-function build_solution_values(model::JuMP.Model, var::JuMP.Containers.DenseAxisArray)
-    sol_tmp = []
-    for val in eachindex(var)
-        push!(sol_tmp, build_solution_values(model, var[val]))
-    end
-    return sol_tmp
-end
-
-
-""
-function build_solution_values(model::JuMP.Model, var::Array{<:Any,1})
-    return [build_solution_values(val) for val in var]
-end
-
-""
-function build_solution_values(model::JuMP.Model, var::Array{<:Any,2})
-    return [build_solution_values(var[i, j]) for i in 1:size(var, 1), j in 1:size(var, 2)]
-end
-
-""
-function build_solution_values(model::JuMP.Model, var::Number)
-    return var
-end
-
-""
-function build_solution_values(model::JuMP.Model, var::JuMP.VariableRef)
-    var_fr_model = JuMP.variable_by_name(model, string(var))
-    return JuMP.value(var_fr_model)
-end
-
-""
-function build_solution_values(model::JuMP.Model, var::JuMP.GenericAffExpr)
-    var_terms = var.terms           # Get variable terms OrderedDict: (var => coeff)
-    var_keys = keys(var.terms)      # Get the JuMP.VariableRef as keys
-    var_vector = collect(var_keys)  # Collect the JuMP.VariableRef keys in a vector
-
-    cmp_terms = []              # vector used to store the final computed terms (i.e., coeff*value)
-    for v in var_vector
-        v_name = string(v)      # convert JuMP.VariableRef to string (for searching the value in the model)
-        v_coeff = var_terms[v]  # get the coefficient from the OrderedDict of var_terms
-        v_model = JuMP.variable_by_name(model, v_name)  # get the new value from the JuMP model.
-        push!(cmp_terms, v_coeff*JuMP.value(v_model))   # multiply the value obtained with the corresponding coefficient - add to vector of computed terms
-    end
-
-    return sum(cmp_terms) # sum all the computed terms (coeff*value) - return the value
-end
-
-""
-function build_solution_values(model::JuMP.Model, var::JuMP.GenericQuadExpr)
-    var_terms = var.terms           # Get variable terms OrderedDict: (var => coeff)
-    var_keys = keys(var.terms)      # Get the JuMP.VariableRef as keys
-    var_vector = collect(var_keys)  # Collect the JuMP.VariableRef keys in a vector
-
-    cmp_terms = []              # vector used to store the final computed terms (i.e., coeff*value)
-    for v in var_vector
-        v_name = string(v)      # convert JuMP.VariableRef to string (for searching the value in the model)
-        v_coeff = var_terms[v]  # get the coefficient from the OrderedDict of var_terms
-        v_model = JuMP.variable_by_name(model, v_name)  # get the new value from the JuMP model.
-        push!(cmp_terms, v_coeff*JuMP.value(v_model))   # multiply the value obtained with the corresponding coefficient - add to vector of computed terms
-    end
-
-    return sum(cmp_terms) # sum all the computed terms (coeff*value) - return the value
-end
-
-""
-function build_solution_values(model::JuMP.Model, var::JuMP.NonlinearExpression)
-    return JuMP.value(var)
-end
-
-""
-function build_solution_values(model::JuMP.Model, var::JuMP.ConstraintRef)
-    return JuMP.dual(var)
-end
-
-""
-function build_solution_values(var::Any)
-    @warn("build_solution_values found unknown type $(typeof(var))")
-    return var
-end
-
-# ---------------------------------------------------------------------------------
+### ------ Transform solution functions -----
 
 """
     function _transform_decomposition_solution_to_pu!(
@@ -383,14 +147,14 @@ function _transform_decomposition_solution_to_pu!(result, pmitd_data::Dict{Strin
 
         for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
             # Transform pmd MATH result to ENG
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"] = _PMD.transform_solution(
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"],
+            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _PMD.transform_solution(
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name],
                 pmitd_data["it"][_PMD.pmd_it_name][ckt_name];
                 make_si=make_si
             )
 
             # Change PMD dictionary per_unit value (Not done automatically by PMD)
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"]["per_unit"] = true
+            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = true
         end
 
         # Transform pmitd MATH result ref to ENG result ref
@@ -455,14 +219,14 @@ function _transform_decomposition_solution_to_si!(result, pmitd_data::Dict{Strin
 
         for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
             # Transform pmd MATH result to ENG
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"] = _PMD.transform_solution(
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"],
+            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _PMD.transform_solution(
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name],
                 pmitd_data["it"][_PMD.pmd_it_name][ckt_name];
                 make_si=make_si
             )
 
             # Change PMD dictionary per_unit value (Not done automatically by PMD)
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"]["per_unit"] = false
+            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = false
         end
 
         # Transform pmitd MATH result ref to ENG result ref
@@ -471,8 +235,8 @@ function _transform_decomposition_solution_to_si!(result, pmitd_data::Dict{Strin
     elseif (solution_model=="math") || (solution_model=="MATH")
 
         for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"] = _PMD.solution_make_si(
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"],
+            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _PMD.solution_make_si(
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name],
                 pmitd_data["it"][_PMD.pmd_it_name][ckt_name]
             )
         end
@@ -517,6 +281,12 @@ function _transform_pmitd_decomposition_solution_to_si!(result::Dict{String,<:An
                 end
                 if haskey(boundary, "qbound_load")
                     boundary["qbound_load"] = boundary["qbound_load"]*pmd_sbase
+                end
+                if haskey(boundary, "pbound_load_scaled")
+                    boundary["pbound_load_scaled"] = boundary["pbound_load_scaled"]*pmd_sbase
+                end
+                if haskey(boundary, "qbound_load_scaled")
+                    boundary["qbound_load_scaled"] = boundary["qbound_load_scaled"]*pmd_sbase
                 end
                 if haskey(boundary, "pbound_aux")
                     boundary["pbound_aux"] = boundary["pbound_aux"].*pmd_sbase

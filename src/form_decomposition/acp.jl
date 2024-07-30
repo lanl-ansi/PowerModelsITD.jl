@@ -209,55 +209,14 @@ The parameter `export_models` is a boolean that determines if the JuMP models' s
 """
 function generate_boundary_linking_vars(pm::_PM.ACPPowerModel, pmd::_PMD.ACPUPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
 
-    # Parse to Int
-    boundary_number = parse(Int64, boundary_number)
+   transmission_linking_vars = generate_boundary_linking_vars_transmission(pm, boundary_number; nw=nw, export_models=export_models)
+   distribution_linking_vars = generate_boundary_linking_vars_distribution(pmd, boundary_number; nw=nw, export_models=export_models)
 
-    # Get boundary info.
-    boundary = _PMD.ref(pmd, nw, :boundary, boundary_number)
+   boundary_linking_vars = [transmission_linking_vars[1], distribution_linking_vars[1]] # use 1 to extract the vector of linking vars - TODO: see if [1] can be removed maintaining compat.
 
-    f_bus = boundary["f_bus"] # convention: from bus Transmission always!
-    t_bus = boundary["t_bus"] # convention: to bus Distribution always!
-
-    # Distribution: Aux vars (subproblem)
-    f_idx = (boundary_number, f_bus, t_bus)
-    p_aux = _PMD.var(pmd, nw, :pbound_aux, f_idx)
-    q_aux = _PMD.var(pmd, nw, :qbound_aux, f_idx)
-
-    # Distribution: vm (subproblem)
-    vm = _PMD.var(pmd, nw, :vm, t_bus)
-    va = _PMD.var(pmd, nw, :va, t_bus)
-
-    # Transmission: Vm (master)
-    Vm = _PM.var(pm, nw, :vm, f_bus)
-    Va = _PM.var(pm, nw, :va, f_bus)
-
-    # Transmission: Pload & Qload (master)
-    P_load = _PM.var(pm, nw, :pbound_load_scaled, f_idx)
-    Q_load = _PM.var(pm, nw, :qbound_load_scaled, f_idx)
-
-    # boundary_linking_vars = [[P_load[1], Q_load[1], Vm], [p_aux[1], q_aux[1], vm[1]]]
-    boundary_linking_vars = [[P_load[1], Q_load[1], Vm, Va], [p_aux[1], q_aux[1], vm[1], va[1]]]
-
-    if (export_models == true)
-        # Open file where shared vars indices are going to be written
-        file = open("shared_vars.txt", "a")
-        # Loop through the vector of shared variables
-        for sh_vect in boundary_linking_vars
-            for sh_var in sh_vect
-                str_to_write = "Shared Variable ($(sh_var)) Index: $(sh_var.index)\n"
-                # Write the string to the file
-                write(file, str_to_write)
-            end
-        end
-        # Close the file
-        close(file)
-    end
-
-    return boundary_linking_vars
+   return boundary_linking_vars
 
 end
-
-
 
 
 function generate_boundary_linking_vars_transmission(pm::_PM.ACPPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
@@ -284,7 +243,7 @@ function generate_boundary_linking_vars_transmission(pm::_PM.ACPPowerModel, boun
 
     if (export_models == true)
         # Open file where shared vars indices are going to be written
-        file = open("shared_vars_master.txt", "a")
+        file = open("shared_vars_transmission.txt", "a")
         # Loop through the vector of shared variables
         for sh_vect in boundary_linking_vars
             for sh_var in sh_vect
@@ -327,7 +286,7 @@ function generate_boundary_linking_vars_distribution(pmd::_PMD.ACPUPowerModel, b
 
     if (export_models == true)
         # Open file where shared vars indices are going to be written
-        file = open("shared_vars_subproblem_$(boundary).txt", "a")
+        file = open("shared_vars_distribution_$(boundary).txt", "a")
         # Loop through the vector of shared variables
         for sh_vect in boundary_linking_vars
             for sh_var in sh_vect

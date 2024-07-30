@@ -37,20 +37,6 @@ module PowerModelsITD
     # enables support for v[1]
     Base.getindex(v::JuMP.VariableRef, i::Int) = v
 
-    # const vectors with strings build function names availables.
-    "STANDARD_PROBLEMS constant vector that contains the different types of ITD problems supported."
-    const STANDARD_PROBLEMS = ["build_opfitd", "build_mn_opfitd", "build_pfitd", "build_mn_opfitd_oltc", "build_opfitd_oltc", "build_dmld_opfitd", "build_mn_dmld_opfitd_simple"]
-
-    "DECOMPOSITION_PROBLEMS constant vector that contains the different types of ITD decomposition problems supported."
-    const DECOMPOSITION_PROBLEMS = ["build_opfitd_decomposition", "build_mn_opfitd_decomposition"]
-    # mutable struct to store pmitd models/JuMP models for decomposition applications.
-    mutable struct DecompositionStruct
-        pm          # transmission system IM model
-        pmd         # distribution system IM model
-        optimizer   # IDEC optimizer struct
-        DecompositionStruct() = new()   # Constructor
-    end
-
     # Files to include in module
     include("io/common.jl")
     include("core/base.jl")
