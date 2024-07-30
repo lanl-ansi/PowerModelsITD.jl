@@ -1,45 +1,129 @@
 # This file contains useful transformation functions for the solutions (SI or pu) - Decomposition
 
 """
-    function run_decomposition(
-        pmitd::DecompositionStruct
+    function build_pm_decomposition_solution(
+        pm,
+        solve_time
     )
 
 Runs decomposition process and returns organized result solution dictionary.
 """
-function run_decomposition(pmitd::DecompositionStruct)
-
-    # Calls the _SDO optimize!(..) function and solves decomposition problem
-    _, solve_time, solve_bytes_alloc, sec_in_gc = @timed _SDO.optimize_serial!(pmitd.optimizer)
+function build_pm_decomposition_solution(pm, solve_time)
 
     # Build and organize the result dictionary
-    result = Dict{String, Any}("solution" => Dict{String, Any}("it" => Dict{String, Any}(_PM.pm_it_name => Dict{String, Any}(), _PMD.pmd_it_name => Dict{String, Any}(), pmitd_it_name => Dict{String, Any}())))
-    result["solution"]["it"][_PM.pm_it_name] = _IM.build_result(pmitd.pm, solve_time)
+    result = Dict{String, Any}("solution" => Dict{String, Any}("it" => Dict{String, Any}(_PM.pm_it_name => Dict{String, Any}(), pmitd_it_name => Dict{String, Any}())))
+    result["solution"]["it"][_PM.pm_it_name] = _IM.build_result(pm, solve_time)
     result["solution"]["it"][pmitd_it_name]["boundary"] = result["solution"]["it"][_PM.pm_it_name]["solution"]["boundary"]
-
-    for (pmd_num, pmd) in enumerate(pmitd.pmd)
-        for (_, boundary_data) in pmd.data[pmitd_it_name]
-
-	        pmd.model = pmitd.optimizer.subproblems[pmd_num]
-	        ckt_name = boundary_data["ckt_name"]
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = build_result_subproblems(pmd, solve_time)
-
-            boundary_key = collect(keys(result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"]["boundary"]))
-            boundary_vars = result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["solution"]["boundary"][boundary_key[1]]
-
-            if haskey(boundary_vars, "pbound_aux")
-                result["solution"]["it"][pmitd_it_name]["boundary"][boundary_key[1]]["pbound_aux"] = boundary_vars["pbound_aux"]
-            end
-
-            if haskey(boundary_vars, "qbound_aux")
-                result["solution"]["it"][pmitd_it_name]["boundary"][boundary_key[1]]["qbound_aux"] = boundary_vars["qbound_aux"]
-            end
-
-        end
-    end
 
     return result
 end
+
+
+function build_pmd_decomposition_solution(pmd)
+
+    # solve_time default
+    solve_time = 0.0
+    # Build and organize the result dictionary
+    result = Dict{String, Any}("solution" => Dict{String, Any}("it" => Dict{String, Any}(_PMD.pmd_it_name => Dict{String, Any}(), pmitd_it_name => Dict{String, Any}())))
+    result["solution"]["it"][_PMD.pmd_it_name] = _IM.build_result(pmd, solve_time)
+    result["solution"]["it"][pmitd_it_name]["boundary"] = result["solution"]["it"][_PMD.pmd_it_name]["solution"]["boundary"]
+
+    return result
+end
+
+
+# ----------------- Custom-made parallelize multiprocessing function ------------------------
+
+function optimize_subproblem_multiprocessing(
+    data::Dict{String, Any},
+    type,
+    build_method,
+    status_signal::Distributed.RemoteChannel,
+    mp_string_rc::Distributed.RemoteChannel,
+    sp_string_rc::Distributed.RemoteChannel,
+    i::Int,
+    number_of_subprobs::Int
+)
+
+    # Instantiate the PMD model
+    subproblem_instantiated = _IM.instantiate_model(data,
+                                    type,
+                                    build_method,
+                                    ref_add_core_decomposition_distribution!,
+                                    _PMD._pmd_global_keys,
+                                    _PMD.pmd_it_sym
+    )
+
+
+    # Set the optimizer to the instantiated subproblem JuMP model
+    JuMP.set_optimizer(subproblem_instantiated.model, _SDO.Optimizer; add_bridges = true)
+
+    # Assign the type of the problem
+    subproblem_instantiated.model.moi_backend.optimizer.model.type = "Subproblem"
+
+    # Obtain ckt boundary data
+    boundary_number = first(keys(data[pmitd_it_name]))
+    # Get vector of boundary linking vars
+    subprob_linking_vars_vector = generate_boundary_linking_vars_distribution(subproblem_instantiated, boundary_number)
+    # Assign the list of linking vars
+    subproblem_instantiated.model.moi_backend.optimizer.model.list_linking_vars = [subprob_linking_vars_vector]
+
+    # Setup and initilize the subproblem
+    JuMP.optimize!(subproblem_instantiated.model) # Setup the Subproblem model
+
+    # Initialize Subproblem
+    retval_init_sub = _SDO.InitializeSubproblemSolver(
+        subproblem_instantiated.model.moi_backend.optimizer.model.inner
+    )
+
+    # Check initialization
+    @assert retval_init_sub == 1
+
+    # Keep alive the process with persistent subproblem data
+    while true
+
+        # Retrieve 'status' signal
+        status_sig = Distributed.take!(status_signal)
+
+        if (status_sig == "continue")
+            _SDO.solve_subproblem(subproblem_instantiated.model.moi_backend.optimizer.model.inner, mp_string_rc, sp_string_rc, i, number_of_subprobs) # Solve
+        else
+            sub_final_status =  _SDO.SubproblemSolverFinalize(subproblem_instantiated.model.moi_backend.optimizer.model.inner)    # Finalize Subproblem
+            break   # break from while-true
+        end
+
+    end
+
+    # Build, transform, and write result to file
+    result = build_pmd_decomposition_solution(subproblem_instantiated)
+
+    result_json = JSON.json(result)
+    open("subproblem_$(i)_boundary_$(boundary_number).txt", "w") do file
+        write(file, result_json)
+    end
+
+    # Close RemoteChannels
+    close(status_signal)
+    close(mp_string_rc)
+    close(sp_string_rc)
+
+    # Clean everything before leaving process
+    GC.gc()
+
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # ----------------- Custom-made build_result and build_solution_values function ------------------------
 

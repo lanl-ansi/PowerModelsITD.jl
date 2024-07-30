@@ -301,9 +301,6 @@ function instantiate_model_decomposition(
     # Correct the network data and assign the respective boundary number values.
     correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
 
-    # Initialize DecompositionStruct
-    decomposed_models = DecompositionStruct() # intialize empty struct
-
     # ----- StsDOpt Optimizer ------
 
     # Add pmitd(boundary) info. to pm ref
@@ -317,9 +314,6 @@ function instantiate_model_decomposition(
                                     _PM._pm_global_keys,
                                     _PM.pm_it_sym; kwargs...
     )
-
-    # Add master model to struct
-    decomposed_models.pm = master_instantiated
 
     # Export mof.json models
     if (export_models == true)
@@ -348,13 +342,29 @@ function instantiate_model_decomposition(
         ckts_data_vector[ckt_number] = ckt_data
     end
 
-    # Set-up and instantiate subproblem models & boundary linking vars
-    subproblems_instantiated_models = Vector{pmitd_type.parameters[2]}(undef, number_of_subproblems)
-    subproblems_JuMP_models = Vector{JuMP.Model}(undef, number_of_subproblems)
-    boundary_vars_vector = Vector{Vector{Vector{JuMP.VariableRef}}}(undef, number_of_subproblems)
+    # Workers vector
+    workers_vector = Distributed.workers()
 
+    # Number of workers defined
+    number_of_workers = length(workers_vector)
 
-    # ************** 1.64GB ********************
+    # Check that workers_vector >= number_of_subprobs
+    if (number_of_workers < number_of_subproblems)
+        # Removes workers no longer needed.
+        Distributed.rmprocs(workers_vector)
+        # Display error.
+        error("Number of workers = $(number_of_workers), Number of subproblems = $(number_of_subprobs). Workers (processes) must be equal or more than the number of subproblems defined; please allocate more processes.")
+    end
+
+    # RemoteChannel to communicate MP and SP strings (It needs to be a )
+    mp_string_vector_rcs = Vector{Distributed.RemoteChannel}(undef, number_of_subproblems)
+    sp_string_vector_rcs = Vector{Distributed.RemoteChannel}(undef, number_of_subproblems)
+
+    # RemoteChannel to communicate subproblems that should finalize the Subproblems
+    status_signal_vector_rcs = Vector{Distributed.RemoteChannel}(undef, number_of_subproblems)
+
+    # Set-up the master boundary linking vars
+    master_boundary_vars_vector = Vector{Vector{Vector{JuMP.VariableRef}}}(undef, number_of_subproblems)
 
     # Threaded loop for instantiating subproblems
     Threads.@threads for i in 1:1:number_of_subproblems
@@ -367,67 +377,46 @@ function instantiate_model_decomposition(
         # add pmitd(boundary) info. to pmd ref
         ckts_data_vector[i][pmitd_it_name] = boundary_for_ckt
 
-        # ************** 1.65GB ********************
+        # Initialize MP and SP in RemoteChannel
+        mp_string_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{Vector{String}}(1))
+        sp_string_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{Vector{String}}(1))
 
-        # Instantiate the PMD model
-        subproblem_instantiated = _IM.instantiate_model(ckts_data_vector[i],
-                                        pmitd_type.parameters[2],
-                                        build_method,
-                                        ref_add_core_decomposition_distribution!,
-                                        _PMD._pmd_global_keys,
-                                        _PMD.pmd_it_sym; kwargs...
+        # Initialize MP and SP in RemoteChannel
+        status_signal_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{String}(1))
+
+        # Spawn subprocess for subproblem
+        Distributed.remote_do(optimize_subproblem_multiprocessing,
+                                workers_vector[i],
+                                ckts_data_vector[i],
+                                pmitd_type.parameters[2],
+                                build_method,
+                                status_signal_vector_rcs[i],
+                                mp_string_vector_rcs[i],
+                                sp_string_vector_rcs[i],
+                                i,
+                                number_of_subproblems
         )
 
-        # ************** 3.00GB - Without refs in _ref_connect_distribution_transmission_decomposition! ********************
-
-        # ************** 3.58GB - With everything and GC.gc() ********************
-        # GC.gc()
-
-        # ************** 4.00GB ********************
-
-        # Add instantiated subproblem to vector of instantiated subproblems
-        subproblems_instantiated_models[i] = subproblem_instantiated
-
-        # Export mof.json models
-        if (export_models == true)
-            JuMP.write_to_file(subproblem_instantiated.model, "subproblem_$(i)_$(ckts_names_vector[i])_$(boundary_number)_model_exported.mof.json")
-        end
-
-        # Set the optimizer to the instantiated subproblem JuMP model
-        JuMP.set_optimizer(subproblem_instantiated.model, _SDO.Optimizer; add_bridges = true)
-
-        # Add the subproblem JuMP model into the vector of instantiated subproblems
-        subproblems_JuMP_models[i] = subproblem_instantiated.model
-
-        # ************** 4.23GB ********************
-
-        # Generate the boundary linking vars. (ACP, ACR, etc.)
-        if (export_models == true)
-            linking_vars_vector = generate_boundary_linking_vars(master_instantiated, subproblem_instantiated, boundary_number; export_models=export_models)
-        else
-            linking_vars_vector = generate_boundary_linking_vars(master_instantiated, subproblem_instantiated, boundary_number)
-        end
+        # Generate master linking vars
+        master_linking_vars_vector = generate_boundary_linking_vars_transmission(master_instantiated, boundary_number)
 
         # Add linking vars vector to vector containing all vectors of linking vars.
-        boundary_vars_vector[i] = linking_vars_vector
+        master_boundary_vars_vector[i] = master_linking_vars_vector
 
     end
 
-    # ************** 4.46GB ********************
+    # Add vector of subproblems JuMP models (empty JuMP vector)
+    optimizer.subproblems = Vector{JuMP.Model}(undef, number_of_subproblems)
 
-    # Add all instantiated subproblem models to DecompositionStruct
-    decomposed_models.pmd = subproblems_instantiated_models
+    # Add vector of boundary linking vars to Optimizer
+    optimizer.list_linking_vars = master_boundary_vars_vector
 
-    # Add vector of subproblems JuMP models to Optimizer
-    optimizer.subproblems = subproblems_JuMP_models
+    # Add RemoteChannels to the optimizer
+    optimizer.status_signal_channel = status_signal_vector_rcs
+    optimizer.mp_string_vector_channel = mp_string_vector_rcs
+    optimizer.sp_string_vector_channel = sp_string_vector_rcs
 
-    # Add vecor of boundary linking vars to Optimizer
-    optimizer.list_linking_vars = boundary_vars_vector
-
-    # Add Optimizer to DecompositionStruct
-    decomposed_models.optimizer = optimizer
-
-    return decomposed_models
+    return optimizer, master_instantiated
 
 end
 
@@ -663,7 +652,7 @@ function solve_model(
     elseif (typeof(optimizer) == _SDO.MetaOptimizer)
 
         # Instantiate the Decomposition PowerModelsITD object.
-        pmitd = instantiate_model_decomposition(
+        pmitd_optimizer, master_prob_instantiated = instantiate_model_decomposition(
             pmitd_data, pmitd_type, optimizer, build_method;
             multinetwork=multinetwork,
             pmitd_ref_extensions=pmitd_ref_extensions,
@@ -671,20 +660,25 @@ function solve_model(
             kwargs...
         )
 
-        # Force call Garbage collector to reduce RAM usage
-        GC.gc()
 
-        result = run_decomposition(pmitd)
+        # Calls the _SDO optimize!(..) function and solves decomposition problem
+        _, solve_time, solve_bytes_alloc, sec_in_gc = @timed _SDO.optimize!(pmitd_optimizer)
+
+        # Build the master decomposition solution
+        result = build_pm_decomposition_solution(master_prob_instantiated, solve_time)
 
         # Inform about the time for solving the problem (*change to @debug)
         @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
 
-        # Transform solution (both T&D) - SI or per unit - MATH or ENG.
-        if (make_si == false)
-            _transform_decomposition_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
-        else
-            _transform_decomposition_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
-        end
+        # Force call Garbage collector to reduce RAM usage
+        GC.gc()
+
+        # # Transform solution (both T&D) - SI or per unit - MATH or ENG.
+        # if (make_si == false)
+        #     _transform_decomposition_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        # else
+        #     _transform_decomposition_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        # end
 
     else
         @error "The problem specification (build_method) or optimizer defined is not supported! Please use a supported optimizer or build_method."

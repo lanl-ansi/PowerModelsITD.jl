@@ -5,6 +5,7 @@ module PowerModelsITD
     import PowerModelsDistribution as _PMD
 
     import StsDOpt as _SDO
+    import Distributed
 
     import JuMP
     import JSON
