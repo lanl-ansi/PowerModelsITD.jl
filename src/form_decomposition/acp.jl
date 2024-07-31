@@ -286,7 +286,7 @@ function generate_boundary_linking_vars_distribution(pmd::_PMD.ACPUPowerModel, b
 
     if (export_models == true)
         # Open file where shared vars indices are going to be written
-        file = open("shared_vars_distribution_$(boundary).txt", "a")
+        file = open("shared_vars_distribution_$(boundary_number).txt", "a")
         # Loop through the vector of shared variables
         for sh_vect in boundary_linking_vars
             for sh_var in sh_vect

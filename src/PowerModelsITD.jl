@@ -55,6 +55,7 @@ module PowerModelsITD
     include("core/solution.jl")
     include("core/constraint_storage_linear.jl")
     include("core/solution_decomposition.jl")
+    include("core/multiprocessing.jl")
 
     include("data_model/transformations.jl")
 

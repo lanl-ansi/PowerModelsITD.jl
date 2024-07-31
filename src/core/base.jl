@@ -285,6 +285,7 @@ specification being considered. `multinetwork` is the boolean that defines if th
 should be define as multinetwork. `pmitd_ref_extensions` is an array of power transmission and
 distribution modeling extensions.
 The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
+ParallelOptimizer Version.
 """
 function instantiate_model_decomposition(
     pmitd_data::Dict{String,<:Any},
@@ -358,7 +359,9 @@ function instantiate_model_decomposition(
         # Removes workers no longer needed.
         Distributed.rmprocs(workers_vector)
         # Display error.
-        error("Number of workers = $(number_of_workers), Number of subproblems = $(number_of_subprobs). Workers (processes) must be equal or more than the number of subproblems defined; please allocate more processes.")
+        error("Number of workers = $(number_of_workers), Number of subproblems = $(number_of_subproblems).
+            Workers (processes) must be equal or more than the number of subproblems defined; please allocate more processes."
+        )
     end
 
     # RemoteChannel to communicate MP and SP strings (It needs to be a )
@@ -378,6 +381,9 @@ function instantiate_model_decomposition(
         boundary_info = pmitd_data["it"][pmitd_it_name]
         boundary_number = findfirst(x -> ckts_names_vector[i] == x["ckt_name"], boundary_info)
         boundary_for_ckt = Dict(boundary_number => boundary_info[boundary_number])
+
+        # Add ckt_name to ckt_data for instantiation
+        ckts_data_vector[i]["ckt_name"] = ckts_names_vector[i]
 
         # add pmitd(boundary) info. to pmd ref
         ckts_data_vector[i][pmitd_it_name] = boundary_for_ckt
@@ -399,11 +405,15 @@ function instantiate_model_decomposition(
                                 mp_string_vector_rcs[i],
                                 sp_string_vector_rcs[i],
                                 i,
-                                number_of_subproblems
+                                number_of_subproblems;
+                                export_models=export_models
         )
 
         # Generate master linking vars
-        master_linking_vars_vector = generate_boundary_linking_vars_transmission(master_instantiated, boundary_number)
+        master_linking_vars_vector = generate_boundary_linking_vars_transmission(master_instantiated,
+                                                                                boundary_number;
+                                                                                export_models=export_models
+        )
 
         # Add linking vars vector to vector containing all vectors of linking vars.
         master_boundary_vars_vector[i] = master_linking_vars_vector
@@ -427,6 +437,27 @@ function instantiate_model_decomposition(
 end
 
 
+"""
+    function instantiate_model_decomposition(
+        pmitd_data::Dict{String,<:Any},
+        pmitd_type::Type,
+        optimizer,
+        build_method::Function;
+        multinetwork::Bool=false,
+        pmitd_ref_extensions::Vector{<:Function}=Function[],
+        export_models::Bool=false,
+        kwargs...
+    )
+
+Instantiates and returns a decomposition-based PowerModelsITD modeling object vector from parsed power
+transmission and distribution (PMITD) input data `pmitd_data`. Here, `pmitd_type` is the integrated
+power transmission and distribution modeling type and `build_method` is the build method for the problem
+specification being considered. `multinetwork` is the boolean that defines if the modeling object
+should be define as multinetwork. `pmitd_ref_extensions` is an array of power transmission and
+distribution modeling extensions.
+The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
+MultiThreadOptimizer Version.
+"""
 function instantiate_model_decomposition(
     pmitd_data::Dict{String,<:Any},
     pmitd_type::Type,
@@ -812,15 +843,15 @@ function solve_model(
         # Inform about the time for solving the problem (*change to @debug)
         @info "pmitd decomposition model solution time (instantiate + optimization): $(time() - start_time)"
 
+        # Transform solution (both T&D) - SI or per unit - MATH or ENG.
+        if (make_si == false)
+            _transform_decomposition_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        else
+            _transform_decomposition_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
+        end
+
         # Force call Garbage collector to reduce RAM usage
         GC.gc()
-
-        # # Transform solution (both T&D) - SI or per unit - MATH or ENG.
-        # if (make_si == false)
-        #     _transform_decomposition_solution_to_pu!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
-        # else
-        #     _transform_decomposition_solution_to_si!(result, pmitd_data; make_si, multinetwork=multinetwork, solution_model=solution_model)
-        # end
 
     elseif (typeof(optimizer) == _SDO.MultiThreadOptimizer)
 

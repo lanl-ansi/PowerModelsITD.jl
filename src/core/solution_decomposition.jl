@@ -3,10 +3,10 @@
 """
     function build_pm_decomposition_solution(
         pm,
-        solve_time
+        solve_time::Float64=0.0
     )
 
-Runs decomposition process and returns organized result solution dictionary.
+Builds the transmission (pm) decomposition result solution dictionary.
 """
 function build_pm_decomposition_solution(pm, solve_time::Float64=0.0)
 
@@ -18,7 +18,14 @@ function build_pm_decomposition_solution(pm, solve_time::Float64=0.0)
     return result
 end
 
+"""
+    function build_pmd_decomposition_solution(
+        pmd,
+        solve_time::Float64=0.0
+    )
 
+Builds the distribution (pmd) decomposition result solution dictionary.
+"""
 function build_pmd_decomposition_solution(pmd, solve_time::Float64=0.0)
 
     # Build and organize the result dictionary
@@ -29,73 +36,6 @@ function build_pmd_decomposition_solution(pmd, solve_time::Float64=0.0)
     return result
 end
 
-
-# ----------------- Custom-made parallelize multiprocessing function ------------------------
-# TODO: Move this function to its own file
-# TODO: add export_models=true option to export models
-function optimize_subproblem_multiprocessing(
-    data::Dict{String, Any},
-    type,
-    build_method,
-    status_signal::Distributed.RemoteChannel,
-    mp_string_rc::Distributed.RemoteChannel,
-    sp_string_rc::Distributed.RemoteChannel,
-    i::Int,
-    number_of_subprobs::Int
-)
-
-    # Instantiate the PMD model
-    subproblem_instantiated = _IM.instantiate_model(data,
-                                    type,
-                                    build_method,
-                                    ref_add_core_decomposition_distribution!,
-                                    _PMD._pmd_global_keys,
-                                    _PMD.pmd_it_sym
-    )
-
-
-    # Set the optimizer to the instantiated subproblem JuMP model
-    JuMP.set_optimizer(subproblem_instantiated.model, _SDO.Optimizer; add_bridges = true)
-
-    # Assign the type of the problem
-    subproblem_instantiated.model.moi_backend.optimizer.model.type = "Subproblem"
-
-    # Obtain ckt boundary data
-    boundary_number = first(keys(data[pmitd_it_name]))
-    # Get vector of boundary linking vars
-    subprob_linking_vars_vector = generate_boundary_linking_vars_distribution(subproblem_instantiated, boundary_number)
-    # Assign the list of linking vars
-    subproblem_instantiated.model.moi_backend.optimizer.model.list_linking_vars = [subprob_linking_vars_vector]
-
-    # Setup and initilize the subproblem
-    JuMP.optimize!(subproblem_instantiated.model) # Setup the Subproblem model
-
-    # Solve the subproblem
-    _SDO.solve_subproblem!(subproblem_instantiated.model,
-                        status_signal,
-                        mp_string_rc,
-                        sp_string_rc,
-                        i,
-                        number_of_subprobs
-    )
-
-    # Build, transform, and write result to file
-    result = build_pmd_decomposition_solution(subproblem_instantiated)
-
-    result_json = JSON.json(result)
-    open("subproblem_$(i)_boundary_$(boundary_number).txt", "w") do file
-        write(file, result_json)
-    end
-
-    # Close RemoteChannels
-    close(status_signal)
-    close(mp_string_rc)
-    close(sp_string_rc)
-
-    # Clean everything before leaving process
-    GC.gc()
-
-end
 
 ### ------ Transform solution functions -----
 
@@ -114,55 +54,66 @@ function _transform_decomposition_solution_to_pu!(result, pmitd_data::Dict{Strin
 
     if multinetwork
         # Transmission system
-        for (nw, nw_pm) in pmitd_data["it"][_PM.pm_it_name]["nw"]
-            result["solution"]["it"][_PM.pm_it_name]["solution"]["nw"][nw]["baseMVA"] = nw_pm["baseMVA"]
+        if haskey(result["solution"]["it"], _PM.pm_it_name)
+            for (nw, nw_pm) in pmitd_data["it"][_PM.pm_it_name]["nw"]
+                result["solution"]["it"][_PM.pm_it_name]["solution"]["nw"][nw]["baseMVA"] = nw_pm["baseMVA"]
+            end
         end
 
         # Distribution system
-        for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-            for (nw, nw_pmd) in pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["nw"]
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["settings"] = nw_pmd["settings"]
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["per_unit"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["per_unit"]
+        if haskey(result["solution"]["it"], _PMD.pmd_it_name)
+            for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+                for (nw, nw_pmd) in pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["nw"]
+                    result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["settings"] = nw_pmd["settings"]
+                    result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["per_unit"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["per_unit"]
+                end
             end
         end
 
     else
         # Transmission system
-        result["solution"]["it"][_PM.pm_it_name]["solution"]["baseMVA"] = pmitd_data["it"][_PM.pm_it_name]["baseMVA"]
+        if haskey(result["solution"]["it"], _PM.pm_it_name)
+            result["solution"]["it"][_PM.pm_it_name]["solution"]["baseMVA"] = pmitd_data["it"][_PM.pm_it_name]["baseMVA"]
+        end
         # Distribution system
-        for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["settings"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["settings"]
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["per_unit"]
+        if haskey(result["solution"]["it"], _PMD.pmd_it_name)
+            for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["settings"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["settings"]
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["per_unit"]
+            end
         end
     end
 
-    # per unit specification
-    result["solution"]["it"][_PM.pm_it_name]["solution"]["per_unit"] = pmitd_data["it"][_PM.pm_it_name]["per_unit"]
+    if haskey(result["solution"]["it"], _PM.pm_it_name)
+        # per unit specification
+        result["solution"]["it"][_PM.pm_it_name]["solution"]["per_unit"] = pmitd_data["it"][_PM.pm_it_name]["per_unit"]
+        # Make per unit
+        _PM.make_per_unit!(result["solution"]["it"][_PM.pm_it_name]["solution"])
+    end
 
-    # Make per unit
-    _PM.make_per_unit!(result["solution"]["it"][_PM.pm_it_name]["solution"])
+    if haskey(result["solution"]["it"], _PMD.pmd_it_name)
+        # Convert to ENG or MATH models
+        if (solution_model=="eng") || (solution_model=="ENG")
 
-    # Convert to ENG or MATH models
-    if (solution_model=="eng") || (solution_model=="ENG")
+            for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+                # Transform pmd MATH result to ENG
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _PMD.transform_solution(
+                    result["solution"]["it"][_PMD.pmd_it_name][ckt_name],
+                    pmitd_data["it"][_PMD.pmd_it_name][ckt_name];
+                    make_si=make_si
+                )
 
-        for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-            # Transform pmd MATH result to ENG
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _PMD.transform_solution(
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name],
-                pmitd_data["it"][_PMD.pmd_it_name][ckt_name];
-                make_si=make_si
-            )
+                # Change PMD dictionary per_unit value (Not done automatically by PMD)
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = true
+            end
 
-            # Change PMD dictionary per_unit value (Not done automatically by PMD)
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = true
+            # Transform pmitd MATH result ref to ENG result ref
+            transform_pmitd_decomposition_solution_to_eng!(result, pmitd_data)
+
+        elseif !(solution_model=="eng") && !(solution_model=="ENG") && !(solution_model=="math") && !(solution_model=="MATH")
+            @error "The solution_model $(solution_model) does not exists, please input 'eng' or 'math'"
+            throw(error())
         end
-
-        # Transform pmitd MATH result ref to ENG result ref
-        transform_pmitd_decomposition_solution_to_eng!(result, pmitd_data)
-
-    elseif !(solution_model=="eng") && !(solution_model=="ENG") && !(solution_model=="math") && !(solution_model=="MATH")
-        @error "The solution_model $(solution_model) does not exists, please input 'eng' or 'math'"
-        throw(error())
     end
 
 end
@@ -183,67 +134,77 @@ function _transform_decomposition_solution_to_si!(result, pmitd_data::Dict{Strin
 
     if multinetwork
         # Transmission system
-        for (nw, nw_pm) in pmitd_data["it"][_PM.pm_it_name]["nw"]
-            result["solution"]["it"][_PM.pm_it_name]["solution"]["nw"][nw]["baseMVA"] = nw_pm["baseMVA"]
-        end
-
-        # Distribution system
-        for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-            for (nw, nw_pmd) in pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["nw"]
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["settings"] = nw_pmd["settings"]
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["per_unit"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["per_unit"]
+        if haskey(result["solution"]["it"], _PM.pm_it_name)
+            for (nw, nw_pm) in pmitd_data["it"][_PM.pm_it_name]["nw"]
+                result["solution"]["it"][_PM.pm_it_name]["solution"]["nw"][nw]["baseMVA"] = nw_pm["baseMVA"]
             end
         end
 
+        # Distribution system
+        if haskey(result["solution"]["it"], _PMD.pmd_it_name)
+            for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+                for (nw, nw_pmd) in pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["nw"]
+                    result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["settings"] = nw_pmd["settings"]
+                    result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["per_unit"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["nw"][nw]["per_unit"]
+                end
+            end
+        end
     else
         # Transmission system
-        result["solution"]["it"][_PM.pm_it_name]["solution"]["baseMVA"] = pmitd_data["it"][_PM.pm_it_name]["baseMVA"]
+        if haskey(result["solution"]["it"], _PM.pm_it_name)
+            result["solution"]["it"][_PM.pm_it_name]["solution"]["baseMVA"] = pmitd_data["it"][_PM.pm_it_name]["baseMVA"]
+        end
         # Distribution system
-        for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["settings"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["settings"]
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["per_unit"]
+        if haskey(result["solution"]["it"], _PMD.pmd_it_name)
+            for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["settings"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["settings"]
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = pmitd_data["it"][_PMD.pmd_it_name][ckt_name]["per_unit"]
+            end
         end
     end
 
-    # per unit specification
-    result["solution"]["it"][_PM.pm_it_name]["solution"]["per_unit"] = pmitd_data["it"][_PM.pm_it_name]["per_unit"]
-
-    # Make transmission system mixed units (not per unit)
-    _PM.make_mixed_units!(result["solution"]["it"][_PM.pm_it_name]["solution"])
+    if haskey(result["solution"]["it"], _PM.pm_it_name)
+        # per unit specification
+        result["solution"]["it"][_PM.pm_it_name]["solution"]["per_unit"] = pmitd_data["it"][_PM.pm_it_name]["per_unit"]
+        # Make transmission system mixed units (not per unit)
+        _PM.make_mixed_units!(result["solution"]["it"][_PM.pm_it_name]["solution"])
+    end
 
     # Transform pmitd solution to PMD SI
     _transform_pmitd_decomposition_solution_to_si!(result)
 
-    # Convert to ENG or MATH models
-    if (solution_model=="eng") || (solution_model=="ENG")
+    if haskey(result["solution"]["it"], _PMD.pmd_it_name)
+        # Convert to ENG or MATH models
+        if (solution_model=="eng") || (solution_model=="ENG")
 
-        for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-            # Transform pmd MATH result to ENG
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _PMD.transform_solution(
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name],
-                pmitd_data["it"][_PMD.pmd_it_name][ckt_name];
-                make_si=make_si
-            )
+            for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+                # Transform pmd MATH result to ENG
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _PMD.transform_solution(
+                    result["solution"]["it"][_PMD.pmd_it_name][ckt_name],
+                    pmitd_data["it"][_PMD.pmd_it_name][ckt_name];
+                    make_si=make_si
+                )
 
-            # Change PMD dictionary per_unit value (Not done automatically by PMD)
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = false
+                # Change PMD dictionary per_unit value (Not done automatically by PMD)
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["per_unit"] = false
+            end
+
+            # Transform pmitd MATH result ref to ENG result ref
+            transform_pmitd_decomposition_solution_to_eng!(result, pmitd_data)
+
+        elseif (solution_model=="math") || (solution_model=="MATH")
+
+            for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
+                result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _PMD.solution_make_si(
+                    result["solution"]["it"][_PMD.pmd_it_name][ckt_name],
+                    pmitd_data["it"][_PMD.pmd_it_name][ckt_name]
+                )
+            end
+
+        elseif !(solution_model=="eng") && !(solution_model=="ENG") && !(solution_model=="math") && !(solution_model=="MATH")
+            @error "The solution_model $(solution_model) does not exists, please input 'eng' or 'math'"
+            throw(error())
         end
-
-        # Transform pmitd MATH result ref to ENG result ref
-        transform_pmitd_decomposition_solution_to_eng!(result, pmitd_data)
-
-    elseif (solution_model=="math") || (solution_model=="MATH")
-
-        for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-            result["solution"]["it"][_PMD.pmd_it_name][ckt_name] = _PMD.solution_make_si(
-                result["solution"]["it"][_PMD.pmd_it_name][ckt_name],
-                pmitd_data["it"][_PMD.pmd_it_name][ckt_name]
-            )
-        end
-
-    elseif !(solution_model=="eng") && !(solution_model=="ENG") && !(solution_model=="math") && !(solution_model=="MATH")
-        @error "The solution_model $(solution_model) does not exists, please input 'eng' or 'math'"
-        throw(error())
     end
 
 end
@@ -264,11 +225,19 @@ function _transform_pmitd_decomposition_solution_to_si!(result::Dict{String,<:An
     # Check for multinetwork
     if haskey(solution[pmitd_it_name], "nw")
         nws_data = solution[pmitd_it_name]["nw"]
-        pmd_sbase = solution[_PMD.pmd_it_name]["nw"]["1"]["settings"]["sbase"] # get sbase from pmd
+        if haskey(result["solution"]["it"], _PMD.pmd_it_name)
+            power_base = solution[_PMD.pmd_it_name]["nw"]["1"]["settings"]["sbase"] # get sbase from pmd
+        else
+            power_base = solution[_PM.pm_it_name]["solution"]["nw"]["1"]["baseMVA"]
+        end
     else # TODO: Only works when all ckts have the same base, otherwise needs modifications
         nws_data = Dict("0" => solution[pmitd_it_name])
-        for (ckt_name, ckt_data) in solution[_PMD.pmd_it_name]
-            pmd_sbase = solution[_PMD.pmd_it_name][ckt_name]["settings"]["sbase"] # get sbase from pmd
+        if haskey(result["solution"]["it"], _PMD.pmd_it_name)
+            for (ckt_name, ckt_data) in solution[_PMD.pmd_it_name]
+                power_base = solution[_PMD.pmd_it_name][ckt_name]["settings"]["sbase"] # get sbase from pmd
+            end
+        else
+            power_base = solution[_PM.pm_it_name]["solution"]["baseMVA"]
         end
     end
 
@@ -277,22 +246,22 @@ function _transform_pmitd_decomposition_solution_to_si!(result::Dict{String,<:An
         if haskey(nw_data, "boundary")
             for (i,boundary) in nw_data["boundary"]
                 if haskey(boundary, "pbound_load")
-                    boundary["pbound_load"] = boundary["pbound_load"]*pmd_sbase
+                    boundary["pbound_load"] = boundary["pbound_load"]*power_base
                 end
                 if haskey(boundary, "qbound_load")
-                    boundary["qbound_load"] = boundary["qbound_load"]*pmd_sbase
+                    boundary["qbound_load"] = boundary["qbound_load"]*power_base
                 end
                 if haskey(boundary, "pbound_load_scaled")
-                    boundary["pbound_load_scaled"] = boundary["pbound_load_scaled"]*pmd_sbase
+                    boundary["pbound_load_scaled"] = boundary["pbound_load_scaled"]*power_base
                 end
                 if haskey(boundary, "qbound_load_scaled")
-                    boundary["qbound_load_scaled"] = boundary["qbound_load_scaled"]*pmd_sbase
+                    boundary["qbound_load_scaled"] = boundary["qbound_load_scaled"]*power_base
                 end
                 if haskey(boundary, "pbound_aux")
-                    boundary["pbound_aux"] = boundary["pbound_aux"].*pmd_sbase
+                    boundary["pbound_aux"] = boundary["pbound_aux"].*power_base
                 end
                 if haskey(boundary, "qbound_aux")
-                    boundary["qbound_aux"] = boundary["qbound_aux"].*pmd_sbase
+                    boundary["qbound_aux"] = boundary["qbound_aux"].*power_base
                 end
             end
         end
