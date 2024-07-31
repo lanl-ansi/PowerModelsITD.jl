@@ -141,17 +141,10 @@ ACPU boundary bus voltage angle constraints.
 """
 function constraint_boundary_voltage_angle(pmd::_PMD.ACPUPowerModel, ::Int, t_bus::Int, ::Vector{Int}, ::Vector{Int}; nw::Int=nw_id_default)
 
-    ## --- NOTE: These constraints seem to make ACP-ACPU decomposition formulation harder to solve
-    ## if the  _PMD.constraint_mc_theta_ref(pmd_model, i) is kept ---
-
-    # # --- Either this constraint ---
-    # _PMD.constraint_mc_theta_ref(pmd, t_bus)
-
-    # --- Or these constraints ---.
-
-    va_source = _PMD.var(pmd, nw, :va, t_bus)
     # Add constraint(s): angles
+    va_source = _PMD.var(pmd, nw, :va, t_bus)
     # JuMP.@constraint(pmd.model, va_source[1] == 0.0)
+
     # Add constraints related to 120 degrees offset for the distribution b and c phases
     shift_120degs_rad = deg2rad(120)
     # Offset constraints for other phases (-+120 degrees)
@@ -204,8 +197,8 @@ end
         export_models::Bool=false
     )
 
-Generates the ACP-ACPU boundary linking vars vector to be used by the IDEC Optimizer.
-The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as `.nl` files.
+Generates the ACP-ACPU boundary linking vars vector to be used by the StsDOpt Optimizer.
+The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as .txt files.
 """
 function generate_boundary_linking_vars(pm::_PM.ACPPowerModel, pmd::_PMD.ACPUPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
 
@@ -219,6 +212,17 @@ function generate_boundary_linking_vars(pm::_PM.ACPPowerModel, pmd::_PMD.ACPUPow
 end
 
 
+"""
+    function generate_boundary_linking_vars_transmission(
+        pm::_PM.ACPPowerModel,
+        boundary_number::String;
+        nw::Int = nw_id_default,
+        export_models::Bool=false
+    )
+
+Generates the ACP boundary linking vars vector to be used by the StsDOpt Optimizer.
+The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as .txt files.
+"""
 function generate_boundary_linking_vars_transmission(pm::_PM.ACPPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
 
     # Parse to Int
@@ -261,7 +265,17 @@ function generate_boundary_linking_vars_transmission(pm::_PM.ACPPowerModel, boun
 end
 
 
+"""
+    function generate_boundary_linking_vars_distribution(
+        pmd::_PMD.ACPUPowerModel,
+        boundary_number::String;
+        nw::Int = nw_id_default,
+        export_models::Bool=false
+    )
 
+Generates the ACPU boundary linking vars vector to be used by the StsDOpt Optimizer.
+The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as .txt files.
+"""
 function generate_boundary_linking_vars_distribution(pmd::_PMD.ACPUPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
 
     # Parse to Int

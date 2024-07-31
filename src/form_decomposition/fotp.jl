@@ -37,17 +37,10 @@ FOTPU boundary bus voltage angle constraints.
 """
 function constraint_boundary_voltage_angle(pmd::_PMD.FOTPUPowerModel, ::Int, t_bus::Int, ::Vector{Int}, ::Vector{Int}; nw::Int=nw_id_default)
 
-    ## --- NOTE: These constraints seem to make ACP-FOTPU decomposition formulation harder to solve
-    ## if the  _PMD.constraint_mc_theta_ref(pmd_model, i) is kept ---
-
-    # --- Either this constraint ---
-    # _PMD.constraint_mc_theta_ref(pmd, t_bus)
-
-    # --- Or these constraints ---.
-
-    va_source = _PMD.var(pmd, nw, :va, t_bus)
     # Add constraint(s): angles
+    va_source = _PMD.var(pmd, nw, :va, t_bus)
     # JuMP.@constraint(pmd.model, va_source[1] == 0.0)
+
     # Add constraints related to 120 degrees offset for the distribution b and c phases
     shift_120degs_rad = deg2rad(120)
     # Offset constraints for other phases (-+120 degrees)
@@ -57,21 +50,43 @@ function constraint_boundary_voltage_angle(pmd::_PMD.FOTPUPowerModel, ::Int, t_b
 end
 
 
-
 # TODO: multinetwork compatibility by using nw info.
 """
     function generate_boundary_linking_vars(
         pm::_PM.ACPPowerModel,
         pmd::_PMD.FOTPUPowerModel,
         boundary_number::String;
-        nw::Int = nw_id_default
-
+        nw::Int = nw_id_default,
+        export_models::Bool=false
     )
 
-Generates the ACP-FOTPU boundary linking vars vector to be used by the IDEC Optimizer.
-The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as `.nl` files.
+Generates the ACP-FOTPU boundary linking vars vector to be used by the StsDOpt Optimizer.
+The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as .txt files.
 """
 function generate_boundary_linking_vars(pm::_PM.ACPPowerModel, pmd::_PMD.FOTPUPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
+
+   transmission_linking_vars = generate_boundary_linking_vars_transmission(pm, boundary_number; nw=nw, export_models=export_models)
+   distribution_linking_vars = generate_boundary_linking_vars_distribution(pmd, boundary_number; nw=nw, export_models=export_models)
+
+   boundary_linking_vars = [transmission_linking_vars[1], distribution_linking_vars[1]] # use 1 to extract the vector of linking vars - TODO: see if [1] can be removed maintaining compat.
+
+   return boundary_linking_vars
+
+end
+
+
+"""
+    function generate_boundary_linking_vars_distribution(
+        pmd::_PMD.FOTPUPowerModel,
+        boundary_number::String;
+        nw::Int = nw_id_default,
+        export_models::Bool=false
+    )
+
+Generates the FOTPU boundary linking vars vector to be used by the StsDOpt Optimizer.
+The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as .txt files.
+"""
+function generate_boundary_linking_vars_distribution(pmd::_PMD.FOTPUPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
 
     # Parse to Int
     boundary_number = parse(Int64, boundary_number)
@@ -81,9 +96,9 @@ function generate_boundary_linking_vars(pm::_PM.ACPPowerModel, pmd::_PMD.FOTPUPo
 
     f_bus = boundary["f_bus"] # convention: from bus Transmission always!
     t_bus = boundary["t_bus"] # convention: to bus Distribution always!
+    f_idx = (boundary_number, f_bus, t_bus)
 
     # Distribution: Aux vars (subproblem)
-    f_idx = (boundary_number, f_bus, t_bus)
     p_aux = _PMD.var(pmd, nw, :pbound_aux, f_idx)
     q_aux = _PMD.var(pmd, nw, :qbound_aux, f_idx)
 
@@ -91,20 +106,11 @@ function generate_boundary_linking_vars(pm::_PM.ACPPowerModel, pmd::_PMD.FOTPUPo
     vm = _PMD.var(pmd, nw, :vm, t_bus)
     va = _PMD.var(pmd, nw, :va, t_bus)
 
-    # Transmission: Vm (master)
-    Vm = _PM.var(pm, nw, :vm, f_bus)
-    Va = _PM.var(pm, nw, :va, f_bus)
-
-    # Transmission: Pload & Qload (master)
-    P_load = _PM.var(pm, nw, :pbound_load_scaled, f_idx)
-    Q_load = _PM.var(pm, nw, :qbound_load_scaled, f_idx)
-
-    # boundary_linking_vars = [[P_load[1], Q_load[1], Vm], [p_aux[1], q_aux[1], vm[1]]]
-    boundary_linking_vars = [[P_load[1], Q_load[1], Vm, Va], [p_aux[1], q_aux[1], vm[1], va[1]]]
+    boundary_linking_vars = [[p_aux[1], q_aux[1], vm[1], va[1]]]
 
     if (export_models == true)
         # Open file where shared vars indices are going to be written
-        file = open("shared_vars.txt", "a")
+        file = open("shared_vars_distribution_$(boundary_number).txt", "a")
         # Loop through the vector of shared variables
         for sh_vect in boundary_linking_vars
             for sh_var in sh_vect

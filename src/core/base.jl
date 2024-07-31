@@ -881,7 +881,9 @@ function solve_model(
             # Add boundary info. to PMITD dict.
             for (b_name, b_data) in result["solution"]["it"][_PMD.pmd_it_name][ckt_name]["boundary"]
                 result["solution"]["it"][pmitd_it_name]["boundary"][b_name]["pbound_aux"] = b_data["pbound_aux"]
-                result["solution"]["it"][pmitd_it_name]["boundary"][b_name]["qbound_aux"] = b_data["qbound_aux"]
+                if haskey(b_data, "qbound_aux")
+                    result["solution"]["it"][pmitd_it_name]["boundary"][b_name]["qbound_aux"] = b_data["qbound_aux"]
+                end
             end
 
         end

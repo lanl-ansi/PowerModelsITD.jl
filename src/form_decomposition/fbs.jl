@@ -61,10 +61,33 @@ end
 
     )
 
-Generates the ACR-FBSUBF boundary linking vars vector to be used by the IDEC Optimizer.
-The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as `.nl` files.
+Generates the ACR-FBSUBF boundary linking vars vector to be used by the StsDOpt Optimizer.
+The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as .txt files.
 """
 function generate_boundary_linking_vars(pm::_PM.ACRPowerModel, pmd::_PMD.FBSUBFPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
+
+    transmission_linking_vars = generate_boundary_linking_vars_transmission(pm, boundary_number; nw=nw, export_models=export_models)
+    distribution_linking_vars = generate_boundary_linking_vars_distribution(pmd, boundary_number; nw=nw, export_models=export_models)
+
+    boundary_linking_vars = [transmission_linking_vars[1], distribution_linking_vars[1]] # use 1 to extract the vector of linking vars - TODO: see if [1] can be removed maintaining compat.
+
+    return boundary_linking_vars
+
+end
+
+
+"""
+    function generate_boundary_linking_vars_distribution(
+        pmd::_PMD.FBSUBFPowerModel,
+        boundary_number::String;
+        nw::Int = nw_id_default,
+        export_models::Bool=false
+    )
+
+Generates the FBSUBFPowerModel boundary linking vars vector to be used by the StsDOpt Optimizer.
+The parameter `export_models` is a boolean that determines if the JuMP models' shared variable indices are exported to the pwd as .txt files.
+"""
+function generate_boundary_linking_vars_distribution(pmd::_PMD.FBSUBFPowerModel, boundary_number::String; nw::Int=nw_id_default, export_models::Bool=false)
 
     # Parse to Int
     boundary_number = parse(Int64, boundary_number)
@@ -74,9 +97,9 @@ function generate_boundary_linking_vars(pm::_PM.ACRPowerModel, pmd::_PMD.FBSUBFP
 
     f_bus = boundary["f_bus"] # convention: from bus Transmission always!
     t_bus = boundary["t_bus"] # convention: to bus Distribution always!
+    f_idx = (boundary_number, f_bus, t_bus)
 
     # Distribution: Aux vars (subproblem)
-    f_idx = (boundary_number, f_bus, t_bus)
     p_aux = _PMD.var(pmd, nw, :pbound_aux, f_idx)
     q_aux = _PMD.var(pmd, nw, :qbound_aux, f_idx)
 
@@ -84,19 +107,11 @@ function generate_boundary_linking_vars(pm::_PM.ACRPowerModel, pmd::_PMD.FBSUBFP
     vr = _PMD.var(pmd, nw, :vr, t_bus)
     vi = _PMD.var(pmd, nw, :vi, t_bus)
 
-    # Transmission: Vr and Vi (master)
-    Vr = _PM.var(pm, nw, :vr, f_bus)
-    Vi = _PM.var(pm, nw, :vi, f_bus)
-
-    # Transmission: Pload & Qload (master)
-    P_load = _PM.var(pm, nw, :pbound_load_scaled, f_idx)
-    Q_load = _PM.var(pm, nw, :qbound_load_scaled, f_idx)
-
-    boundary_linking_vars = [[P_load[1], Q_load[1], Vr, Vi], [p_aux[1], q_aux[1], vr[1], vi[1]]]
+    boundary_linking_vars = [[p_aux[1], q_aux[1], vr[1], vi[1]]]
 
     if (export_models == true)
         # Open file where shared vars indices are going to be written
-        file = open("shared_vars.txt", "a")
+        file = open("shared_vars_distribution_$(boundary_number).txt", "a")
         # Loop through the vector of shared variables
         for sh_vect in boundary_linking_vars
             for sh_var in sh_vect
