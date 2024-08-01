@@ -25,7 +25,7 @@ function optimize_subproblem_multiprocessing(
     export_models::Bool=false
 )
 
-    @info "Enter optimize_subproblem_multiprocessing() function"
+    @info "Enter optimize_subproblem_multiprocessing function"
 
     # Instantiate the PMD model
     subproblem_instantiated = _IM.instantiate_model(data,
