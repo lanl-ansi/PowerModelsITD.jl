@@ -25,6 +25,8 @@ function optimize_subproblem_multiprocessing(
     export_models::Bool=false
 )
 
+    @info "Enter optimize_subproblem_multiprocessing() function"
+
     # Instantiate the PMD model
     subproblem_instantiated = _IM.instantiate_model(data,
                                     type,
@@ -83,6 +85,13 @@ function optimize_subproblem_multiprocessing(
     close(status_signal)
     close(mp_string_rc)
     close(sp_string_rc)
+
+    # Clear references to help the garbage collector
+    subproblem_instantiated = nothing
+    subprob_linking_vars_vector = nothing
+    result = nothing
+    result_json = nothing
+    data = nothing
 
     # Clean everything before leaving process
     GC.gc()

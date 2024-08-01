@@ -853,6 +853,9 @@ function solve_model(
         # Force call Garbage collector to reduce RAM usage
         GC.gc()
 
+        # Remove Processes
+        Distributed.rmprocs(Distributed.workers())
+
     elseif (typeof(optimizer) == _SDO.MultiThreadOptimizer)
 
         # Instantiate the Decomposition PowerModelsITD object.
