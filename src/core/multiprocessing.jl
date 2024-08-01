@@ -75,7 +75,7 @@ function optimize_subproblem_multiprocessing(
     # TODO: Find a way to transform distribution systems solution from MATH to ENG and PU to SI before output.
 
     result_json = JSON.json(result)
-    open("subproblem_$(i)-ckt_$(data["ckt_name"])-boundary_$(boundary_number).txt", "w") do file
+    open("subproblem_$(i)-ckt_$(data["ckt_name"])-boundary_$(boundary_number).json", "w") do file
         write(file, result_json)
     end
 
