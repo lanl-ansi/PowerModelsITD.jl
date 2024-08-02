@@ -304,8 +304,6 @@ function instantiate_model_decomposition(
     # Correct the network data and assign the respective boundary number values.
     correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
 
-    # ----- StsDOpt Optimizer ------
-
     # Add pmitd(boundary) info. to pm ref
     pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"][pmitd_it_name]
 
@@ -319,28 +317,20 @@ function instantiate_model_decomposition(
     )
 
     # Export mof.json models
-    if (export_models == true)
+    if export_models
         JuMP.write_to_file(master_instantiated.model, "master_model_exported.mof.json")
     end
 
-    # Add master model to optimizer master
+    # Add master model to optimizer and set optimizer
     optimizer.master = master_instantiated.model
-
-    # Set master optimizer
     JuMP.set_optimizer(optimizer.master, _SDO.Optimizer; add_bridges = true)
 
     # Get the number of subproblems
     number_of_subproblems = length(pmitd_data["it"][_PMD.pmd_it_name])
 
-    # Convert distro. dictionary to vectors of dictionaries so it can be used in threaded version
-    ckts_names_vector = Vector{String}(undef, number_of_subproblems)
-    ckts_data_vector = Vector{Dict}(undef, number_of_subproblems)
-    ckt_number = 0
-    for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-        ckt_number = ckt_number + 1
-        ckts_names_vector[ckt_number] = ckt_name
-        ckts_data_vector[ckt_number] = ckt_data
-    end
+    # Convert distro. dictionary to arrays for threaded version
+    ckts_names_vector = collect(keys(pmitd_data["it"][_PMD.pmd_it_name]))
+    ckts_data_vector = collect(values(pmitd_data["it"][_PMD.pmd_it_name]))
 
     # Workers vector
     workers_vector = Distributed.workers()
@@ -370,17 +360,17 @@ function instantiate_model_decomposition(
 
     # Threaded loop for instantiating subproblems
     Threads.@threads for i in 1:1:number_of_subproblems
+        ckt_name = ckts_names_vector[i]
+        ckt_data = ckts_data_vector[i]
 
         # Obtain ckt boundary data
         boundary_info = pmitd_data["it"][pmitd_it_name]
-        boundary_number = findfirst(x -> ckts_names_vector[i] == x["ckt_name"], boundary_info)
+        boundary_number = findfirst(x -> ckt_name == x["ckt_name"], boundary_info)
         boundary_for_ckt = Dict(boundary_number => boundary_info[boundary_number])
 
         # Add ckt_name to ckt_data for instantiation
-        ckts_data_vector[i]["ckt_name"] = ckts_names_vector[i]
-
-        # add pmitd(boundary) info. to pmd ref
-        ckts_data_vector[i][pmitd_it_name] = boundary_for_ckt
+        ckt_data["ckt_name"] = ckt_name
+        ckt_data[pmitd_it_name] = boundary_for_ckt
 
         # Initialize MP and SP in RemoteChannel
         mp_string_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{Vector{String}}(1))
@@ -392,7 +382,7 @@ function instantiate_model_decomposition(
         # Spawn subprocess for subproblem
         Distributed.remote_do(optimize_subproblem_multiprocessing,
                                 workers_vector[i],
-                                ckts_data_vector[i],
+                                ckt_data,
                                 pmitd_type.parameters[2],
                                 build_method,
                                 status_signal_vector_rcs[i],
@@ -414,10 +404,8 @@ function instantiate_model_decomposition(
 
     end
 
-    # Add vector of subproblems JuMP models (empty JuMP vector)
+    # Add vector of subproblems JuMP models (empty JuMP vector) and boundary linking vars
     optimizer.subproblems = Vector{JuMP.Model}(undef, number_of_subproblems)
-
-    # Add vector of boundary linking vars to Optimizer
     optimizer.list_linking_vars = master_boundary_vars_vector
 
     # Add RemoteChannels to the optimizer
@@ -469,8 +457,6 @@ function instantiate_model_decomposition(
     # Correct the network data and assign the respective boundary number values.
     correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
 
-    # ----- StsDOpt Optimizer ------
-
     # Add pmitd(boundary) info. to pm ref
     pmitd_data["it"][_PM.pm_it_name][pmitd_it_name] = pmitd_data["it"][pmitd_it_name]
 
@@ -483,51 +469,43 @@ function instantiate_model_decomposition(
                                     _PM.pm_it_sym; kwargs...
     )
 
-    # Export mof.json models
-    if (export_models == true)
+    # Export master model if required
+    if export_models
         JuMP.write_to_file(master_instantiated.model, "master_model_exported.mof.json")
     end
 
-    # Add master model to optimizer master
+    # Add master model to optimizer and set optimizer
     optimizer.master = master_instantiated.model
-
-    # Set master optimizer
     JuMP.set_optimizer(optimizer.master, _SDO.Optimizer; add_bridges = true)
 
     # Get the number of subproblems
     number_of_subproblems = length(pmitd_data["it"][_PMD.pmd_it_name])
 
-    # Convert distro. dictionary to vectors of dictionaries so it can be used in threaded version
-    ckts_names_vector = Vector{String}(undef, number_of_subproblems)
-    ckts_data_vector = Vector{Dict}(undef, number_of_subproblems)
-    ckt_number = 0
-    for (ckt_name, ckt_data) in pmitd_data["it"][_PMD.pmd_it_name]
-        ckt_number = ckt_number + 1
-        ckts_names_vector[ckt_number] = ckt_name
-        ckts_data_vector[ckt_number] = ckt_data
-    end
+    # Convert distro. dictionary to arrays for threaded version
+    ckts_names_vector = collect(keys(pmitd_data["it"][_PMD.pmd_it_name]))
+    ckts_data_vector = collect(values(pmitd_data["it"][_PMD.pmd_it_name]))
 
-    # Set-up and instantiate subproblem models & boundary linking vars
+    # Pre-allocate space for subproblems and boundary variables
     subproblems_instantiated_models = Vector{pmitd_type.parameters[2]}(undef, number_of_subproblems)
     subproblems_JuMP_models = Vector{JuMP.Model}(undef, number_of_subproblems)
     boundary_vars_vector = Vector{Vector{Vector{JuMP.VariableRef}}}(undef, number_of_subproblems)
 
     # Threaded loop for instantiating subproblems
-    Threads.@threads for i in 1:1:number_of_subproblems
+    Threads.@threads for i in 1:number_of_subproblems
+        ckt_name = ckts_names_vector[i]
+        ckt_data = ckts_data_vector[i]
 
         # Obtain ckt boundary data
         boundary_info = pmitd_data["it"][pmitd_it_name]
-        boundary_number = findfirst(x -> ckts_names_vector[i] == x["ckt_name"], boundary_info)
+        boundary_number = findfirst(x -> ckt_name == x["ckt_name"], boundary_info)
         boundary_for_ckt = Dict(boundary_number => boundary_info[boundary_number])
 
         # Add ckt_name to ckt_data for instantiation
-        ckts_data_vector[i]["ckt_name"] = ckts_names_vector[i]
-
-        # add pmitd(boundary) info. to pmd ref
-        ckts_data_vector[i][pmitd_it_name] = boundary_for_ckt
+        ckt_data["ckt_name"] = ckt_name
+        ckt_data[pmitd_it_name] = boundary_for_ckt
 
         # Instantiate the PMD model
-        subproblem_instantiated = _IM.instantiate_model(ckts_data_vector[i],
+        subproblem_instantiated = _IM.instantiate_model(ckt_data,
                                         pmitd_type.parameters[2],
                                         build_method,
                                         ref_add_core_decomposition_distribution!,
@@ -535,46 +513,36 @@ function instantiate_model_decomposition(
                                         _PMD.pmd_it_sym; kwargs...
         )
 
-        # Add instantiated subproblem to vector of instantiated subproblems
+        # Add instantiated subproblem to vector
         subproblems_instantiated_models[i] = subproblem_instantiated
 
-        # Export mof.json models
-        if (export_models == true)
-            JuMP.write_to_file(subproblem_instantiated.model, "subproblem_$(i)_$(ckts_names_vector[i])_$(boundary_number)_model_exported.mof.json")
+        # Export subproblem model if required
+        if export_models
+            JuMP.write_to_file(subproblem_instantiated.model, "subproblem_$(i)_$(ckt_name)_$(boundary_number)_model_exported.mof.json")
         end
 
         # Set the optimizer to the instantiated subproblem JuMP model
         JuMP.set_optimizer(subproblem_instantiated.model, _SDO.Optimizer; add_bridges = true)
 
-        # Add the subproblem JuMP model into the vector of instantiated subproblems
+        # Add the subproblem JuMP model to the vector
         subproblems_JuMP_models[i] = subproblem_instantiated.model
 
-        # Generate the boundary linking vars. (ACP, ACR, etc.)
-        if (export_models == true)
-            linking_vars_vector = generate_boundary_linking_vars(master_instantiated,
-                                                                subproblem_instantiated,
-                                                                boundary_number;
-                                                                export_models=export_models
-            )
-        else
-            linking_vars_vector = generate_boundary_linking_vars(master_instantiated,
-                                                                subproblem_instantiated,
-                                                                boundary_number
-            )
-        end
+        # Generate the boundary linking vars
+        linking_vars_vector = generate_boundary_linking_vars(master_instantiated,
+                                                              subproblem_instantiated,
+                                                              boundary_number;
+                                                              export_models=export_models
+        )
 
-        # Add linking vars vector to vector containing all vectors of linking vars.
+        # Add linking vars vector to the boundary vars vector
         boundary_vars_vector[i] = linking_vars_vector
-
     end
 
-    # Add vector of subproblems JuMP models to Optimizer
+    # Add vectors of subproblems JuMP models and boundary linking vars to Optimizer
     optimizer.subproblems = subproblems_JuMP_models
-
-    # Add vecor of boundary linking vars to Optimizer
     optimizer.list_linking_vars = boundary_vars_vector
 
-    # return optimizer, master model, and subproblem models
+    # Return optimizer, master model, and subproblem models
     return optimizer, master_instantiated, subproblems_instantiated_models
 
 end
