@@ -359,7 +359,8 @@ function instantiate_model_decomposition(
     master_boundary_vars_vector = Vector{Vector{Vector{JuMP.VariableRef}}}(undef, number_of_subproblems)
 
     # Threaded loop for instantiating subproblems
-    Threads.@threads for i in 1:1:number_of_subproblems
+    # Threads.@threads for i in 1:1:number_of_subproblems # faster but causes +RAM usage
+    for i in 1:1:number_of_subproblems
         ckt_name = ckts_names_vector[i]
         ckt_data = ckts_data_vector[i]
 
@@ -491,7 +492,8 @@ function instantiate_model_decomposition(
     boundary_vars_vector = Vector{Vector{Vector{JuMP.VariableRef}}}(undef, number_of_subproblems)
 
     # Threaded loop for instantiating subproblems
-    Threads.@threads for i in 1:number_of_subproblems
+    # Threads.@threads for i in 1:1:number_of_subproblems # faster but causes +RAM usage
+    for i in 1:number_of_subproblems
         ckt_name = ckts_names_vector[i]
         ckt_data = ckts_data_vector[i]
 
