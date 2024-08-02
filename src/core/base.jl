@@ -301,9 +301,6 @@ function instantiate_model_decomposition(
     distro_systems_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
     pmitd_data["it"][_PMD.pmd_it_name] = distro_systems_separated
 
-    # Force call Garbage collector to reduce RAM usage
-    GC.gc()
-
     # Correct the network data and assign the respective boundary number values.
     correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
 
@@ -331,9 +328,6 @@ function instantiate_model_decomposition(
 
     # Set master optimizer
     JuMP.set_optimizer(optimizer.master, _SDO.Optimizer; add_bridges = true)
-
-    # Force call Garbage collector to reduce RAM usage
-    GC.gc()
 
     # Get the number of subproblems
     number_of_subproblems = length(pmitd_data["it"][_PMD.pmd_it_name])
@@ -472,9 +466,6 @@ function instantiate_model_decomposition(
     distro_systems_separated = _separate_pmd_circuits(pmitd_data["it"][_PMD.pmd_it_name]; multinetwork=multinetwork)
     pmitd_data["it"][_PMD.pmd_it_name] = distro_systems_separated
 
-    # Force call Garbage collector to reduce RAM usage
-    GC.gc()
-
     # Correct the network data and assign the respective boundary number values.
     correct_network_data_decomposition!(pmitd_data; multinetwork=multinetwork)
 
@@ -502,9 +493,6 @@ function instantiate_model_decomposition(
 
     # Set master optimizer
     JuMP.set_optimizer(optimizer.master, _SDO.Optimizer; add_bridges = true)
-
-    # Force call Garbage collector to reduce RAM usage
-    GC.gc()
 
     # Get the number of subproblems
     number_of_subproblems = length(pmitd_data["it"][_PMD.pmd_it_name])
