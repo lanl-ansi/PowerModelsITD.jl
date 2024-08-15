@@ -2,7 +2,7 @@ name = "PowerModelsITD"
 uuid = "615c3f80-b0cb-4ecd-88fe-27bee056c380"
 authors = ["Juan Ospina", "David M Fobes"]
 repo = "https://github.com/lanl-ansi/PowerModelsITD.jl.git"
-version = "0.9.0"
+version = "0.9.1"
 
 [deps]
 InfrastructureModels = "2030c09a-7f63-5d83-885d-db604e0e9cc0"
