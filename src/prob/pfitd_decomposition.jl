@@ -74,6 +74,14 @@ function build_pfitd_decomposition(pm_model::_PM.AbstractPowerModel)
         @assert bus["bus_type"] == 3
         _PM.constraint_theta_ref(pm_model, i)
         _PM.constraint_voltage_magnitude_setpoint(pm_model, i)
+
+        # if multiple generators, fix power generation degeneracies
+        if length(_PM.ref(pm_model, :bus_gens, i)) > 1
+            for j in collect(_PM.ref(pm_model, :bus_gens, i))[2:end]
+                _PM.constraint_gen_setpoint_active(pm_model, j)
+                _PM.constraint_gen_setpoint_reactive(pm_model, j)
+            end
+        end
     end
 
     # DC lines
@@ -102,12 +110,24 @@ function build_pfitd_decomposition(pm_model::_PM.AbstractPowerModel)
     boundary_buses_transmission_set = Set(boundary_buses_transmission)
 
     # # ---- Transmission Power Balance ---
-    for i in _PM.ids(pm_model, :bus)
+    for (i, bus) in _PM.ref(pm_model, :bus)
         if i in boundary_buses_transmission_set
             constraint_transmission_power_balance_boundary(pm_model, i)
         else
             _PM.constraint_power_balance(pm_model, i)
         end
+
+        # PV Bus Constraints
+        if length(_PM.ref(pm_model, :bus_gens, i)) > 0 && !(i in _PM.ids(pm_model, :ref_buses))
+            # this assumes inactive generators are filtered out of bus_gens
+            @assert bus["bus_type"] == 2
+
+            _PM.constraint_voltage_magnitude_setpoint(pm_model, i)
+            for j in _PM.ref(pm_model, :bus_gens, i)
+                _PM.constraint_gen_setpoint_active(pm_model, j)
+            end
+        end
+
     end
 
     # Boundary constraints
@@ -127,13 +147,13 @@ Constructor for Distribution Integrated T&D Decomposition-based Power Flow.
 function build_pfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel)
 
     # PMD(Distribution) Variables
-    _PMD.variable_mc_bus_voltage(pmd_model; bounded=false)
-    _PMD.variable_mc_branch_power(pmd_model; bounded=false)
-    _PMD.variable_mc_transformer_power(pmd_model; bounded=false)
-    _PMD.variable_mc_switch_power(pmd_model; bounded=false)
-    _PMD.variable_mc_generator_power(pmd_model; bounded=false)
-    _PMD.variable_mc_load_power(pmd_model; bounded=false)
-    _PMD.variable_mc_storage_power(pmd_model; bounded=false)
+    _PMD.variable_mc_bus_voltage(pmd_model; bounded = false)
+    _PMD.variable_mc_branch_power(pmd_model; bounded = false)
+    _PMD.variable_mc_transformer_power(pmd_model; bounded = false)
+    _PMD.variable_mc_switch_power(pmd_model; bounded = false)
+    _PMD.variable_mc_generator_power(pmd_model)
+    _PMD.variable_mc_load_power(pmd_model; bounded = false)
+    _PMD.variable_mc_storage_power(pmd_model; bounded = false)
 
     # Decomposition-related vars
     variable_boundary_power(pmd_model)
@@ -153,8 +173,23 @@ function build_pfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel)
     end
 
     # Power balance for PMD buses.
-    for i in _PMD.ids(pmd_model, :bus)
+    for (i, bus) in _PMD.ref(pmd_model, :bus)
         _PMD.constraint_mc_power_balance(pmd_model, i)
+
+        # PV Bus Constraints
+        if (length(_PMD.ref(pmd_model, :bus_gens, i)) > 0 || length(_PMD.ref(pmd_model, :bus_storages, i)) > 0) && !(i in _PMD.ids(pmd_model, :ref_buses))
+            # this assumes inactive generators are filtered out of bus_gens
+            @assert bus["bus_type"] == 2
+
+            _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i)
+            for j in _PMD.ref(pmd_model, :bus_gens, i)
+                _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j)
+            end
+            for j in _PMD.ref(pmd_model, :bus_storages, i)
+                _PMD.constraint_mc_storage_power_setpoint_real(pmd_model, j)
+            end
+        end
+
     end
 
     for i in _PMD.ids(pmd_model, :storage)
@@ -171,7 +206,6 @@ function build_pfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel)
 
     for i in _PMD.ids(pmd_model, :switch)
         _PMD.constraint_mc_switch_state(pmd_model, i)
-        _PMD.constraint_mc_switch_thermal_limit(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :transformer)
@@ -249,12 +283,24 @@ function build_pfitd_decomposition(pm_model::_PM.AbstractWModels)
     boundary_buses_transmission_set = Set(boundary_buses_transmission)
 
     # # ---- Transmission Power Balance ---
-    for i in _PM.ids(pm_model, :bus)
+    for (i, bus) in _PM.ref(pm_model, :bus)
         if i in boundary_buses_transmission_set
             constraint_transmission_power_balance_boundary(pm_model, i)
         else
             _PM.constraint_power_balance(pm_model, i)
         end
+
+        # PV Bus Constraints
+        if length(_PM.ref(pm_model, :bus_gens, i)) > 0 && !(i in _PM.ids(pm_model, :ref_buses))
+            # this assumes inactive generators are filtered out of bus_gens
+            @assert bus["bus_type"] == 2
+
+            _PM.constraint_voltage_magnitude_setpoint(pm_model, i)
+            for j in _PM.ref(pm_model, :bus_gens, i)
+                _PM.constraint_gen_setpoint_active(pm_model, j)
+            end
+        end
+
     end
 
     # Boundary constraints
@@ -280,7 +326,7 @@ function build_pfitd_decomposition(pmd_model::_PMD.AbstractUBFModels)
     _PMD.variable_mc_branch_power(pmd_model)
     _PMD.variable_mc_transformer_power(pmd_model; bounded=false)
     _PMD.variable_mc_switch_power(pmd_model)
-    _PMD.variable_mc_generator_power(pmd_model; bounded=false)
+    _PMD.variable_mc_generator_power(pmd_model)
     _PMD.variable_mc_load_power(pmd_model)
     _PMD.variable_mc_storage_power(pmd_model; bounded=false)
 
@@ -302,8 +348,23 @@ function build_pfitd_decomposition(pmd_model::_PMD.AbstractUBFModels)
     end
 
     # Power balance for PMD buses.
-    for i in _PMD.ids(pmd_model, :bus)
+    for (i, bus) in _PMD.ref(pmd_model, :bus)
         _PMD.constraint_mc_power_balance(pmd_model, i)
+
+        # PV Bus Constraints
+        if (length(_PMD.ref(pmd_model, :bus_gens, i)) > 0 || length(_PMD.ref(pmd_model, :bus_storages, i)) > 0) && !(i in _PMD.ids(pmd_model, :ref_buses))
+            # this assumes inactive generators are filtered out of bus_gens
+            @assert bus["bus_type"] == 2
+
+            _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i)
+            for j in _PMD.ref(pmd_model, :bus_gens, i)
+                _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j)
+            end
+            for j in _PMD.ref(pmd_model, :bus_storages, i)
+                _PMD.constraint_mc_storage_power_setpoint_real(pmd_model, j)
+            end
+        end
+
     end
 
     for i in _PMD.ids(pmd_model, :storage)
@@ -324,7 +385,6 @@ function build_pfitd_decomposition(pmd_model::_PMD.AbstractUBFModels)
 
     for i in _PMD.ids(pmd_model, :switch)
         _PMD.constraint_mc_switch_state(pmd_model, i)
-        _PMD.constraint_mc_switch_thermal_limit(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :transformer)
@@ -352,9 +412,9 @@ function build_pfitd_decomposition(pm_model::_PM.AbstractIVRModel)
 
     # PM(Transmission) Variables
     _PM.variable_bus_voltage(pm_model, bounded = false)
-    _PM.variable_gen_power(pm_model, bounded = false)
-    _PM.variable_dcline_power(pm_model, bounded = false)
-
+    _PM.variable_branch_current(pm_model, bounded = false)
+    _PM.variable_gen_current(pm_model, bounded = false)
+    _PM.variable_dcline_current(pm_model, bounded = false)
 
     # Decomposition-related vars
     variable_boundary_power(pm_model)
@@ -368,8 +428,9 @@ function build_pfitd_decomposition(pm_model::_PM.AbstractIVRModel)
     end
 
     for i in _PM.ids(pm_model, :branch)
-        _PM.expression_branch_power_ohms_yt_from(pm_model, i)
-        _PM.expression_branch_power_ohms_yt_to(pm_model, i)
+        _PM.constraint_current_from(pm_model, i)
+        _PM.constraint_current_to(pm_model, i)
+        _PM.constraint_voltage_drop(pm_model, i)
     end
 
     # DC lines
@@ -398,12 +459,24 @@ function build_pfitd_decomposition(pm_model::_PM.AbstractIVRModel)
     boundary_buses_transmission_set = Set(boundary_buses_transmission)
 
     # # ---- Transmission Power Balance ---
-    for i in _PM.ids(pm_model, :bus)
+    for (i, bus) in _PM.ref(pm_model, :bus)
         if i in boundary_buses_transmission_set
             constraint_transmission_current_balance_boundary(pm_model, i)
         else
             _PM.constraint_current_balance(pm_model, i)
         end
+
+        # PV Bus Constraints
+        if length(_PM.ref(pm_model, :bus_gens, i)) > 0 && !(i in _PM.ids(pm_model, :ref_buses))
+            # this assumes inactive generators are filtered out of bus_gens
+            @assert bus["bus_type"] == 2
+
+            _PM.constraint_voltage_magnitude_setpoint(pm_model, i)
+            for j in _PM.ref(pm_model, :bus_gens, i)
+                _PM.constraint_gen_setpoint_active(pm_model, j)
+            end
+        end
+
     end
 
     # Boundary constraints
@@ -428,7 +501,7 @@ function build_pfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedIVRModel)
     _PMD.variable_mc_branch_current(pmd_model, bounded = false)
     _PMD.variable_mc_switch_current(pmd_model, bounded = false)
     _PMD.variable_mc_transformer_current(pmd_model, bounded = false)
-    _PMD.variable_mc_generator_current(pmd_model, bounded = false)
+    _PMD.variable_mc_generator_current(pmd_model)
     _PMD.variable_mc_load_current(pmd_model, bounded = false)
 
     # Decomposition-related vars
@@ -445,8 +518,19 @@ function build_pfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedIVRModel)
         _PMD.constraint_mc_load_power(pmd_model, id)
     end
 
-    for id in _PMD.ids(pmd_model, :bus)
-        _PMD.constraint_mc_current_balance(pmd_model, id)
+    for (i, bus) in _PMD.ref(pmd_model, :bus)
+        _PMD.constraint_mc_current_balance(pmd_model, i)
+
+        # PV Bus Constraints
+        if length(_PMD.ref(pmd_model, :bus_gens, i)) > 0 && !(i in _PMD.ids(pmd_model, :ref_buses))
+            # this assumes inactive generators are filtered out of bus_gens
+            @assert bus["bus_type"] == 2
+            _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i)
+            for j in _PMD.ref(pmd_model, :bus_gens, i)
+                _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j)
+            end
+        end
+
     end
 
     for i in _PMD.ids(pmd_model, :branch)
@@ -457,7 +541,6 @@ function build_pfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedIVRModel)
 
     for i in _PMD.ids(pmd_model, :switch)
         _PMD.constraint_mc_switch_state(pmd_model, i)
-        _PMD.constraint_mc_switch_current_limit(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :transformer)
@@ -486,63 +569,6 @@ end
 # Constructor for Transmission Multinetwork Integrated T&D Decomposition-based Power Flow.
 # """
 # function build_mn_pfitd_decomposition(pm_model::_PM.AbstractPowerModel)
-
-#     for (n, network) in _PM.nws(pm_model)
-
-#         # PM(Transmission) Variables
-#         _PM.variable_bus_voltage(pm_model, nw=n)
-#         _PM.variable_gen_power(pm_model, nw=n)
-#         _PM.variable_branch_power(pm_model, nw=n)
-#         _PM.variable_dcline_power(pm_model, nw=n)
-#         _PM.variable_storage_power_mi(pm_model, nw=n)
-
-#         # --- PM(Transmission) Constraints ---
-#         _PM.constraint_model_voltage(pm_model, nw=n)
-
-#         # reference buses (this only needs to happen for pm(transmission))
-#         for i in _PM.ids(pm_model, :ref_buses, nw=n)
-#             _PM.constraint_theta_ref(pm_model, i, nw=n)
-#         end
-
-#         for i in _PM.ids(pm_model, :storage, nw=n)
-#             _PM.constraint_storage_complementarity_mi(pm_model, i, nw=n)
-#             _PM.constraint_storage_losses(pm_model, i, nw=n)
-#             _PM.constraint_storage_thermal_limit(pm_model, i, nw=n)
-#         end
-
-#         # PM branches
-#         for i in _PM.ids(pm_model, :branch, nw=n)
-#             _PM.constraint_ohms_yt_from(pm_model, i, nw=n)
-#             _PM.constraint_ohms_yt_to(pm_model, i, nw=n)
-
-#             _PM.constraint_voltage_angle_difference(pm_model, i, nw=n)
-
-#             _PM.constraint_thermal_limit_from(pm_model, i, nw=n)
-#             _PM.constraint_thermal_limit_to(pm_model, i, nw=n)
-#         end
-
-#         # PM DC lines
-#         for i in _PM.ids(pm_model, :dcline, nw=n)
-#             _PM.constraint_dcline_power_losses(pm_model, i, nw=n)
-#         end
-
-#     end
-
-#     # --- PM energy storage state constraint ---
-#     network_ids_pm = sort(collect(_PM.nw_ids(pm_model)))
-
-#     n_1_pm = network_ids_pm[1]
-#     for i in _PM.ids(pm_model, :storage, nw=n_1_pm)
-#         _PM.constraint_storage_state(pm_model, i, nw=n_1_pm)
-#     end
-
-#     for n_2_pm in network_ids_pm[2:end]
-#         for i in _PM.ids(pm_model, :storage, nw=n_2_pm)
-#             _PM.constraint_storage_state(pm_model, i, n_1_pm, n_2_pm)
-#         end
-#         n_1_pm = n_2_pm
-#     end
-
 # end
 
 
@@ -553,77 +579,4 @@ end
 # Constructor for Distribution Multinetwork Integrated T&D Decomposition-based Power Flow.
 # """
 # function build_mn_pfitd_decomposition(pmd_model::_PMD.AbstractUnbalancedPowerModel)
-
-#     for (n, network) in _PMD.nws(pmd_model)
-
-#         # PMD(Distribution) Variables
-#         _PMD.variable_mc_bus_voltage(pmd_model; nw=n)
-#         _PMD.variable_mc_branch_power(pmd_model; nw=n)
-#         _PMD.variable_mc_transformer_power(pmd_model; nw=n)
-#         _PMD.variable_mc_switch_power(pmd_model; nw=n)
-#         _PMD.variable_mc_generator_power(pmd_model; nw=n)
-#         _PMD.variable_mc_load_power(pmd_model; nw=n)
-#         _PMD.variable_mc_storage_power(pmd_model; nw=n)
-
-#         # -------------------------------------------------
-#         # --- PMD(Distribution) Constraints ---
-#         _PMD.constraint_mc_model_voltage(pmd_model; nw=n)
-
-#         # generators should be constrained before KCL, or Pd/Qd undefined
-#         for i in _PMD.ids(pmd_model, n, :gen)
-#             _PMD.constraint_mc_generator_power(pmd_model, i; nw=n)
-#         end
-
-#         # loads should be constrained before KCL, or Pd/Qd undefined
-#         for i in _PMD.ids(pmd_model, n, :load)
-#             _PMD.constraint_mc_load_power(pmd_model, i; nw=n)
-#         end
-
-#         for i in _PMD.ids(pmd_model, n, :storage)
-#             _PMD.constraint_storage_complementarity_nl(pmd_model, i; nw=n)
-#             _PMD.constraint_mc_storage_losses(pmd_model, i; nw=n)
-#             _PMD.constraint_mc_storage_thermal_limit(pmd_model, i; nw=n)
-#         end
-
-#         for i in _PMD.ids(pmd_model, n, :branch)
-#             _PMD.constraint_mc_ohms_yt_from(pmd_model, i; nw=n)
-#             _PMD.constraint_mc_ohms_yt_to(pmd_model, i; nw=n)
-
-#             _PMD.constraint_mc_voltage_angle_difference(pmd_model, i; nw=n)
-
-#             _PMD.constraint_mc_thermal_limit_from(pmd_model, i; nw=n)
-#             _PMD.constraint_mc_thermal_limit_to(pmd_model, i; nw=n)
-#             _PMD.constraint_mc_ampacity_from(pmd_model, i; nw=n)
-#             _PMD.constraint_mc_ampacity_to(pmd_model, i; nw=n)
-#         end
-
-#         for i in _PMD.ids(pmd_model, n, :switch)
-#             _PMD.constraint_mc_switch_state(pmd_model, i; nw=n)
-#             _PMD.constraint_mc_switch_thermal_limit(pmd_model, i; nw=n)
-#             _PMD.constraint_mc_switch_ampacity(pmd_model, i; nw=n)
-#         end
-
-#         for i in _PMD.ids(pmd_model, n, :transformer)
-#             _PMD.constraint_mc_transformer_power(pmd_model, i; nw=n)
-#         end
-
-#     end
-
-#     # --- PMD energy storage state constraint ---
-#     network_ids_pmd = sort(collect(_PMD.nw_ids(pmd_model)))
-
-#     n_1_pmd = network_ids_pmd[1]
-
-#     for i in _PMD.ids(pmd_model, :storage; nw=n_1_pmd)
-#         _PMD.constraint_storage_state(pmd_model, i; nw=n_1_pmd)
-#     end
-
-#     for n_2_pmd in network_ids_pmd[2:end]
-#         for i in _PMD.ids(pmd_model, :storage; nw=n_2_pmd)
-#             _PMD.constraint_storage_state(pmd_model, i, n_1_pmd, n_2_pmd)
-#         end
-
-#         n_1_pmd = n_2_pmd
-#     end
-
 # end
