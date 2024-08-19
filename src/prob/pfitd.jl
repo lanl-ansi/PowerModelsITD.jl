@@ -1,4 +1,4 @@
-# Definitions for solving the integrated T&D opf problem
+# Definitions for solving the integrated T&D pf problem
 
 """
 	function solve_pfitd(
@@ -104,6 +104,7 @@ function build_pfitd(pmitd::AbstractPowerModelITD)
     _PM.variable_bus_voltage(pm_model, bounded = false)
     _PM.variable_gen_power(pm_model, bounded = false)
     _PM.variable_dcline_power(pm_model, bounded = false)
+    _PM.variable_storage_power(pm_model, bounded = false)
 
     for i in _PM.ids(pm_model, :branch)
         _PM.expression_branch_power_ohms_yt_from(pm_model, i)
@@ -130,6 +131,15 @@ function build_pfitd(pmitd::AbstractPowerModelITD)
         @assert bus["bus_type"] == 3
         _PM.constraint_theta_ref(pm_model, i)
         _PM.constraint_voltage_magnitude_setpoint(pm_model, i)
+
+        # if multiple generators, fix power generation degeneracies
+        if length(_PM.ref(pm_model, :bus_gens, i)) > 1
+            for j in collect(_PM.ref(pm_model, :bus_gens, i))[2:end]
+                _PM.constraint_gen_setpoint_active(pm_model, j)
+                _PM.constraint_gen_setpoint_reactive(pm_model, j)
+            end
+        end
+
     end
 
     # DC lines
@@ -146,6 +156,13 @@ function build_pfitd(pmitd::AbstractPowerModelITD)
         end
     end
 
+    # Storage
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
+    end
 
     # -------------------------------------------------
     # --- PMD(Distribution) Constraints ---
@@ -175,7 +192,6 @@ function build_pfitd(pmitd::AbstractPowerModelITD)
 
     for i in _PMD.ids(pmd_model, :switch)
         _PMD.constraint_mc_switch_state(pmd_model, i)
-        _PMD.constraint_mc_switch_thermal_limit(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :transformer)
@@ -237,12 +253,15 @@ function build_pfitd(pmitd::AbstractPowerModelITD)
         end
 
         # PV Bus Constraints
-        if length(_PMD.ref(pmd_model, :bus_gens, i)) > 0 && !(i in _PMD.ids(pmd_model,:ref_buses))
+        if (length(_PMD.ref(pmd_model, :bus_gens, i)) > 0 || length(_PMD.ref(pmd_model, :bus_storages, i)) > 0) && !(i in _PMD.ids(pmd_model, :ref_buses))
             # this assumes inactive generators are filtered out of bus_gens
             @assert bus["bus_type"] == 2
             _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i)
             for j in _PMD.ref(pmd_model, :bus_gens, i)
                 _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j)
+            end
+            for j in _PMD.ref(pmd_model, :bus_storages, i)
+                _PMD.constraint_mc_storage_power_setpoint_real(pmd_model, j)
             end
         end
     end
@@ -326,7 +345,6 @@ function build_pfitd(pmitd::AbstractIVRPowerModelITD)
 
     for i in _PMD.ids(pmd_model, :switch)
         _PMD.constraint_mc_switch_state(pmd_model, i)
-        _PMD.constraint_mc_switch_current_limit(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :transformer)
@@ -420,6 +438,7 @@ function build_pfitd(pmitd::AbstractBFPowerModelITD)
     _PM.variable_branch_power(pm_model, bounded = false)
     _PM.variable_branch_current(pm_model, bounded = false)
     _PM.variable_dcline_power(pm_model, bounded = false)
+    _PM.variable_storage_power(pm_model, bounded = false)
 
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model; bounded=false)
@@ -464,6 +483,14 @@ function build_pfitd(pmitd::AbstractBFPowerModelITD)
         _PM.constraint_voltage_magnitude_difference(pm_model, i)
     end
 
+    # Storage
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
+    end
+
     # -------------------------------------------------
     # --- PMD(Distribution) Constraints ---
     _PMD.constraint_mc_model_current(pmd_model)
@@ -489,14 +516,10 @@ function build_pfitd(pmitd::AbstractBFPowerModelITD)
         _PMD.constraint_mc_power_losses(pmd_model, i)
         _PMD.constraint_mc_model_voltage_magnitude_difference(pmd_model, i)
         _PMD.constraint_mc_voltage_angle_difference(pmd_model, i)
-
-        _PMD.constraint_mc_thermal_limit_from(pmd_model, i)
-        _PMD.constraint_mc_thermal_limit_to(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :switch)
         _PMD.constraint_mc_switch_state(pmd_model, i)
-        _PMD.constraint_mc_switch_thermal_limit(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :transformer)
@@ -558,12 +581,15 @@ function build_pfitd(pmitd::AbstractBFPowerModelITD)
         end
 
         # PV Bus Constraints
-        if length(_PMD.ref(pmd_model, :bus_gens, i)) > 0 && !(i in _PMD.ids(pmd_model,:ref_buses))
+        if (length(_PMD.ref(pmd_model, :bus_gens, i)) > 0 || length(_PMD.ref(pmd_model, :bus_storages, i)) > 0) && !(i in _PMD.ids(pmd_model, :ref_buses))
             # this assumes inactive generators are filtered out of bus_gens
             @assert bus["bus_type"] == 2
             _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i)
             for j in _PMD.ref(pmd_model, :bus_gens, i)
                 _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j)
+            end
+            for j in _PMD.ref(pmd_model, :bus_storages, i)
+                _PMD.constraint_mc_storage_power_setpoint_real(pmd_model, j)
             end
         end
     end
@@ -588,6 +614,12 @@ function build_pfitd(pmitd::AbstractLNLBFPowerModelITD)
     _PM.variable_bus_voltage(pm_model, bounded = false)
     _PM.variable_gen_power(pm_model, bounded = false)
     _PM.variable_dcline_power(pm_model, bounded = false)
+    _PM.variable_storage_power(pm_model, bounded = false)
+
+    for i in _PM.ids(pm_model, :branch)
+        _PM.expression_branch_power_ohms_yt_from(pm_model, i)
+        _PM.expression_branch_power_ohms_yt_to(pm_model, i)
+    end
 
     # PMD(Distribution) Variables
     _PMD.variable_mc_bus_voltage(pmd_model; bounded=false)
@@ -611,11 +643,14 @@ function build_pfitd(pmitd::AbstractLNLBFPowerModelITD)
         @assert bus["bus_type"] == 3
         _PM.constraint_theta_ref(pm_model, i)
         _PM.constraint_voltage_magnitude_setpoint(pm_model, i)
-    end
 
-    for i in _PM.ids(pm_model, :branch)
-        _PM.expression_branch_power_ohms_yt_from(pm_model, i)
-        _PM.expression_branch_power_ohms_yt_to(pm_model, i)
+        # if multiple generators, fix power generation degeneracies
+        if length(_PM.ref(pm_model, :bus_gens, i)) > 1
+            for j in collect(_PM.ref(pm_model, :bus_gens, i))[2:end]
+                _PM.constraint_gen_setpoint_active(pm_model, j)
+                _PM.constraint_gen_setpoint_reactive(pm_model, j)
+            end
+        end
     end
 
     # DC lines
@@ -632,6 +667,13 @@ function build_pfitd(pmitd::AbstractLNLBFPowerModelITD)
         end
     end
 
+    # Storage
+    for i in _PM.ids(pm_model, :storage)
+        _PM.constraint_storage_state(pm_model, i)
+        _PM.constraint_storage_complementarity_nl(pm_model, i)
+        _PM.constraint_storage_losses(pm_model, i)
+        _PM.constraint_storage_thermal_limit(pm_model, i)
+    end
 
     # -------------------------------------------------
     # --- PMD(Distribution) Constraints ---
@@ -657,16 +699,11 @@ function build_pfitd(pmitd::AbstractLNLBFPowerModelITD)
     for i in _PMD.ids(pmd_model, :branch)
         _PMD.constraint_mc_power_losses(pmd_model, i)
         _PMD.constraint_mc_model_voltage_magnitude_difference(pmd_model, i)
-
         _PMD.constraint_mc_voltage_angle_difference(pmd_model, i)
-
-        _PMD.constraint_mc_thermal_limit_from(pmd_model, i)
-        _PMD.constraint_mc_thermal_limit_to(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :switch)
         _PMD.constraint_mc_switch_state(pmd_model, i)
-        _PMD.constraint_mc_switch_thermal_limit(pmd_model, i)
     end
 
     for i in _PMD.ids(pmd_model, :transformer)
@@ -728,12 +765,15 @@ function build_pfitd(pmitd::AbstractLNLBFPowerModelITD)
         end
 
         # PV Bus Constraints
-        if length(_PMD.ref(pmd_model, :bus_gens, i)) > 0 && !(i in _PMD.ids(pmd_model,:ref_buses))
+        if (length(_PMD.ref(pmd_model, :bus_gens, i)) > 0 || length(_PMD.ref(pmd_model, :bus_storages, i)) > 0) && !(i in _PMD.ids(pmd_model, :ref_buses))
             # this assumes inactive generators are filtered out of bus_gens
             @assert bus["bus_type"] == 2
             _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i)
             for j in _PMD.ref(pmd_model, :bus_gens, i)
                 _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j)
+            end
+            for j in _PMD.ref(pmd_model, :bus_storages, i)
+                _PMD.constraint_mc_storage_power_setpoint_real(pmd_model, j)
             end
         end
     end
@@ -762,13 +802,12 @@ function build_mn_pfitd(pmitd::AbstractPowerModelITD)
         _PM.variable_bus_voltage(pm_model, bounded = false, nw=n)
         _PM.variable_gen_power(pm_model, bounded = false, nw=n)
         _PM.variable_dcline_power(pm_model, bounded = false, nw=n)
+        _PM.variable_storage_power(pm_model, bounded = false, nw=n)
 
         for i in _PM.ids(pm_model, :branch, nw=n)
             _PM.expression_branch_power_ohms_yt_from(pm_model, i; nw=n)
             _PM.expression_branch_power_ohms_yt_to(pm_model, i; nw=n)
         end
-
-        _PM.variable_storage_power(pm_model, bounded = false, nw=n)
 
         # PMD(Distribution) Variables
         _PMD.variable_mc_bus_voltage(pmd_model; nw=n, bounded=false)
@@ -790,6 +829,15 @@ function build_mn_pfitd(pmitd::AbstractPowerModelITD)
             @assert bus["bus_type"] == 3
             _PM.constraint_theta_ref(pm_model, i, nw=n)
             _PM.constraint_voltage_magnitude_setpoint(pm_model, i, nw=n)
+
+            # if multiple generators, fix power generation degeneracies
+            if length(_PM.ref(pm_model, :bus_gens, i, nw=n)) > 1
+                for j in collect(_PM.ref(pm_model, :bus_gens, i, nw=n))[2:end]
+                    _PM.constraint_gen_setpoint_active(pm_model, j, nw=n)
+                    _PM.constraint_gen_setpoint_reactive(pm_model, j, nw=n)
+                end
+            end
+
         end
 
         # Storage
@@ -840,7 +888,6 @@ function build_mn_pfitd(pmitd::AbstractPowerModelITD)
 
         for i in _PMD.ids(pmd_model, n, :switch)
             _PMD.constraint_mc_switch_state(pmd_model, i; nw=n)
-            _PMD.constraint_mc_switch_thermal_limit(pmd_model, i; nw=n)
         end
 
         for i in _PMD.ids(pmd_model, n, :transformer)
@@ -901,12 +948,15 @@ function build_mn_pfitd(pmitd::AbstractPowerModelITD)
             end
 
             # PV Bus Constraints
-            if length(_PMD.ref(pmd_model, :bus_gens, i, nw=n)) > 0 && !(i in _PMD.ids(pmd_model,:ref_buses, nw=n))
+            if (length(_PMD.ref(pmd_model, :bus_gens, i, nw=n)) > 0 || length(_PMD.ref(pmd_model, :bus_storages, i, nw=n)) > 0) && !(i in _PMD.ids(pmd_model, :ref_buses, nw=n))
                 # this assumes inactive generators are filtered out of bus_gens
                 @assert bus["bus_type"] == 2
                 _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i; nw=n)
                 for j in _PMD.ref(pmd_model, :bus_gens, i, nw=n)
                     _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j; nw=n)
+                end
+                for j in _PMD.ref(pmd_model, :bus_storages, i, nw=n)
+                    _PMD.constraint_mc_storage_power_setpoint_real(pmd_model, j; nw=n)
                 end
             end
         end
@@ -1026,7 +1076,6 @@ function build_mn_pfitd(pmitd::AbstractIVRPowerModelITD)
 
         for i in _PMD.ids(pmd_model, n, :switch)
             _PMD.constraint_mc_switch_state(pmd_model, i; nw=n)
-            _PMD.constraint_mc_switch_current_limit(pmd_model, i; nw=n)
         end
 
         for i in _PMD.ids(pmd_model, n, :transformer)
@@ -1059,21 +1108,43 @@ function build_mn_pfitd(pmitd::AbstractIVRPowerModelITD)
         boundary_buses_distribution_set = Set(boundary_buses_distribution)
 
         # # ---- Transmission Power Balance ---
-        for i in _PM.ids(pm_model, :bus, nw=n)
+        for (i, bus) in _PM.ref(pm_model, :bus, nw=n)
             if i in boundary_buses_transmission_set
                 constraint_transmission_current_balance_boundary(pmitd, i; nw_pmitd=n)
             else
                 _PM.constraint_current_balance(pm_model, i, nw=n)
             end
+
+            # PV Bus Constraints
+            if length(_PM.ref(pm_model, :bus_gens, i, nw=n)) > 0 && !(i in _PM.ids(pm_model,:ref_buses, nw=n))
+                # this assumes inactive generators are filtered out of bus_gens
+                @assert bus["bus_type"] == 2
+                _PM.constraint_voltage_magnitude_setpoint(pm_model, i, nw=n)
+                for j in _PM.ref(pm_model, :bus_gens, i, nw=n)
+                    _PM.constraint_gen_setpoint_active(pm_model, j, nw=n)
+                end
+            end
+
         end
 
         # ---- Distribution Power Balance ---
-        for i in _PMD.ids(pmd_model, n, :bus)
+        for (i, bus) in _PMD.ref(pmd_model, :bus, nw=n)
             if i in boundary_buses_distribution_set
                 constraint_distribution_current_balance_boundary(pmitd, i; nw_pmitd=n)
             else
                 _PMD.constraint_mc_current_balance(pmd_model, i; nw=n)
             end
+
+            # PV Bus Constraints
+            if length(_PMD.ref(pmd_model, :bus_gens, i, nw=n)) > 0 && !(i in _PMD.ids(pmd_model, :ref_buses, nw=n))
+                # this assumes inactive generators are filtered out of bus_gens
+                @assert bus["bus_type"] == 2
+                _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i; nw=n)
+                for j in _PMD.ref(pmd_model, :bus_gens, i, nw=n)
+                    _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j; nw=n)
+                end
+            end
+
         end
 
     end
@@ -1123,6 +1194,14 @@ function build_mn_pfitd(pmitd::AbstractBFPowerModelITD)
             @assert bus["bus_type"] == 3
             _PM.constraint_theta_ref(pm_model, i, nw=n)
             _PM.constraint_voltage_magnitude_setpoint(pm_model, i, nw=n)
+
+            # if multiple generators, fix power generation degeneracies
+            if length(_PM.ref(pm_model, :bus_gens, i, nw=n)) > 1
+                for j in collect(_PM.ref(pm_model, :bus_gens, i, nw=n))[2:end]
+                    _PM.constraint_gen_setpoint_active(pm_model, j, nw=n)
+                    _PM.constraint_gen_setpoint_reactive(pm_model, j, nw=n)
+                end
+            end
         end
 
         # Storage
@@ -1176,13 +1255,10 @@ function build_mn_pfitd(pmitd::AbstractBFPowerModelITD)
             _PMD.constraint_mc_power_losses(pmd_model, i; nw=n)
             _PMD.constraint_mc_model_voltage_magnitude_difference(pmd_model, i; nw=n)
             _PMD.constraint_mc_voltage_angle_difference(pmd_model, i; nw=n)
-            _PMD.constraint_mc_thermal_limit_from(pmd_model, i; nw=n)
-            _PMD.constraint_mc_thermal_limit_to(pmd_model, i; nw=n)
         end
 
         for i in _PMD.ids(pmd_model, n, :switch)
             _PMD.constraint_mc_switch_state(pmd_model, i; nw=n)
-            _PMD.constraint_mc_switch_thermal_limit(pmd_model, i; nw=n)
         end
 
         for i in _PMD.ids(pmd_model, n, :transformer)
@@ -1243,12 +1319,15 @@ function build_mn_pfitd(pmitd::AbstractBFPowerModelITD)
             end
 
             # PV Bus Constraints
-            if length(_PMD.ref(pmd_model, :bus_gens, i, nw=n)) > 0 && !(i in _PMD.ids(pmd_model,:ref_buses, nw=n))
+            if (length(_PMD.ref(pmd_model, :bus_gens, i, nw=n)) > 0 || length(_PMD.ref(pmd_model, :bus_storages, i, nw=n)) > 0) && !(i in _PMD.ids(pmd_model, :ref_buses, nw=n))
                 # this assumes inactive generators are filtered out of bus_gens
                 @assert bus["bus_type"] == 2
                 _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i; nw=n)
                 for j in _PMD.ref(pmd_model, :bus_gens, i, nw=n)
                     _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j; nw=n)
+                end
+                for j in _PMD.ref(pmd_model, :bus_storages, i, nw=n)
+                    _PMD.constraint_mc_storage_power_setpoint_real(pmd_model, j; nw=n)
                 end
             end
         end
@@ -1306,13 +1385,12 @@ function build_mn_pfitd(pmitd::AbstractLNLBFPowerModelITD)
         _PM.variable_bus_voltage(pm_model, bounded = false, nw=n)
         _PM.variable_gen_power(pm_model, bounded = false, nw=n)
         _PM.variable_dcline_power(pm_model, bounded = false, nw=n)
+        _PM.variable_storage_power(pm_model, bounded = false, nw=n)
 
         for i in _PM.ids(pm_model, :branch, nw=n)
             _PM.expression_branch_power_ohms_yt_from(pm_model, i; nw=n)
             _PM.expression_branch_power_ohms_yt_to(pm_model, i; nw=n)
         end
-
-        _PM.variable_storage_power(pm_model, bounded = false, nw=n)
 
         # PMD(Distribution) Variables
         _PMD.variable_mc_bus_voltage(pmd_model; nw=n, bounded=false)
@@ -1335,6 +1413,14 @@ function build_mn_pfitd(pmitd::AbstractLNLBFPowerModelITD)
             @assert bus["bus_type"] == 3
             _PM.constraint_theta_ref(pm_model, i, nw=n)
             _PM.constraint_voltage_magnitude_setpoint(pm_model, i, nw=n)
+
+            # if multiple generators, fix power generation degeneracies
+            if length(_PM.ref(pm_model, :bus_gens, i, nw=n)) > 1
+                for j in collect(_PM.ref(pm_model, :bus_gens, i, nw=n))[2:end]
+                    _PM.constraint_gen_setpoint_active(pm_model, j, nw=n)
+                    _PM.constraint_gen_setpoint_reactive(pm_model, j, nw=n)
+                end
+            end
         end
 
         # Storage
@@ -1382,13 +1468,10 @@ function build_mn_pfitd(pmitd::AbstractLNLBFPowerModelITD)
             _PMD.constraint_mc_power_losses(pmd_model, i; nw=n)
             _PMD.constraint_mc_model_voltage_magnitude_difference(pmd_model, i; nw=n)
             _PMD.constraint_mc_voltage_angle_difference(pmd_model, i; nw=n)
-            _PMD.constraint_mc_thermal_limit_from(pmd_model, i; nw=n)
-            _PMD.constraint_mc_thermal_limit_to(pmd_model, i; nw=n)
         end
 
         for i in _PMD.ids(pmd_model, n, :switch)
             _PMD.constraint_mc_switch_state(pmd_model, i; nw=n)
-            _PMD.constraint_mc_switch_thermal_limit(pmd_model, i; nw=n)
         end
 
         for i in _PMD.ids(pmd_model, n, :transformer)
@@ -1449,14 +1532,18 @@ function build_mn_pfitd(pmitd::AbstractLNLBFPowerModelITD)
             end
 
             # PV Bus Constraints
-            if length(_PMD.ref(pmd_model, :bus_gens, i, nw=n)) > 0 && !(i in _PMD.ids(pmd_model,:ref_buses, nw=n))
+            if (length(_PMD.ref(pmd_model, :bus_gens, i, nw=n)) > 0 || length(_PMD.ref(pmd_model, :bus_storages, i, nw=n)) > 0) && !(i in _PMD.ids(pmd_model, :ref_buses, nw=n))
                 # this assumes inactive generators are filtered out of bus_gens
                 @assert bus["bus_type"] == 2
                 _PMD.constraint_mc_voltage_magnitude_only(pmd_model, i; nw=n)
                 for j in _PMD.ref(pmd_model, :bus_gens, i, nw=n)
                     _PMD.constraint_mc_gen_power_setpoint_real(pmd_model, j; nw=n)
                 end
+                for j in _PMD.ref(pmd_model, :bus_storages, i, nw=n)
+                    _PMD.constraint_mc_storage_power_setpoint_real(pmd_model, j; nw=n)
+                end
             end
+
         end
     end
 

@@ -2,7 +2,7 @@
 
 ## staged
 
-- none.
+- Fixed issues (and removed unnecessary constraints) in `pfitd.jl` formulations.
 
 ## v0.9.1
 
