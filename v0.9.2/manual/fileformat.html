@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>File Formats · PowerModelsITD.jl</title><meta name="title" content="File Formats · PowerModelsITD.jl"/><meta property="og:title" content="File Formats · PowerModelsITD.jl"/><meta property="twitter:title" content="File Formats · PowerModelsITD.jl"/><meta name="description" content="Documentation for PowerModelsITD.jl."/><meta property="og:description" content="Documentation for PowerModelsITD.jl."/><meta property="twitter:description" content="Documentation for PowerModelsITD.jl."/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../index.html"><img src="../assets/logo.svg" alt="PowerModelsITD.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../index.html">PowerModelsITD.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../index.html">Introduction</a></li><li><a class="tocitem" href="../installation.html">Installation Guide</a></li><li><input class="collapse-toggle" id="menuitem-3" type="checkbox" checked/><label class="tocitem" for="menuitem-3"><span class="docs-label">Manual</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="quickguide.html">Getting Started</a></li><li class="is-active"><a class="tocitem" href="fileformat.html">File Formats</a><ul class="internal"><li><a class="tocitem" href="#File-Formats-Supported"><span>File Formats Supported</span></a></li><li><a class="tocitem" href="#Transmission-System"><span>Transmission System</span></a></li><li><a class="tocitem" href="#Distribution-System"><span>Distribution System</span></a></li><li><a class="tocitem" href="#Boundary"><span>Boundary</span></a></li><li><a class="tocitem" href="#The-auto_renametrue-Option"><span>The <code>auto_rename=true</code> Option</span></a></li></ul></li><li><a class="tocitem" href="formulations.html">Formulations</a></li><li><a class="tocitem" href="storage.html">Storage</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-4" type="checkbox"/><label class="tocitem" for="menuitem-4"><span class="docs-label">Tutorials</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../tutorials/BeginnersGuide.html">Beginners Guide</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-5" type="checkbox"/><label class="tocitem" for="menuitem-5"><span class="docs-label">API Reference</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../reference/base.html">Base</a></li><li><a class="tocitem" href="../reference/data_models.html">Data Models</a></li><li><a class="tocitem" href="../reference/formulations.html">Formulations</a></li><li><a class="tocitem" href="../reference/problems.html">Problems</a></li><li><a class="tocitem" href="../reference/variables.html">Variables</a></li><li><a class="tocitem" href="../reference/constraints.html">Constraints</a></li><li><a class="tocitem" href="../reference/objectives.html">Objectives</a></li><li><a class="tocitem" href="../reference/constants.html">Constants</a></li></ul></li><li><input class="collapse-toggle" id="menuitem-6" type="checkbox"/><label class="tocitem" for="menuitem-6"><span class="docs-label">Developer Docs</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../developer/contributing.html">Contributing</a></li><li><a class="tocitem" href="../developer/style.html">Style Guide</a></li><li><a class="tocitem" href="../developer/roadmap.html">Roadmap</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li><a class="is-disabled">Manual</a></li><li class="is-active"><a href="fileformat.html">File Formats</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href="fileformat.html">File Formats</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/lanl-ansi/PowerModelsITD.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/lanl-ansi/PowerModelsITD.jl/blob/main/docs/src/manual/fileformat.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="File-Formats-Guide"><a class="docs-heading-anchor" href="#File-Formats-Guide">File Formats Guide</a><a id="File-Formats-Guide-1"></a><a class="docs-heading-anchor-permalink" href="#File-Formats-Guide" title="Permalink"></a></h1><p>In this section, we will give a brief introduction to the file formats supported in PowerModelsITD.jl. Place special attention at the <strong>Boundary</strong> section to understand how the <em>boundary linking file</em> must be formatted and how the <code>auto_rename=true</code> option works.</p><h2 id="File-Formats-Supported"><a class="docs-heading-anchor" href="#File-Formats-Supported">File Formats Supported</a><a id="File-Formats-Supported-1"></a><a class="docs-heading-anchor-permalink" href="#File-Formats-Supported" title="Permalink"></a></h2><ul><li><strong>Transmission</strong>: Matpower &quot;.m&quot; and PTI &quot;.raw&quot; files (PSS(R)E v33 specification)</li><li><strong>Distribution</strong>: OpenDSS &quot;.dss&quot; files</li><li><strong>Boundary</strong>: JSON &quot;.json&quot; files</li></ul><h2 id="Transmission-System"><a class="docs-heading-anchor" href="#Transmission-System">Transmission System</a><a id="Transmission-System-1"></a><a class="docs-heading-anchor-permalink" href="#Transmission-System" title="Permalink"></a></h2><ul><li><strong>Matpower (&quot;.m&quot;)</strong></li></ul><pre><code class="language-julia hljs">function mpc = case5
+mpc.version = &#39;2&#39;;
+mpc.baseMVA = 100.0;
+
+%% bus data
+%	bus_i	type	Pd	Qd	Gs	Bs	area	Vm	Va	baseKV	zone	Vmax	Vmin
+mpc.bus = [
+	1	 2	 0.0	 0.0	 0.0	 0.0	 1	    1.07762	    2.80377	 230.0	 1	    1.10000	    0.90000;
+	2	 1	 300.0	 98.61	 0.0	 0.0	 1	    1.08407	   -0.73465	 230.0	 1	    1.10000	    0.90000;
+	3	 2	 300.0	 98.61	 0.0	 0.0	 1	    1.10000	   -0.55972	 230.0	 1	    1.10000	    0.90000;
+	4	 3	 390.0	 131.47	 0.0	 0.0	 1	    1.06414	    0.00000	 230.0	 1	    1.10000	    0.90000;
+	5	 1	 8.0	 1.2	 0.0	 0.0	 1	    1.00000	    0.00000	 230.0	 1	    1.10000	    0.90000;
+	10	 2	 0.0	 0.0	 0.0	 0.0	 1	    1.06907	    3.59033	 230.0	 1	    1.10000	    0.90000;
+];
+
+%% generator data
+%	bus	Pg	Qg	Qmax	Qmin	Vg	mBase	status	Pmax	Pmin
+mpc.gen = [
+	1	 40.0	 30.0	 30.0	 -30.0	 1.07762	 100.0	 1	 40.0	 0.0;
+	1	 170.0	 127.5	 127.5	 -127.5	 1.07762	 100.0	 1	 170.0	 0.0;
+	3	 324.498	 390.0	 390.0	 -390.0	 1.1	 100.0	 1	 520.0	 0.0;
+	4	 0.0	 -10.802	 150.0	 -150.0	 1.06414	 100.0	 1	 200.0	 0.0;
+	10	 470.694	 -165.039	 450.0	 -450.0	 1.06907	 100.0	 1	 600.0	 0.0;
+];
+
+%% generator cost data
+%	2	startup	shutdown	n	c(n-1)	...	c0
+mpc.gencost = [
+	2	 0.0	 0.0	 3	   0.000000	  14.000000	   0.000000	   2.000000;
+	2	 0.0	 0.0	 3	   0.000000	  15.000000	   0.000000	   2.000000;
+	2	 0.0	 0.0	 3	   0.000000	  30.000000	   0.000000	   2.000000;
+	2	 0.0	 0.0	 3	   0.000000	  40.000000	   0.000000	   2.000000;
+	2	 0.0	 0.0	 3	   0.000000	  10.000000	   0.000000	   2.000000;
+];
+
+%% branch data
+%	fbus	tbus	r	x	b	rateA	rateB	rateC	ratio	angle	status	angmin	angmax
+mpc.branch = [
+	1	 2	 0.00281	 0.0281	 0.00712	 400.0	 400.0	 400.0	 0.0	  0.0	 1	 -30.0	 30.0;
+	1	 4	 0.00304	 0.0304	 0.00658	 426	 426	 426	 0.0	  0.0	 1	 -30.0	 30.0;
+	1	 10	 0.00064	 0.0064	 0.03126	 426	 426	 426	 0.0	  0.0	 1	 -30.0	 30.0;
+	2	 3	 0.00108	 0.0108	 0.01852	 426	 426	 426	 0.0	  0.0	 1	 -30.0	 30.0;
+	3	 4	 0.00297	 0.0297	 0.00674	 426	 426	 426	 1.05	  1.0	 1	 -30.0	 30.0;
+	4	 10	 0.00297	 0.0297	 0.00674	 240.0	 240.0	 240.0	 0.0	  0.0	 1	 -30.0	 30.0;
+	2	 5	 0.00297	 0.0297	 0.00674	 426	 426	 426	 0.0	  0.0	 1	 -30.0	 30.0;
+];
+</code></pre><ul><li><strong>PSS(R)E v33 specification (&quot;.raw&quot;)</strong></li></ul><pre><code class="language-julia hljs"> 0,    100.00, 33, 0, 0, 60.00
+tests an angle shifting transformer
+tests two winding transformer status
+    1,&#39;1&#39;, 230.0000,2,   1,   1,   1,1.00000000,   2.803770, 1.10000, 0.90000, 1.10000, 0.90000
+    2,&#39;2&#39;, 230.0000,1,   1,   1,   1,1.08406997,  -0.734650, 1.10000, 0.90000, 1.10000, 0.90000
+    3,&#39;3&#39;, 230.0000,2,   1,   1,   1,1.00000000,  -0.559720, 1.10000, 0.90000, 1.10000, 0.90000
+    4,&#39;4&#39;, 230.0000,3,   1,   1,   1,1.06413996,   0.000000, 1.10000, 0.90000, 1.10000, 0.90000
+    5,&#39;5&#39;, 230.0000,1,   1,   1,   1,1.00000000,   0.000000, 1.10000, 0.90000, 1.10000, 0.90000
+   10,&#39;10&#39;, 230.0000,2,   1,   1,   1,1.00000000,   3.590330, 1.10000, 0.90000, 1.10000, 0.90000
+0 / END OF BUS DATA, BEGIN LOAD DATA
+    2,&#39;1&#39;,1,   1,   1,   300.000,    98.610,     0.000,     0.000,     0.000,     0.000,   1,1
+    3,&#39;1&#39;,1,   1,   1,   300.000,    98.610,     0.000,     0.000,     0.000,     0.000,   1,1
+    4,&#39;1&#39;,1,   1,   1,   390.000,   131.470,     0.000,     0.000,     0.000,     0.000,   1,1
+    5,&#39;1&#39;,1,   1,   1,   8.00000,   1.20000,     0.000,     0.000,     0.000,     0.000,   1,1
+0 / END OF LOAD DATA, BEGIN FIXED SHUNT DATA
+0 / END OF FIXED SHUNT DATA, BEGIN GENERATOR DATA
+    1,&#39;1&#39;,    40.000,    30.000,    30.000,   -30.000,1.07762,    0,   100.000,   0.00000,   1.00000,   0.00000,   0.00000,1.00000,1,  100.0,    40.000,     0.000,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000,0, 1.0000
+    1,&#39;2&#39;,   170.000,   127.500,   127.500,  -127.500,1.07762,    0,   100.000,   0.00000,   1.00000,   0.00000,   0.00000,1.00000,1,  100.0,   170.000,     0.000,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000,0, 1.0000
+    3,&#39;1&#39;,   324.498,   390.000,   390.000,  -390.000,1.10000,    0,   100.000,   0.00000,   1.00000,   0.00000,   0.00000,1.00000,1,  100.0,   520.000,     0.000,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000,0, 1.0000
+    4,&#39;1&#39;,     0.000,   -10.802,   150.000,  -150.000,1.06414,    0,   100.000,   0.00000,   1.00000,   0.00000,   0.00000,1.00000,1,  100.0,   200.000,     0.000,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000,0, 1.0000
+   10,&#39;1&#39;,   470.694,  -165.039,   450.000,  -450.000,1.06907,    0,   100.000,   0.00000,   1.00000,   0.00000,   0.00000,1.00000,1,  100.0,   600.000,     0.000,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000,0, 1.0000
+0 / END OF GENERATOR DATA, BEGIN BRANCH DATA
+     1,     2,&#39;1&#39;,2.81000E-3,2.81000E-2,7.12000E-3, 400.00, 400.00, 400.00,  0.00000,  0.00000,  0.00000,  0.00000,1,1,   0.0,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000
+     1,     4,&#39;1&#39;,3.04000E-3,3.04000E-2,6.58000E-3, 426.00, 426.00, 426.00,  0.00000,  0.00000,  0.00000,  0.00000,1,1,   0.0,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000
+     1,    10,&#39;1&#39;,6.40000E-4,6.40000E-3,3.12600E-2, 426.00, 426.00, 426.00,  0.00000,  0.00000,  0.00000,  0.00000,1,1,   0.0,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000
+     2,     3,&#39;1&#39;,1.08000E-3,1.08000E-2,1.85200E-2, 426.00, 426.00, 426.00,  0.00000,  0.00000,  0.00000,  0.00000,1,1,   0.0,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000
+     3,     4,&#39;1&#39;,2.97000E-3,2.97000E-2,6.74000E-3, 426.00, 426.00, 426.00,  1.05000,  0.00000,  0.00000,  0.00000,1,1,   0.0,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000
+     4,    10,&#39;1&#39;,2.97000E-3,2.97000E-2,6.74000E-3, 240.00, 240.00, 240.00,  0.00000,  0.00000,  0.00000,  0.00000,1,1,   0.0,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000
+     2,     5,&#39;1&#39;,2.97000E-3,2.97000E-2,6.74000E-3, 426.00, 426.00, 426.00,  0.00000,  0.00000,  0.00000,  0.00000,1,1,   0.0,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000
+0 / END OF BRANCH DATA, BEGIN TRANSFORMER DATA
+     4,     3,    0,&#39;1 &#39;,0,1,1,0.00000E0,6.74000E-3,2,&#39;            &#39;,1,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000,&#39;            &#39;
+2.97000E-3,2.97000E-2, 100.00
+1.050000,230.000,  -1.000, 426.00, 426.00, 426.00,-3,     0,   30.00,  -30.00,  150.00,   51.00,9601, 0, 0.00000, 0.00000,  0.000
+1.000000,230.000
+     3,     4,    0,&#39;2 &#39;,1,0,1,0.00000E0,6.74000E-3,2,&#39;            &#39;,1,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000,&#39;            &#39;
+2.97000E-3,2.97000E-2, 100.00
+1.050000,230.000,   1.000, 426.00, 426.00, 426.00,-3,     0,   30.00,  -30.00,  150.00,   51.00,9601, 0, 0.00000, 0.00000,  0.000
+1.000000,230.000
+     3,     4,    0,&#39;2 &#39;,1,1,0,0.00000E0,6.74000E-3,2,&#39;            &#39;,0,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000,&#39;            &#39;
+2.97000E-3,2.97000E-2, 100.00
+1.050000,230.000,   1.000, 426.00, 426.00, 426.00,-3,     0,   30.00,  -30.00,  150.00,   51.00,9601, 0, 0.00000, 0.00000,  0.000
+1.000000,230.000
+     3,     4,    0,&#39;2 &#39;,1,1,1,0.00000E0,6.74000E-3,2,&#39;            &#39;,2,   1,1.0000,   0,1.0000,   0,1.0000,   0,1.0000,&#39;            &#39;
+2.97000E-3,2.97000E-2, 100.00
+1.050000,230.000,   1.000, 426.00, 426.00, 426.00,-3,     0,   30.00,  -30.00,  150.00,   51.00,9601, 0, 0.00000, 0.00000,  0.000
+1.000000,230.000
+0 / END OF TRANSFORMER DATA, BEGIN AREA DATA
+   1,    0,     0.000,     1.000,&#39;1           &#39;
+0 / END OF AREA DATA, BEGIN TWO-TERMINAL DC DATA
+0 / END OF TWO-TERMINAL DC DATA, BEGIN VOLTAGE SOURCE CONVERTER DATA
+0 / END OF VOLTAGE SOURCE CONVERTER DATA, BEGIN IMPEDANCE CORRECTION DATA
+0 / END OF IMPEDANCE CORRECTION DATA, BEGIN MULTI-TERMINAL DC DATA
+0 / END OF MULTI-TERMINAL DC DATA, BEGIN MULTI-SECTION LINE DATA
+0 / END OF MULTI-SECTION LINE DATA, BEGIN ZONE DATA
+   1,&#39;1       &#39;
+0 / END OF ZONE DATA, BEGIN INTER-AREA TRANSFER DATA
+0 / END OF INTER-AREA TRANSFER DATA, BEGIN OWNER DATA
+    1,&#39;1&#39;
+0 / END OF OWNER DATA, BEGIN FACTS CONTROL DEVICE DATA
+0 / END OF FACTS CONTROL DEVICE DATA, BEGIN SWITCHED SHUNT DATA
+0 /END OF SWITCHED SHUNT DATA, BEGIN GNE DEVICE DATA
+0 /END OF GNE DEVICE DATA
+Q</code></pre><h2 id="Distribution-System"><a class="docs-heading-anchor" href="#Distribution-System">Distribution System</a><a id="Distribution-System-1"></a><a class="docs-heading-anchor-permalink" href="#Distribution-System" title="Permalink"></a></h2><ul><li><strong>OpenDSS (&quot;.dss&quot;)</strong></li></ul><pre><code class="language-julia hljs">New Circuit.3bus_bal
+!  define a really stiff source
+~ basekv=230 pu=1.00 MVAsc3=200000 MVAsc1=210000
+
+! Substation Transformer
+New Transformer.SubXF Phases=3 Windings=2 Xhl=0.01
+~ wdg=1 bus=sourcebus conn=wye kv=230   kva=25000    %r=0.0005
+~ wdg=2 bus=Substation   conn=wye kv=13.8  kva=25000   %r=0.0005
+
+!Define Linecodes
+New linecode.556MCM nphases=3 basefreq=60  ! ohms per 5 mile
+~ rmatrix = ( 0.1000 | 0.0400    0.1000 |  0.0400    0.0400    0.1000)
+~ xmatrix = ( 0.0583 |  0.0233    0.0583 | 0.0233    0.0233    0.0583)
+~ cmatrix = (50.92958178940651  | -0  50.92958178940651 | -0 -0 50.92958178940651  ) ! small capacitance
+
+New linecode.4/0QUAD nphases=3 basefreq=60  ! ohms per 100ft
+~ rmatrix = ( 0.1167 | 0.0467    0.1167 | 0.0467    0.0467    0.1167)
+~ xmatrix = (0.0667  |  0.0267    0.0667  |  0.0267    0.0267    0.0667 )
+~ cmatrix = (50.92958178940651  | -0  50.92958178940651 | -0 -0 50.92958178940651  )  ! small capacitance
+
+!Define lines
+New Line.OHLine  bus1=Substation.1.2.3  Primary.1.2.3  linecode = 556MCM   length=1 normamps=6000 emergamps=6000! 5 mile line
+New Line.Quad    Bus1=Primary.1.2.3  loadbus.1.2.3  linecode = 4/0QUAD  length=1 normamps=6000 emergamps=6000  ! 100 ft
+
+!Loads - single phase
+New Load.L1 phases=1  loadbus.1.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1
+New Load.L2 phases=1  loadbus.2.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1
+New Load.L3 phases=1  loadbus.3.0   ( 13.8 3 sqrt / )   kW=3000   kvar=1500  model=1
+
+!GENERATORS DEFINITIONS
+New generator.gen1 Bus1=loadbus.1.2.3 Phases=3 kV=( 13.8 3 sqrt / )  kW=2000 pf=1 conn=wye Model=3
+
+Set VoltageBases = &quot;230,13.8&quot;
+Set tolerance=0.000001
+set defaultbasefreq=60</code></pre><p><strong><em>Important Note</em></strong>: See how the defined file has a unique circuit (ckt) name (i.e., <code>New Circuit.3bus_bal</code>). It is important that for scenarios where multiple distribution systems are to be used, each distribution system file must have a <strong>unique</strong> ckt name. Otherwise, PowerModelsITD.jl will generate an <strong>error</strong> indicating the user that they must input distribution systems with unique names (or use the <code>auto_rename=true</code> option explained later).</p><h2 id="Boundary"><a class="docs-heading-anchor" href="#Boundary">Boundary</a><a id="Boundary-1"></a><a class="docs-heading-anchor-permalink" href="#Boundary" title="Permalink"></a></h2><p>The file shown below shows the <strong>ideal</strong> format to be used when defining the boundary connections in the JSON file. For transmission system boundary buses, the name of the bus is sufficient. For distribution systems, especially, cases where multiple distribution systems will be inputted, the <strong>ideal</strong> format for <code>distribution_boundary</code> names is <code>circuit_name.object.name_of_object</code>. In this example, two distribution systems (<code>3bus_unbal</code> and <code>3bus_bal</code>) are going to be connected to buses <strong>5</strong> and <strong>6</strong> in the transmission system.</p><ul><li><strong>JSON (&quot;.json&quot;)</strong></li></ul><pre><code class="language-julia hljs">[
+	{
+        &quot;transmission_boundary&quot;: &quot;5&quot;,
+        &quot;distribution_boundary&quot;: &quot;3bus_unbal.voltage_source.source&quot;
+	},
+
+	{
+        &quot;transmission_boundary&quot;: &quot;6&quot;,
+        &quot;distribution_boundary&quot;: &quot;3bus_bal.voltage_source.source&quot;
+        }
+]</code></pre><p>As observed in the file, we follow the <strong>ideal</strong> format when defining the <code>distribution_boundary</code> names. If this format is <strong>not</strong> followed (and the <code>auto_rename=true</code> option is not used), <strong>errors</strong> will be displayed by PowerModelsITD.jl. Errors ranging from <code>&quot;The distribution bus/source specified in the JSON file does not exists. Please input an existing bus/source!&quot;</code> to <code>&quot;Distribution systems have same circuit names! Please use different names for each distribution system. (e.g., New Circuit.NameOfCkt) or use the auto_rename=true option.&quot;</code> will be displayed warning the user that something is wrong with the JSON file information provided.</p><p>But, what happens when we would like to use the <strong>same</strong> distribution system file to create multiple dsitribution systems connected at different transmission system boundary buses. In other words, <em>we don&#39;t care too much about the names of the distribution circuits, and the boundary names in the JSON file are inputted in a sequential order</em>. Then, for use with <strong>caution</strong>, PowerModelsITD.jl supports the use of an <strong>auto-renaming</strong> option that renames <strong>repeated</strong> circuits in a sequential manner such as: <code>pmd_files = [pmd, pmd, ..., pmd]</code>, <code>pmd_cktName_1</code>, <code>pmd_cktName_2</code>, ..., <code>pmd_cktName_n</code>.</p><p><strong><em>Important Note</em></strong>: All elements/components inside the <code>pmd=&gt;</code> dictionary will always be renamed based on the format <code>ckt_name.component_name</code></p><h2 id="The-auto_renametrue-Option"><a class="docs-heading-anchor" href="#The-auto_renametrue-Option">The <code>auto_rename=true</code> Option</a><a id="The-auto_renametrue-Option-1"></a><a class="docs-heading-anchor-permalink" href="#The-auto_renametrue-Option" title="Permalink"></a></h2><p><strong><em>Important Note</em></strong>: Use this option with <strong>extreme caution!</strong> When this option is used, a <code>@warn</code> will be displayed such that the user is aware that the boundary connections <strong>may be wrong</strong> because they are assigned/connected in a sequential manner and not based on buses names.</p><p>Let&#39;s go through an example case where we would like to use the same distribution system file to create a test case where multiple distribution systems (with the same name) are connected to different transmission system boundary buses. And, <strong>we don&#39;t care</strong> about the specific boundary connections since they can be done sequentially (since all or some distribution systems will be a copy of the same circuit and will have the same names).</p><p>Let&#39;s first define the test case in Julia:</p><pre><code class="language-julia hljs">using PowerModelsITD
+using Ipopt
+
+pm_file = joinpath(dirname(trans_path), &quot;case5_with2loads.m&quot;)
+pmd_file = joinpath(dirname(dist_path), &quot;case3_unbalanced_withoutgen.dss&quot;)
+pmd_files = [pmd_file, pmd_file] # vector of multiple distro. systems copies
+pmitd_file = joinpath(dirname(bound_path), &quot;case5_case3x2.json&quot;)
+pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
+
+result = solve_opfitd(pm_file, pmd_files, pmitd_file, pmitd_type, Ipopt.Optimizer; auto_rename=true)</code></pre><p>Another way to define and solve the problem could be (both ways are equivalent):</p><pre><code class="language-julia hljs">using PowerModelsITD
+using Ipopt
+
+pm_file = joinpath(dirname(trans_path), &quot;case5_with2loads.m&quot;)
+pmd_file = joinpath(dirname(dist_path), &quot;case3_unbalanced_withoutgen.dss&quot;)
+pmd_files = [pmd_file, pmd_file] # vector of multiple distro. systems copies
+pmitd_file = joinpath(dirname(bound_path), &quot;case5_case3x2.json&quot;)
+pmitd_type = NLPowerModelITD{ACPPowerModel, ACPUPowerModel}
+
+pmitd_data = parse_files(pm_file, pmd_files, pmitd_file; auto_rename=true)
+result = solve_model(pmitd_data, pmitd_type, Ipopt.Optimizer, build_opfitd)</code></pre><p>Note, how the option <code>auto_rename=true</code> is defined such that PowerModelsITD.jl can understand that we don&#39;t care about the specific names of the circuits (because we are repeating ckts) so we are allowing the application to <strong>auto-rename</strong> the ckts as needed for its correct operation. If the <code>auto_rename</code> option is not defined, errors will be displayed.</p><p>The JSON file for this example is defined as:</p><pre><code class="language-julia hljs">[
+	{
+        &quot;transmission_boundary&quot;: &quot;5&quot;,
+        &quot;distribution_boundary&quot;: &quot;voltage_source.source&quot;
+	},
+
+	{
+        &quot;transmission_boundary&quot;: &quot;6&quot;,
+        &quot;distribution_boundary&quot;: &quot;voltage_source.source&quot;
+        }
+]</code></pre><p>See how we <strong>do not</strong> need to especifically define the circuit names, but we still need to define the <code>object.name_of_object</code>. Internally, PowerModelsITD.jl will parse the files and assign the names: <code>3bus_unbal_nogen_1</code> and <code>3bus_unbal_nogen_2</code> as the names of the circuits (based on the <code>ckt_name_n</code> standard format).</p><p><strong><em>Important Note</em></strong>: In the case where multiple distribuition systems are defined, let&#39;s say 3 or more, and only two have the same circuit name, if <code>auto_rename=false</code> (i.e., not used) errors will be displayed, if <code>auto_rename=true</code> only the repeated circuits will be renamed (in this case, all repeated circuits after the first one).</p><p><strong><em>The <code>auto rename</code> option can be very useful for some cases, but users must be very careful when using it since specific boundary connections are going to be performed in a sequential manner and PowerModelsITD.jl cannot guarantee that this is what the user is expecting. To avoid confusions, we recommend users stick to the ideal boundary linking file JSON format.</em></strong></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="quickguide.html">« Getting Started</a><a class="docs-footer-nextpage" href="formulations.html">Formulations »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Wednesday 21 August 2024 15:14">Wednesday 21 August 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
