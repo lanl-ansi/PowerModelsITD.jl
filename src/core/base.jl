@@ -374,8 +374,8 @@ function instantiate_model_decomposition(
         ckt_data[pmitd_it_name] = boundary_for_ckt
 
         # Initialize MP and SP in RemoteChannel
-        mp_string_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{Vector{String}}(1))
-        sp_string_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{Vector{String}}(1))
+        mp_string_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{String}(1))
+        sp_string_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{String}(1))
 
         # Initialize MP and SP in RemoteChannel
         status_signal_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{String}(1))
