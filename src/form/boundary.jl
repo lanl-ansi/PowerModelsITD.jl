@@ -294,3 +294,39 @@ function constraint_distribution_current_balance_boundary(pmitd::AbstractIVRPowe
     constraint_distribution_current_balance(pmitd, pmd_model, nw_pmitd, i, bus["terminals"], bus["grounded"], bus_arcs, bus_arcs_sw, bus_arcs_trans, bus_gens, bus_storage, bus_loads, bus_shunts, bus_arcs_boundary_to)
 
 end
+
+
+### Bus - KCL Constraints ###
+"""
+    function constraint_transmission_power_balance_boundary(
+        pmitd::AbstractPowerModelITD,
+        i::Int;
+        nw_pmitd::Int=nw_id_default
+    )
+
+General power balance contraints for boundary buses in the transmission system-side.
+"""
+function constraint_transmission_power_balance_boundary_stochastic(pmitd::AbstractPowerModelITD, i::Int; nw_pmitd::Int=nw_id_default)
+
+    # Extract the transmission model
+    pm_model = _get_powermodel_from_powermodelitd(pmitd)
+    bus = _PM.ref(pm_model, nw_pmitd, :bus, i)
+
+    bus_arcs = _PM.ref(pm_model, nw_pmitd, :bus_arcs, i)
+    bus_arcs_dc = _PM.ref(pm_model, nw_pmitd, :bus_arcs_dc, i)
+    bus_arcs_sw = _PM.ref(pm_model, nw_pmitd, :bus_arcs_sw, i)
+    bus_gens = _PM.ref(pm_model, nw_pmitd, :bus_gens, i)
+    bus_loads = _PM.ref(pm_model, nw_pmitd, :bus_loads, i)
+    bus_shunts = _PM.ref(pm_model, nw_pmitd, :bus_shunts, i)
+    bus_storage = _PM.ref(pm_model, nw_pmitd, :bus_storage, i)
+
+    bus_pd = Dict(k => _PM.ref(pm_model, nw_pmitd, :load, k, "pd") for k in bus_loads)
+    bus_qd = Dict(k => _PM.ref(pm_model, nw_pmitd, :load, k, "qd") for k in bus_loads)
+
+    bus_gs = Dict(k => _PM.ref(pm_model, nw_pmitd, :shunt, k, "gs") for k in bus_shunts)
+    bus_bs = Dict(k => _PM.ref(pm_model, nw_pmitd, :shunt, k, "bs") for k in bus_shunts)
+
+    bus_arcs_boundary_from = ref(pmitd, nw_pmitd, :bus_arcs_boundary_from, i)
+    constraint_transmission_power_balance_stochastic(pmitd, pm_model, nw_pmitd, i, bus_arcs, bus_arcs_dc, bus_arcs_sw, bus_gens, bus_storage, bus_pd, bus_qd, bus_gs, bus_bs, bus_arcs_boundary_from)
+
+end

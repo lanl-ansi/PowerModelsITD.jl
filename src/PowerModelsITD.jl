@@ -69,6 +69,7 @@ module PowerModelsITD
     include("form/fotr.jl")
     include("form/fotp.jl")
     include("form/lindist3flow.jl")
+    include("form/acp_stochastic.jl")
 
     include("form_decomposition/boundary.jl")
     include("form_decomposition/acr.jl")
@@ -80,6 +81,7 @@ module PowerModelsITD
     include("form_decomposition/fotr.jl")
     include("form_decomposition/fotp.jl")
     include("form_decomposition/lindist3flow.jl")
+    include("form_decomposition/acp_stochastic.jl")
 
     include("prob/pfitd.jl")
     include("prob/opfitd.jl")
@@ -89,6 +91,8 @@ module PowerModelsITD
     include("prob/opfitd_storage_linear.jl")
     include("prob/opfitd_decomposition.jl")
     include("prob/pfitd_decomposition.jl")
+    include("prob/opfitd_stochastic.jl")
+    include("prob/opfitd_decomposition_stochastic.jl")
 
     # This must come last to support automated export.
     include("core/export.jl")
