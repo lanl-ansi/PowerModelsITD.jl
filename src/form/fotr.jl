@@ -51,7 +51,6 @@ function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd
 
     ungrounded_terminals = [(idx,t) for (idx,t) in enumerate(terminals) if !grounded[idx]]
 
-    # pd/qd can be NLexpressions, so cannot be vectorized
     for (idx, t) in ungrounded_terminals
         cp = JuMP.@constraint(pmitd.model,
               sum(  p[arc][t] for (arc, conns) in bus_arcs if t in conns)
@@ -159,7 +158,7 @@ function constraint_boundary_voltage_angle(pm::_PM.ACRPowerModel, pmd::_PMD.FOTR
     shift_120degs_rad = deg2rad(120)
 
     # TODO: These are non-linear constraints due to transformation to degrees of phase a angle (another way - non-linear may be possible)
-    JuMP.@NLconstraint(pm.model, vi_to[2] == tan(atan(vi_to[1]/vr_to[1]) - shift_120degs_rad)*vr_to[2])
-    JuMP.@NLconstraint(pm.model, vi_to[3] == tan(atan(vi_to[1]/vr_to[1]) + shift_120degs_rad)*vr_to[3])
+    JuMP.@constraint(pm.model, vi_to[2] == tan(atan(vi_to[1]/vr_to[1]) - shift_120degs_rad)*vr_to[2])
+    JuMP.@constraint(pm.model, vi_to[3] == tan(atan(vi_to[1]/vr_to[1]) + shift_120degs_rad)*vr_to[3])
 
 end

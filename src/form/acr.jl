@@ -39,7 +39,6 @@ function constraint_transmission_power_balance(pmitd::AbstractPowerModelITD, pm:
     pbound_fr    = get(var(pmitd, n),    :pbound_fr, Dict()); _PM._check_var_keys(pbound_fr, bus_arcs_boundary_from, "active power", "boundary")
     qbound_fr    = get(var(pmitd, n),    :qbound_fr, Dict()); _PM._check_var_keys(qbound_fr, bus_arcs_boundary_from, "reactive power", "boundary")
 
-
     cstr_p = JuMP.@constraint(pmitd.model,
         sum(p[a] for a in bus_arcs)
         + sum(p_dc[a_dc] for a_dc in bus_arcs_dc)
@@ -51,6 +50,7 @@ function constraint_transmission_power_balance(pmitd::AbstractPowerModelITD, pm:
         - sum(pd for pd in values(bus_pd))
         - sum(gs for gs in values(bus_gs))*(vr^2 + vi^2)
     )
+
     cstr_q = JuMP.@constraint(pmitd.model,
         sum(q[a] for a in bus_arcs)
         + sum(q_dc[a_dc] for a_dc in bus_arcs_dc)
@@ -118,10 +118,8 @@ function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd
 
     ungrounded_terminals = [(idx,t) for (idx,t) in enumerate(terminals) if !grounded[idx]]
 
-
-    # pd/qd can be NLexpressions, so cannot be vectorized
     for (idx, t) in ungrounded_terminals
-        cp = @smart_constraint(pmitd.model, [p, q, pg, qg, ps, qs, psw, qsw, pt, qt, pd, qd, pbound_to, qbound_to, vr, vi],
+        cp = JuMP.@constraint(pmitd.model,
               sum(  p[arc][t] for (arc, conns) in bus_arcs if t in conns)
             + sum(psw[arc][t] for (arc, conns) in bus_arcs_sw if t in conns)
             + sum( pt[arc][t] for (arc, conns) in bus_arcs_trans if t in conns)
@@ -136,7 +134,7 @@ function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd
         )
         push!(cstr_p, cp)
 
-        cq = @smart_constraint(pmitd.model, [p, q, pg, qg, ps, qs, psw, qsw, pt, qt, pd, qd, pbound_to, qbound_to, vr, vi],
+        cq = JuMP.@constraint(pmitd.model,
               sum(  q[arc][t] for (arc, conns) in bus_arcs if t in conns)
             + sum(qsw[arc][t] for (arc, conns) in bus_arcs_sw if t in conns)
             + sum( qt[arc][t] for (arc, conns) in bus_arcs_trans if t in conns)
@@ -217,6 +215,6 @@ function constraint_boundary_voltage_angle(pm::_PM.ACRPowerModel, pmd::_PMD.ACRU
     shift_120degs_rad = deg2rad(120)
 
     # TODO: These are non-linear constraints due to transformation to degrees of phase a angle (another way - non-linear may be possible)
-    JuMP.@NLconstraint(pm.model, vi_to[2] == tan(atan(vi_to[1]/vr_to[1]) - shift_120degs_rad)*vr_to[2])
-    JuMP.@NLconstraint(pm.model, vi_to[3] == tan(atan(vi_to[1]/vr_to[1]) + shift_120degs_rad)*vr_to[3])
+    JuMP.@constraint(pm.model, vi_to[2] == tan(atan(vi_to[1]/vr_to[1]) - shift_120degs_rad)*vr_to[2])
+    JuMP.@constraint(pm.model, vi_to[3] == tan(atan(vi_to[1]/vr_to[1]) + shift_120degs_rad)*vr_to[3])
 end

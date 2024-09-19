@@ -5,12 +5,10 @@ module PowerModelsITD
     import PowerModelsDistribution as _PMD
 
     import JuMP
-
     import JSON
 
     # Borrow dependencies from other packages
     import InfrastructureModels: optimize_model!, @im_fields, nw_id_default
-    import PowerModelsDistribution: @smart_constraint, _has_nl_expression
 
     # Import necessary (additional) packages/functions
     import LinearAlgebra
