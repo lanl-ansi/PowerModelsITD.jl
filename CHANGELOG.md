@@ -2,6 +2,10 @@
 
 ## staged
 
+- none.
+
+## v0.10.0
+
 - Updated to use the new `NonlinearExpr` syntax introduced in JuMP v1.15. In most cases, there should be no user-visible changes. `Breaking change`: PowerModels v0.21.2+, PowerModelsDistribution v0.16+, and JuMP v1.23.2+ should be used to support new compatibility (enforced in `Project.toml`). This upgrade signifcantly decreases the time to build large-scale models.
 - Added a new problem formulation `opfitd_storage_linear.jl` that removes the complementary_nl constraint by making rs=0 and xs=0, allows the use of a linear storage model for T&D co-optimization using nonlinear formulations.
 - Fixed issue with functions in `objective_storage.jl` not transforming correctly the cost.
