@@ -188,7 +188,7 @@ function _objective_variable_pg_cost(pm::_PM.AbstractIVRModel; report::Bool=true
     for (n, nw_ref) in _PM.nws(pm)
         gen_lines = _PM.calc_cost_pwl_lines(nw_ref[:gen])
 
-        #to avoid function calls inside of @NLconstraint
+        #to avoid function calls inside of @constraint
         pg_cost = _PM.var(pm, n)[:pg_cost] = JuMP.@variable(pm.model,
             [i in _PM.ids(pm, n, :gen)], base_name="$(n)_pg_cost",
         )
@@ -197,7 +197,7 @@ function _objective_variable_pg_cost(pm::_PM.AbstractIVRModel; report::Bool=true
         for (i, gen) in nw_ref[:gen]
             pg = _PM.var(pm, n, :pg, i)
             for line in gen_lines[i]
-                JuMP.@NLconstraint(pm.model, pg_cost[i] >= line.slope*pg + line.intercept)
+                JuMP.@constraint(pm.model, pg_cost[i] >= line.slope*pg + line.intercept)
             end
         end
     end
@@ -217,7 +217,7 @@ function _objective_variable_dc_cost(pm::_PM.AbstractIVRModel, report::Bool=true
     for (n, nw_ref) in _PM.nws(pm)
         dcline_lines = _PM.calc_cost_pwl_lines(nw_ref[:dcline])
 
-        #to avoid function calls inside of @NLconstraint
+        #to avoid function calls inside of @constraint
         p_dc_cost = _PM.var(pm, n)[:p_dc_cost] = JuMP.@variable(pm.model,
             [i in _PM.ids(pm, n, :dcline)], base_name="$(n)_p_dc_cost",
         )
@@ -227,7 +227,7 @@ function _objective_variable_dc_cost(pm::_PM.AbstractIVRModel, report::Bool=true
             arc = (i, dcline["f_bus"], dcline["t_bus"])
             p_dc_var = _PM.var(pm, n, :p_dc)[arc]
             for line in dcline_lines[i]
-                JuMP.@NLconstraint(pm.model, p_dc_cost[i] >= line.slope*p_dc_var + line.intercept)
+                JuMP.@constraint(pm.model, p_dc_cost[i] >= line.slope*p_dc_var + line.intercept)
             end
         end
     end

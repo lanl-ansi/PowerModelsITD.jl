@@ -171,14 +171,14 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
     #     for (i,gen) in nw_ref[:gen]
     #         bus = gen["gen_bus"]
 
-    #         #to avoid function calls inside of @NLconstraint:
+    #         #to avoid function calls inside of @constraint:
     #         pg = _PM.var(pm, n, :pg, i)
     #         if length(gen["cost"]) == 1
     #             pm_gen_cost[(n,i)] = gen["cost"][1]
     #         elseif length(gen["cost"]) == 2
-    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pm.model, gen["cost"][1]*pg + gen["cost"][2])
+    #             pm_gen_cost[(n,i)] = JuMP.@expression(pm.model, gen["cost"][1]*pg + gen["cost"][2])
     #         elseif length(gen["cost"]) == 3
-    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pm.model, gen["cost"][1]*pg^2 + gen["cost"][2]*pg + gen["cost"][3])
+    #             pm_gen_cost[(n,i)] = JuMP.@expression(pm.model, gen["cost"][1]*pg^2 + gen["cost"][2]*pg + gen["cost"][3])
     #         else
     #             pm_gen_cost[(n,i)] = 0.0
     #         end
@@ -202,14 +202,14 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
     #     for (i,gen) in nw_ref[:gen]
     #         bus = gen["gen_bus"]
 
-    #         #to avoid function calls inside of @NLconstraint:
+    #         #to avoid function calls inside of @constraint:
     #         pg = _PMD.var(pmd, n, :pg, i)
     #         if length(gen["cost"]) == 1
     #             pmd_gen_cost[(n,i)] = gen["cost"][1]
     #         elseif length(gen["cost"]) == 2
-    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmd.model, gen["cost"][1]*sum(pg[c] for c in gen["connections"]) + gen["cost"][2])
+    #             pmd_gen_cost[(n,i)] = JuMP.@expression(pmd.model, gen["cost"][1]*sum(pg[c] for c in gen["connections"]) + gen["cost"][2])
     #         elseif length(gen["cost"]) == 3
-    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmd.model, gen["cost"][1]*sum(pg[c] for c in gen["connections"])^2 + gen["cost"][2]*sum(pg[c] for c in gen["connections"]) + gen["cost"][3])
+    #             pmd_gen_cost[(n,i)] = JuMP.@expression(pmd.model, gen["cost"][1]*sum(pg[c] for c in gen["connections"])^2 + gen["cost"][2]*sum(pg[c] for c in gen["connections"]) + gen["cost"][3])
     #         else
     #             pmd_gen_cost[(n,i)] = 0.0
     #         end
@@ -230,7 +230,7 @@ function _objective_itd_min_fuel_cost_polynomial_linquad_storage(pmitd::Abstract
 
 
     # # ITD (Combined objective)
-    # return JuMP.@NLobjective(pmitd.model, Min,
+    # return JuMP.@objective(pmitd.model, Min,
     #     sum(
     #         sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
     #     for (n, nw_ref) in _PM.nws(pm))
@@ -267,20 +267,20 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractIVRPo
     #     for (i,gen) in nw_ref[:gen]
     #         bus = gen["gen_bus"]
 
-    #         #to avoid function calls inside of @NLconstraint:
+    #         #to avoid function calls inside of @constraint:
     #         pg = _PM.var(pm, n, :pg, i)
     #         cost_rev = reverse(gen["cost"])
     #         if length(cost_rev) == 1
-    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1])
+    #             pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1])
     #         elseif length(cost_rev) == 2
-    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg)
+    #             pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg)
     #         elseif length(cost_rev) == 3
-    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2)
+    #             pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2)
     #         elseif length(cost_rev) >= 4
     #             cost_rev_nl = cost_rev[4:end]
-    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2 + sum( v*pg^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
+    #             pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2 + sum( v*pg^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
     #         else
-    #             pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, 0.0)
+    #             pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, 0.0)
     #         end
     #     end
     # end
@@ -305,16 +305,16 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractIVRPo
     #         cost_rev = reverse(gen["cost"])
 
     #         if length(cost_rev) == 1
-    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1])
+    #             pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1])
     #         elseif length(cost_rev) == 2
-    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]))
+    #             pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]))
     #         elseif length(cost_rev) == 3
-    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]) + cost_rev[3]*sum(pg[c] for c in gen["connections"])^2)
+    #             pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]) + cost_rev[3]*sum(pg[c] for c in gen["connections"])^2)
     #         elseif length(cost_rev) >= 4
     #             cost_rev_nl = cost_rev[4:end]
-    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]) + cost_rev[3]*sum(pg[c] for c in gen["connections"])^2 + sum( v*sum(pg[c] for c in gen["connections"])^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
+    #             pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*sum(pg[c] for c in gen["connections"]) + cost_rev[3]*sum(pg[c] for c in gen["connections"])^2 + sum( v*sum(pg[c] for c in gen["connections"])^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
     #         else
-    #             pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, 0.0)
+    #             pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, 0.0)
     #         end
     #     end
     # end
@@ -333,7 +333,7 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractIVRPo
 
 
     # # ITD (Combined objective)
-    # return JuMP.@NLobjective(pmitd.model, Min,
+    # return JuMP.@objective(pmitd.model, Min,
     #     sum(
     #         sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
     #     for (n, nw_ref) in _PM.nws(pm))
@@ -370,16 +370,16 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractPower
 
             cost_rev = reverse(gen["cost"])
             if length(cost_rev) == 1
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1])
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1])
             elseif length(cost_rev) == 2
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg)
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg)
             elseif length(cost_rev) == 3
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2)
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2)
             elseif length(cost_rev) >= 4
                 cost_rev_nl = cost_rev[4:end]
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2 + sum( v*pg^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2 + sum( v*pg^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
             else
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, 0.0)
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, 0.0)
             end
         end
     end
@@ -408,16 +408,16 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractPower
             JuMP.@constraint(pmitd.model, pg_aux == pg)
 
             if length(cost_rev) == 1
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1])
+                pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1])
             elseif length(cost_rev) == 2
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg_aux)
+                pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg_aux)
             elseif length(cost_rev) == 3
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg_aux + cost_rev[3]*pg_aux^2)
+                pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg_aux + cost_rev[3]*pg_aux^2)
             elseif length(cost_rev) >= 4
                 cost_rev_nl = cost_rev[4:end]
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg_aux + cost_rev[3]*pg_aux^2 + sum( v*pg_aux^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
+                pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg_aux + cost_rev[3]*pg_aux^2 + sum( v*pg_aux^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
             else
-                pmd_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, 0.0)
+                pmd_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, 0.0)
             end
         end
     end
@@ -435,7 +435,7 @@ function _objective_itd_min_fuel_cost_polynomial_nl_storage(pmitd::AbstractPower
     end
 
     # ITD (Combined objective)
-    return JuMP.@NLobjective(pmitd.model, Min,
+    return JuMP.@objective(pmitd.model, Min,
         sum(
             sum( pm_gen_cost[(n,i)] for (i,gen) in nw_ref[:gen] )
         for (n, nw_ref) in _PM.nws(pm))

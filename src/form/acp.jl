@@ -39,63 +39,29 @@ function constraint_transmission_power_balance(pmitd::AbstractPowerModelITD, pm:
     pbound_fr    = get(var(pmitd, n),    :pbound_fr, Dict()); _PM._check_var_keys(pbound_fr, bus_arcs_boundary_from, "active power", "boundary")
     qbound_fr    = get(var(pmitd, n),    :qbound_fr, Dict()); _PM._check_var_keys(qbound_fr, bus_arcs_boundary_from, "reactive power", "boundary")
 
-    # the check "typeof(p[arc]) <: JuMP.NonlinearExpression" is required for the
-    # case when p/q are nonlinear expressions instead of decision variables
-    # once NLExpressions are first order in JuMP it should be possible to
-    # remove this.
-    nl_form = length(bus_arcs) > 0 && (typeof(p[iterate(bus_arcs)[1]]) <: JuMP.NonlinearExpression)
+    cstr_p = JuMP.@constraint(pmitd.model,
+        sum(p[a] for a in bus_arcs)
+        + sum(p_dc[a_dc] for a_dc in bus_arcs_dc)
+        + sum(psw[a_sw] for a_sw in bus_arcs_sw)
+        + sum(pbound_fr[a_pbound_fr][1] for a_pbound_fr in bus_arcs_boundary_from)
+        ==
+        sum(pg[g] for g in bus_gens)
+        - sum(ps[s] for s in bus_storage)
+        - sum(pd for (i,pd) in bus_pd)
+        - sum(gs for (i,gs) in bus_gs)*vm^2
+    )
 
-    if !nl_form
-        cstr_p = JuMP.@constraint(pmitd.model,
-            sum(p[a] for a in bus_arcs)
-            + sum(p_dc[a_dc] for a_dc in bus_arcs_dc)
-            + sum(psw[a_sw] for a_sw in bus_arcs_sw)
-            + sum(pbound_fr[a_pbound_fr][1] for a_pbound_fr in bus_arcs_boundary_from)
-            ==
-            sum(pg[g] for g in bus_gens)
-            - sum(ps[s] for s in bus_storage)
-            - sum(pd for (i,pd) in bus_pd)
-            - sum(gs for (i,gs) in bus_gs)*vm^2
-        )
-    else
-        cstr_p = JuMP.@NLconstraint(pmitd.model,
-            sum(p[a] for a in bus_arcs)
-            + sum(p_dc[a_dc] for a_dc in bus_arcs_dc)
-            + sum(psw[a_sw] for a_sw in bus_arcs_sw)
-            + sum(pbound_fr[a_pbound_fr][1] for a_pbound_fr in bus_arcs_boundary_from)
-            ==
-            sum(pg[g] for g in bus_gens)
-            - sum(ps[s] for s in bus_storage)
-            - sum(pd for (i,pd) in bus_pd)
-            - sum(gs for (i,gs) in bus_gs)*vm^2
-        )
-    end
-
-    if !nl_form
-        cstr_q = JuMP.@constraint(pmitd.model,
-            sum(q[a] for a in bus_arcs)
-            + sum(q_dc[a_dc] for a_dc in bus_arcs_dc)
-            + sum(qsw[a_sw] for a_sw in bus_arcs_sw)
-            + sum(qbound_fr[a_qbound_fr][1] for a_qbound_fr in bus_arcs_boundary_from)
-            ==
-            sum(qg[g] for g in bus_gens)
-            - sum(qs[s] for s in bus_storage)
-            - sum(qd for (i,qd) in bus_qd)
-            + sum(bs for (i,bs) in bus_bs)*vm^2
-        )
-    else
-        cstr_q = JuMP.@NLconstraint(pmitd.model,
-            sum(q[a] for a in bus_arcs)
-            + sum(q_dc[a_dc] for a_dc in bus_arcs_dc)
-            + sum(qsw[a_sw] for a_sw in bus_arcs_sw)
-            + sum(qbound_fr[a_qbound_fr][1] for a_qbound_fr in bus_arcs_boundary_from)
-            ==
-            sum(qg[g] for g in bus_gens)
-            - sum(qs[s] for s in bus_storage)
-            - sum(qd for (i,qd) in bus_qd)
-            + sum(bs for (i,bs) in bus_bs)*vm^2
-        )
-    end
+    cstr_q = JuMP.@constraint(pmitd.model,
+        sum(q[a] for a in bus_arcs)
+        + sum(q_dc[a_dc] for a_dc in bus_arcs_dc)
+        + sum(qsw[a_sw] for a_sw in bus_arcs_sw)
+        + sum(qbound_fr[a_qbound_fr][1] for a_qbound_fr in bus_arcs_boundary_from)
+        ==
+        sum(qg[g] for g in bus_gens)
+        - sum(qs[s] for s in bus_storage)
+        - sum(qd for (i,qd) in bus_qd)
+        + sum(bs for (i,bs) in bus_bs)*vm^2
+    )
 
     if _IM.report_duals(pmitd)
         sol(pmitd, n, :bus, i)[:lam_kcl_r] = cstr_p
@@ -156,7 +122,7 @@ function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd
 
     for (idx,t) in ungrounded_terminals
         if any(Bs[idx,jdx] != 0 for (jdx, u) in ungrounded_terminals if idx != jdx) || any(Gs[idx,jdx] != 0 for (jdx, u) in ungrounded_terminals if idx != jdx)
-            cp = JuMP.@NLconstraint(pmitd.model,
+            cp = JuMP.@constraint(pmitd.model,
                   sum(  p[a][t] for (a, conns) in bus_arcs if t in conns)
                 + sum(psw[a][t] for (a, conns) in bus_arcs_sw if t in conns)
                 + sum( pt[a][t] for (a, conns) in bus_arcs_trans if t in conns)
@@ -175,7 +141,7 @@ function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd
             )
             push!(cstr_p, cp)
 
-            cq = JuMP.@NLconstraint(pmitd.model,
+            cq = JuMP.@constraint(pmitd.model,
                   sum(  q[a][t] for (a, conns) in bus_arcs if t in conns)
                 + sum(qsw[a][t] for (a, conns) in bus_arcs_sw if t in conns)
                 + sum( qt[a][t] for (a, conns) in bus_arcs_trans if t in conns)
@@ -194,7 +160,7 @@ function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd
             )
             push!(cstr_q, cq)
         else
-            cp = @smart_constraint(pmitd.model, [p, pg, ps, psw, pt, pd, pbound_to, vm],
+            cp = JuMP.@constraint(pmitd.model,
                   sum(  p[a][t] for (a, conns) in bus_arcs if t in conns)
                 + sum(psw[a][t] for (a, conns) in bus_arcs_sw if t in conns)
                 + sum( pt[a][t] for (a, conns) in bus_arcs_trans if t in conns)
@@ -208,7 +174,7 @@ function constraint_distribution_power_balance(pmitd::AbstractPowerModelITD, pmd
             )
             push!(cstr_p, cp)
 
-            cq = @smart_constraint(pmitd.model, [q, qg, qs, qsw, qt, qd, qbound_to, vm],
+            cq = JuMP.@constraint(pmitd.model,
                   sum(  q[a][t] for (a, conns) in bus_arcs if t in conns)
                 + sum(qsw[a][t] for (a, conns) in bus_arcs_sw if t in conns)
                 + sum( qt[a][t] for (a, conns) in bus_arcs_trans if t in conns)

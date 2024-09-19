@@ -2,7 +2,7 @@
 
 ## staged
 
-- none.
+- Updated to use the new `NonlinearExpr` syntax introduced in JuMP v1.15. In most cases, there should be no user-visible changes. `Breaking change`: PowerModels v0.21.2+, PowerModelsDistribution v0.16+, and JuMP v1.23.2+ should be used to support new compatibility (enforced in `Project.toml`). This upgrade signifcantly decreases the time to build large-scale models.
 
 ## v0.9.2
 

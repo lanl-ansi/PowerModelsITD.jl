@@ -211,16 +211,16 @@ function _objective_itd_min_fuel_polynomial_nl_distribution_load_setpoint_delta(
 
             cost_rev = reverse(gen["cost"])
             if length(cost_rev) == 1
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1])
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1])
             elseif length(cost_rev) == 2
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg)
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg)
             elseif length(cost_rev) == 3
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2)
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2)
             elseif length(cost_rev) >= 4
                 cost_rev_nl = cost_rev[4:end]
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2 + sum( v*pg^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, cost_rev[1] + cost_rev[2]*pg + cost_rev[3]*pg^2 + sum( v*pg^(d+3) for (d,v) in enumerate(cost_rev_nl)) )
             else
-                pm_gen_cost[(n,i)] = JuMP.@NLexpression(pmitd.model, 0.0)
+                pm_gen_cost[(n,i)] = JuMP.@expression(pmitd.model, 0.0)
             end
         end
     end
