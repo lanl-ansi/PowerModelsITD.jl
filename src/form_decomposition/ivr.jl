@@ -30,22 +30,24 @@ function constraint_transmission_current_balance(pm::_PM.AbstractIVRModel, n::In
     pbound_load    = get(_PM.var(pm, n),    :pbound_load, Dict()); _PM._check_var_keys(pbound_load, bus_arcs_boundary_from, "active power", "boundary")
     qbound_load    = get(_PM.var(pm, n),    :qbound_load, Dict()); _PM._check_var_keys(qbound_load, bus_arcs_boundary_from, "reactive power", "boundary")
 
-    JuMP.@NLconstraint(pm.model, sum(cr[a] for a in bus_arcs)
-                                + sum(crdc[d] for d in bus_arcs_dc)
-                                + (sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)*vr + sum(qbound_load[a_qbound_load][1] for a_qbound_load in bus_arcs_boundary_from)*vi)/(vr^2 + vi^2)
-                                ==
-                                sum(crg[g] for g in bus_gens)
-                                - (sum(pd for pd in values(bus_pd))*vr + sum(qd for qd in values(bus_qd))*vi)/(vr^2 + vi^2)
-                                - sum(gs for gs in values(bus_gs))*vr + sum(bs for bs in values(bus_bs))*vi
-                                )
-    JuMP.@NLconstraint(pm.model, sum(ci[a] for a in bus_arcs)
-                                + sum(cidc[d] for d in bus_arcs_dc)
-                                + (sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)*vi - sum(qbound_load[a_qbound_load][1] for a_qbound_load in bus_arcs_boundary_from)*vr)/(vr^2 + vi^2)
-                                ==
-                                sum(cig[g] for g in bus_gens)
-                                - (sum(pd for pd in values(bus_pd))*vi - sum(qd for qd in values(bus_qd))*vr)/(vr^2 + vi^2)
-                                - sum(gs for gs in values(bus_gs))*vi - sum(bs for bs in values(bus_bs))*vr
-                                )
+    JuMP.@constraint(pm.model, sum(cr[a] for a in bus_arcs)
+        + sum(crdc[d] for d in bus_arcs_dc)
+        + (sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)*vr + sum(qbound_load[a_qbound_load][1] for a_qbound_load in bus_arcs_boundary_from)*vi)/(vr^2 + vi^2)
+        ==
+        sum(crg[g] for g in bus_gens)
+        - (sum(pd for pd in values(bus_pd))*vr + sum(qd for qd in values(bus_qd))*vi)/(vr^2 + vi^2)
+        - sum(gs for gs in values(bus_gs))*vr + sum(bs for bs in values(bus_bs))*vi
+    )
+
+    JuMP.@constraint(pm.model, sum(ci[a] for a in bus_arcs)
+        + sum(cidc[d] for d in bus_arcs_dc)
+        + (sum(pbound_load[a_pbound_load][1] for a_pbound_load in bus_arcs_boundary_from)*vi - sum(qbound_load[a_qbound_load][1] for a_qbound_load in bus_arcs_boundary_from)*vr)/(vr^2 + vi^2)
+        ==
+        sum(cig[g] for g in bus_gens)
+        - (sum(pd for pd in values(bus_pd))*vi - sum(qd for qd in values(bus_qd))*vr)/(vr^2 + vi^2)
+        - sum(gs for gs in values(bus_gs))*vi - sum(bs for bs in values(bus_bs))*vr
+    )
+
 end
 
 
@@ -95,8 +97,8 @@ function constraint_boundary_voltage_angle(pmd::_PMD.IVRUPowerModel, ::Int, t_bu
     shift_120degs_rad = deg2rad(120)
 
     # TODO: These are non-linear constraints due to transformation to degrees of phase a angle (another way - non-linear may be possible)
-    JuMP.@NLconstraint(pmd.model, vi_source[2] == tan(atan(vi_source[1]/vr_source[1]) - shift_120degs_rad)*vr_source[2])
-    JuMP.@NLconstraint(pmd.model, vi_source[3] == tan(atan(vi_source[1]/vr_source[1]) + shift_120degs_rad)*vr_source[3])
+    JuMP.@constraint(pmd.model, vi_source[2] == tan(atan(vi_source[1]/vr_source[1]) - shift_120degs_rad)*vr_source[2])
+    JuMP.@constraint(pmd.model, vi_source[3] == tan(atan(vi_source[1]/vr_source[1]) + shift_120degs_rad)*vr_source[3])
 
 end
 

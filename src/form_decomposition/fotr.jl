@@ -45,8 +45,8 @@ function constraint_boundary_voltage_angle(pmd::_PMD.FOTRUPowerModel, ::Int, t_b
     shift_120degs_rad = deg2rad(120)
 
     # TODO: These are non-linear constraints due to transformation to degrees of phase a angle (another way - non-linear may be possible)
-    JuMP.@NLconstraint(pmd.model, vi_source[2] == tan(atan(vi_source[1]/vr_source[1]) - shift_120degs_rad)*vr_source[2])
-    JuMP.@NLconstraint(pmd.model, vi_source[3] == tan(atan(vi_source[1]/vr_source[1]) + shift_120degs_rad)*vr_source[3])
+    JuMP.@constraint(pmd.model, vi_source[2] == tan(atan(vi_source[1]/vr_source[1]) - shift_120degs_rad)*vr_source[2])
+    JuMP.@constraint(pmd.model, vi_source[3] == tan(atan(vi_source[1]/vr_source[1]) + shift_120degs_rad)*vr_source[3])
 
 end
 

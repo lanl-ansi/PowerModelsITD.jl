@@ -61,8 +61,8 @@ function constraint_boundary_power(pmd::_PMD.IVRUPowerModel, i::Int; nw::Int=nw_
     spg = _PMD.var(pmd, nw, :pg, slack_gen_number)
     sqg = _PMD.var(pmd, nw, :qg, slack_gen_number)
 
-    JuMP.@NLconstraint(pmd.model, p_aux[1] == sum(spg[phase] for phase in boundary["t_connections"]))
-    JuMP.@NLconstraint(pmd.model, q_aux[1] == sum(sqg[phase] for phase in boundary["t_connections"]))
+    JuMP.@constraint(pmd.model, p_aux[1] == sum(spg[phase] for phase in boundary["t_connections"]))
+    JuMP.@constraint(pmd.model, q_aux[1] == sum(sqg[phase] for phase in boundary["t_connections"]))
 
 end
 
