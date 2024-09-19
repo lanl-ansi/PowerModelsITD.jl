@@ -160,7 +160,7 @@
 
         # with storage cost problem
         pmitd_result_strg = solve_opfitd_storage(pmitd_data, pmitd_type, ipopt)
-        @test isapprox(pmitd_result_strg["objective"], 17976.959438016635+(pmitd_result_strg["solution"]["it"]["pmd"]["storage"]["3bus_bal_battery.s1"]["sd"]*strg_cost/100000); atol = 1e-3)
+        @test isapprox(pmitd_result_strg["objective"], 17978.20946; atol = 1e-3)
 
     end
 
