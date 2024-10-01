@@ -285,12 +285,12 @@ specification being considered. `multinetwork` is the boolean that defines if th
 should be define as multinetwork. `pmitd_ref_extensions` is an array of power transmission and
 distribution modeling extensions.
 The parameter `export_models` is a boolean that determines if the JuMP models are exported to the pwd as `.mof.json` files.
-ParallelOptimizer Version.
+MultiProcessOptimizer Version.
 """
 function instantiate_model_decomposition(
     pmitd_data::Dict{String,<:Any},
     pmitd_type::Type,
-    optimizer::_SDO.ParallelOptimizer,
+    optimizer::_SDO.MultiProcessOptimizer,
     build_method::Function;
     multinetwork::Bool=false,
     pmitd_ref_extensions::Vector{<:Function}=Function[],
@@ -332,35 +332,15 @@ function instantiate_model_decomposition(
     ckts_names_vector = collect(keys(pmitd_data["it"][_PMD.pmd_it_name]))
     ckts_data_vector = collect(values(pmitd_data["it"][_PMD.pmd_it_name]))
 
-    # Workers vector
-    workers_vector = Distributed.workers()
-
-    # Number of workers defined
-    number_of_workers = length(workers_vector)
-
-    # Check that workers_vector >= number_of_subprobs
-    if (number_of_workers < number_of_subproblems)
-        # Removes workers no longer needed.
-        Distributed.rmprocs(workers_vector)
-        # Display error.
-        error("Number of workers = $(number_of_workers), Number of subproblems = $(number_of_subproblems).
-            Workers (processes) must be equal or more than the number of subproblems defined; please allocate more processes."
-        )
-    end
-
-    # RemoteChannel to communicate MP and SP strings (It needs to be a )
-    mp_string_vector_rcs = Vector{Distributed.RemoteChannel}(undef, number_of_subproblems)
-    sp_string_vector_rcs = Vector{Distributed.RemoteChannel}(undef, number_of_subproblems)
-
-    # RemoteChannel to communicate subproblems that should finalize the Subproblems
-    status_signal_vector_rcs = Vector{Distributed.RemoteChannel}(undef, number_of_subproblems)
+   # Check that processes-subproblems are 1-to-1 & initialize remote channels to be used for communication
+    workers_vector, mp_string_vector_rcs, sp_string_vector_rcs, status_signal_vector_rcs = _SDO.init_remotechannels(number_of_subproblems)
 
     # Set-up the master boundary linking vars
     master_boundary_vars_vector = Vector{Vector{Vector{JuMP.VariableRef}}}(undef, number_of_subproblems)
 
     # Threaded loop for instantiating subproblems
-    # Threads.@threads for i in 1:1:number_of_subproblems # faster but causes +RAM usage
-    for i in 1:1:number_of_subproblems
+    Threads.@threads for i in 1:1:number_of_subproblems # faster but causes +RAM usage
+    # for i in 1:1:number_of_subproblems
         ckt_name = ckts_names_vector[i]
         ckt_data = ckts_data_vector[i]
 
@@ -372,13 +352,6 @@ function instantiate_model_decomposition(
         # Add ckt_name to ckt_data for instantiation
         ckt_data["ckt_name"] = ckt_name
         ckt_data[pmitd_it_name] = boundary_for_ckt
-
-        # Initialize MP and SP in RemoteChannel
-        mp_string_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{String}(1))
-        sp_string_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{String}(1))
-
-        # Initialize MP and SP in RemoteChannel
-        status_signal_vector_rcs[i] = Distributed.RemoteChannel(()->Channel{String}(1))
 
         # Spawn subprocess for subproblem
         Distributed.remote_do(optimize_subproblem_multiprocessing,
@@ -778,7 +751,7 @@ function solve_model(
         end
 
     # Solve decomposition ITD problem
-    elseif (typeof(optimizer) == _SDO.ParallelOptimizer)
+    elseif (typeof(optimizer) == _SDO.MultiProcessOptimizer)
 
         # Instantiate the Decomposition PowerModelsITD object.
         pmitd_optimizer, transmission_instantiated = instantiate_model_decomposition(

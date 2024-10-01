@@ -1,5 +1,5 @@
 """
-    function optimize_subproblem_multiprocessing((
+    function optimize_subproblem_multiprocessing(
         data::Dict{String, Any},
         type,
         build_method,
@@ -11,7 +11,7 @@
         export_models::Bool
     )
 
-Instantiates and solves subproblems in parallel (multiprocessing). Writes the results to a .txt file.
+Instantiates and solves subproblems as multiprocessing. Writes the results to a .txt file.
 """
 function optimize_subproblem_multiprocessing(
     data::Dict{String, Any},
@@ -83,13 +83,6 @@ function optimize_subproblem_multiprocessing(
     close(status_signal)
     close(mp_string_rc)
     close(sp_string_rc)
-
-    # # Clear references to help the garbage collector
-    # subproblem_instantiated = nothing
-    # subprob_linking_vars_vector = nothing
-    # result = nothing
-    # result_json = nothing
-    # data = nothing
 
     # Clean everything before leaving process
     GC.gc()
