@@ -217,9 +217,31 @@ end
 
 Rename specific components in single network dictionary. `base_data` is the dictionary where the renamed
 components are to be added, `data` is the dictionary containing the components to be renamed.
-`ckt_name` is the circuit name of `data`.
+`ckt_name` is the circuit name of `data`. Update the function to work for distribution networks 
+with matlab files.
 """
 function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any}, ckt_name::String)
+
+    function _safe_prefix!(obj::Dict{String,<:Any}, key::String, ckt_name::String; fallback_key::String=key)
+        if haskey(obj, key)
+            val = obj[key]
+        elseif haskey(obj, fallback_key)
+            val = obj[fallback_key]
+        else
+            return
+        end 
+
+        if isa(val, String) || isa(val, Number)
+            obj[key] = ckt_name * "." * string(val) 
+        elseif isa(val, Vector)
+            val_ = deepcopy(val)
+            if length(val_) >= 1
+                obj[key] = ckt_name * "." * string(val_[2])
+            end 
+        else 
+            obj[key] = val
+        end 
+    end
 
     # loop through buses
     if (haskey(data, "bus"))
@@ -297,10 +319,13 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
             if !(haskey(base_data, "load"))
                 base_data["load"] = Dict()
             end
+
             base_data["load"][new_key] = value
-            base_data["load"][new_key]["source_id"] = ckt_name * "." * base_data["load"][new_key]["source_id"]
-            base_data["load"][new_key]["bus"] = ckt_name * "." * base_data["load"][new_key]["bus"]
             base_data["load"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
+
+            _safe_prefix!(base_data["load"][new_key], "source_id", ckt_name)
+            _safe_prefix!(base_data["load"][new_key], "bus", ckt_name; fallback_key="load_bus")
+
         end
     end
 
@@ -333,17 +358,18 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
     end
 
     # loop through generators
-    if (haskey(data, "generator"))
-        for (key, value) in data["generator"]
+    if (haskey(data, "generator")) || haskey(data, "gen")
+        gen_name = get(data, "generator", "gen")
+        for (key, value) in data[gen_name]
             new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "generator"))
                 base_data["generator"] = Dict()
             end
             base_data["generator"][new_key] = value
-            base_data["generator"][new_key]["source_id"] = ckt_name * "." * base_data["generator"][new_key]["source_id"]
-            base_data["generator"][new_key]["bus"] = ckt_name * "." * base_data["generator"][new_key]["bus"]
             base_data["generator"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
+            _safe_prefix!(base_data["generator"][new_key], "source_id", ckt_name)
+            _safe_prefix!(base_data["generator"][new_key], "bus", ckt_name; fallback_key="gen_bus")
         end
     end
 
@@ -356,9 +382,12 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
                 base_data["shunt"] = Dict()
             end
             base_data["shunt"][new_key] = value
-            base_data["shunt"][new_key]["source_id"] = ckt_name * "." * base_data["shunt"][new_key]["source_id"]
-            base_data["shunt"][new_key]["bus"] = ckt_name * "." * base_data["shunt"][new_key]["bus"]
+
             base_data["shunt"][new_key]["belongs_to_ckt"] = ckt_name  # add new category "belongs_to_ckt" to every component
+
+            _safe_prefix!(base_data["shunt"][new_key], "source_id", ckt_name)
+            _safe_prefix!(base_data["shunt"][new_key], "bus", ckt_name; fallback_key="shunt_bus")
+
         end
     end
 
@@ -394,7 +423,7 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
 
     # add vbases to settings
     # loop through settings
-    if (haskey(data, "settings"))
+    if (haskey(data, "settings")) && (haskey(data["settings"], "vbases_default"))
         for (key, value) in data["settings"]["vbases_default"]
             new_key = ckt_name * "." * key
             base_data["settings"]["vbases_default"][new_key] = value
@@ -402,7 +431,6 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
     end
 
 end
-
 
 """
     function _add_file_name!(
