@@ -358,9 +358,16 @@ function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{S
     end
 
     # loop through generators
-    if (haskey(data, "generator")) || haskey(data, "gen")
-        gen_name = get(data, "generator", "gen")
-        for (key, value) in data[gen_name]
+    if haskey(data, "generator")
+        gen_key = "generator"
+    elseif haskey(data, "gen")
+        gen_key = "gen"
+    else
+        gen_key = nothing
+    end
+
+    if !isnothing(gen_key)
+        for (key, value) in data[gen_key]
             new_key = ckt_name * "." * key
             # if key does not exists in base_data, add an empty Dict
             if !(haskey(base_data, "generator"))
