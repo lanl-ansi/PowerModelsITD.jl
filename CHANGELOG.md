@@ -1,5 +1,8 @@
 # PowerModelsITD.jl Change Log
 
+## [unreleased] 2025-10-16
+- Update the functions `parse_files`, `parse_power_distribution_file` (in `common.jl`) and the functions `_rename_components!` and `_rename_network_components!` (in `helpers.jl`) to work for the distribution input files in the matpower versions.
+
 ## staged
 
 - none.
