@@ -207,6 +207,40 @@ function _remove_network_components!(base_data::Dict{String,<:Any})
 
 end
 
+""" 
+    function _safe_prefix!(
+        obj::Dict{String,<:Any}, 
+        key::String, ckt_name::String; 
+        fallback_key::String=key
+        )
+
+Set the rules of renaming some components (i.e. `source_id` and `bus`). `obj` is the dictionary layer
+where the renamed components are to be added. `key` is the component name, `fallback_key` is the 
+alternative component name that might appear in matlab files. 
+"""
+
+function _safe_prefix!(obj::Dict{String,<:Any}, key::String, ckt_name::String; fallback_key::String=key)
+    
+    if haskey(obj, key)
+        val = obj[key]
+    elseif haskey(obj, fallback_key)
+        val = obj[fallback_key]
+    else
+        return
+    end 
+
+    if isa(val, String) || isa(val, Number)
+        obj[key] = ckt_name * "." * string(val) 
+    elseif isa(val, Vector)
+        val_ = deepcopy(val)
+        if length(val_) >= 1
+            obj[key] = ckt_name * "." * string(val_[2])
+        end 
+    else 
+        obj[key] = val
+    end 
+end
+
 
 """
     function _rename_network_components!(
@@ -221,27 +255,6 @@ components are to be added, `data` is the dictionary containing the components t
 with matlab files.
 """
 function _rename_network_components!(base_data::Dict{String,<:Any}, data::Dict{String,<:Any}, ckt_name::String)
-
-    function _safe_prefix!(obj::Dict{String,<:Any}, key::String, ckt_name::String; fallback_key::String=key)
-        if haskey(obj, key)
-            val = obj[key]
-        elseif haskey(obj, fallback_key)
-            val = obj[fallback_key]
-        else
-            return
-        end 
-
-        if isa(val, String) || isa(val, Number)
-            obj[key] = ckt_name * "." * string(val) 
-        elseif isa(val, Vector)
-            val_ = deepcopy(val)
-            if length(val_) >= 1
-                obj[key] = ckt_name * "." * string(val_[2])
-            end 
-        else 
-            obj[key] = val
-        end 
-    end
 
     # loop through buses
     if (haskey(data, "bus"))

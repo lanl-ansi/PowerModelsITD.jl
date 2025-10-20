@@ -141,7 +141,13 @@ function parse_power_distribution_file(pmd_file::String, base_data::Dict{String,
     # Read distribution network data.
     if split(pmd_file, ".")[end] == "m" # If reading a MATPOWER file.
         data = _PM.parse_file(pmd_file)
+
+        if !haskey(data, "settings")
+            data["settings"] = Dict{String, Any}()
+        end 
+        
         data["name"] = String(get(data, "name", split(basename(pmd_file), ".")[1]))
+        data["settings"]["power_scale_factor"] = 1/data["baseMVA"]
         _scale_loads!(data, inv(3.0))
         _PMD.make_multiconductor!(data, real(3))
     else # Otherwise, use the PowerModelsDistribution parser.

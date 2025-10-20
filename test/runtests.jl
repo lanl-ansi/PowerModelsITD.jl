@@ -45,4 +45,5 @@ PowerModelsITD.silence!()
     include("opfitd_storage_linear.jl")
     include("solve_x.jl")
     include("pfitd_mn.jl")
+    include("test_matlab.jl")
 end
