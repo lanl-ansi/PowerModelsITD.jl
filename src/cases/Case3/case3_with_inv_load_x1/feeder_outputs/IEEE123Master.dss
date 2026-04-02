@@ -1,0 +1,222 @@
+! Annotated Master file for the IEEE 123-bus test case.
+!
+! This file is meant to be invoked from the Compile command in the "Run_IEEE123Bus.DSS"  file.
+! 
+! Note: DSS commands, property names, etc., are NOT case sensitive. Capitalize as you please.
+! You should always do a "Clear" before making a new circuit:
+! Note: slack bus placed directly at 4.16 kV bus 150rd (LODGE requires slack in the line network).
+
+Clear
+
+! INSTANTIATE A NEW CIRCUIT AND DEFINE A STIFF 4160V SOURCE
+! The new circuit is called "ieee123"
+! This creates a Vsource object connected to "sourcebus". This is now the active circuit element, so
+! you can simply continue to edit its property value. 
+! The basekV is redefined to 4.16 kV. The bus name is changed to "150rd" to match one of the buses in the test feeder.
+! The source is set for 1.0 per unit and the Short circuit impedance is set to a small value (0.0001 ohms)
+! The ~ is just shorthad for "more" for the New or Edit commands
+
+New Circuit.ieee123 bus1=150rd pu=1.0 basekV=4.16 R1=0 X1=0.0001 R0=0 X0=0.0001
+
+! 3-PHASE GANGED REGULATOR AT HEAD OF FEEDER (KERSTING ASSUMES NO IMPEDANCE IN THE REGULATOR)
+! the first line defines the 3-phase transformer to be controlled by the regulator control.
+! The 2nd line defines the properties of the regulator control according to the test case
+
+! new transformer.reg1a phases=3 windings=2 buses=[sourcebus 150rd] conns=[wye wye] kvs=[345.0 4.16] kvas=[500000 500000] XHL=.001 %LoadLoss=0.00001 ppm=0.0
+! new regcontrol.creg1a transformer=reg1a winding=2 vreg=120 band=2 ptratio=20 ctprim=700 R=3 X=7.5
+
+! REDIRECT INPUT STREAM TO FILE CONTAINING DEFINITIONS OF LINECODES
+! This file defines the line impedances is a similar manner to the description in the test case.
+
+Redirect IEEELineCodes.dss
+
+! LINE DEFINITIONS
+! Lines are defined by referring to a "linecode" that contains the impedances per unit length
+! So the only properties required are the LineCode name and Length.  Units are assumed to match the definition
+! since no units property is defined in either the Linecodes file or this file.
+! Note that it is not necessary to explicitly specify the node connections for the 3-phase lines
+! unless they are not ".1.2.3". However, they are spelled out here for clarity.
+! The DSS assumes .1.2.3.0.0 ... for connections of 3 or more phases.
+! Likewise, .1 is not necessary for 1-phase lines connected to phase 1. However, if it is connected
+! to any other phase, it must be specified. For completeness, everything is spelled out here.
+!
+! Note that normamps is added to each line for LODGE thermal analysis.
+
+! *** Original *** New Line.L115   Phases=3 Bus1=149.1.2.3  Bus2=1.1.2.3    LineCode=1    Length=0.4
+! Since the default is 3-phase, the definition of this line can be simpler:
+
+New Line.L115            Bus1=149d        Bus2=1d         Linecode=3P_OH_AL_OTHER_3    Length=0.4 normamps=3000
+
+New Line.L1     Phases=1 Bus1=1d.2        Bus2=2d.2        LineCode=10   Length=0.175 normamps=80
+New Line.L2     Phases=1 Bus1=1d.3        Bus2=3d.3        LineCode=11   Length=0.25 normamps=80
+New Line.L3     Phases=3 Bus1=1d.1.2.3    Bus2=7d.1.2.3    Linecode=3P_OH_AL_OTHER_3    Length=0.3 normamps=3000
+New Line.L4     Phases=1 Bus1=3d.3        Bus2=4d.3        LineCode=11   Length=0.2 normamps=80
+New Line.L5     Phases=1 Bus1=3d.3        Bus2=5d.3        LineCode=11   Length=0.325 normamps=80
+New Line.L6     Phases=1 Bus1=5d.3        Bus2=6d.3        LineCode=11   Length=0.25 normamps=80
+New Line.L7     Phases=3 Bus1=7d.1.2.3    Bus2=8d.1.2.3    Linecode=3P_OH_AL_OTHER_3    Length=0.2 normamps=3000
+New Line.L8     Phases=1 Bus1=8d.2        Bus2=12d.2       LineCode=10   Length=0.225 normamps=80
+New Line.L9     Phases=1 Bus1=8d.1        Bus2=9d.1        LineCode=9    Length=0.225 normamps=80
+New Line.L10    Phases=3 Bus1=8d.1.2.3    Bus2=13rd.1.2.3   Linecode=3P_OH_AL_ACSR_477_3    Length=0.3 normamps=670
+New Line.L11    Phases=1 Bus1=9d.1        Bus2=14d.1       LineCode=9    Length=0.425 normamps=80
+New Line.L12    Phases=1 Bus1=13rd.3       Bus2=34d.3       LineCode=11   Length=0.15 normamps=80
+New Line.L13    Phases=3 Bus1=13rd.1.2.3   Bus2=18d.1.2.3   Linecode=3P_OH_AL_OTHER_3    Length=0.825 normamps=3000
+New Line.L14    Phases=1 Bus1=14d.1       Bus2=11d.1       LineCode=9    Length=0.25 normamps=80
+New Line.L15    Phases=1 Bus1=14d.1       Bus2=10d.1       LineCode=9    Length=0.25 normamps=80
+New Line.L16    Phases=1 Bus1=15d.3       Bus2=16d.3       LineCode=11   Length=0.375 normamps=80
+New Line.L17    Phases=1 Bus1=15d.3       Bus2=17d.3       LineCode=11   Length=0.35 normamps=80
+New Line.L18    Phases=1 Bus1=18d.1       Bus2=19d.1       LineCode=9    Length=0.25 normamps=80
+New Line.L19    Phases=3 Bus1=18d.1.2.3   Bus2=21d.1.2.3   LineCode=2    Length=0.3 normamps=150
+New Line.L20    Phases=1 Bus1=19d.1       Bus2=20d.1       LineCode=9    Length=0.325 normamps=80
+New Line.L21    Phases=1 Bus1=21d.2       Bus2=22d.2       LineCode=10   Length=0.525 normamps=80
+New Line.L22    Phases=3 Bus1=21d.1.2.3   Bus2=23d.1.2.3   LineCode=2    Length=0.25 normamps=150
+New Line.L23    Phases=1 Bus1=23d.3       Bus2=24d.3       LineCode=11   Length=0.55 normamps=80
+New Line.L24    Phases=3 Bus1=23d.1.2.3   Bus2=25d.1.2.3   LineCode=2    Length=0.275 normamps=150
+New Line.L25    Phases=2 Bus1=25d.1.3     Bus2=26d.1.3     LineCode=7    Length=0.35 normamps=100
+New Line.L26    Phases=3 Bus1=25d.1.2.3   Bus2=28d.1.2.3   LineCode=2    Length=0.2 normamps=150
+New Line.L27    Phases=2 Bus1=26d.1.3     Bus2=27d.1.3     LineCode=7    Length=0.275 normamps=100
+New Line.L28    Phases=1 Bus1=26d.3       Bus2=31d.3       LineCode=11   Length=0.225 normamps=80
+New Line.L29    Phases=1 Bus1=27d.1       Bus2=33d.1       LineCode=9    Length=0.5 normamps=80
+New Line.L30    Phases=3 Bus1=28d.1.2.3   Bus2=29d.1.2.3   LineCode=2    Length=0.3 normamps=150
+New Line.L31    Phases=3 Bus1=29d.1.2.3   Bus2=30d.1.2.3   LineCode=2    Length=0.35 normamps=150
+New Line.L32    Phases=3 Bus1=30d.1.2.3   Bus2=250d.1.2.3  LineCode=2    Length=0.2 normamps=150
+New Line.L33    Phases=1 Bus1=31d.3       Bus2=32d.3       LineCode=11   Length=0.3 normamps=80
+New Line.L34    Phases=1 Bus1=34d.3       Bus2=15d.3       LineCode=11   Length=0.1 normamps=80
+New Line.L35    Phases=2 Bus1=35d.1.2     Bus2=36d.1.2     LineCode=8    Length=0.65 normamps=100
+New Line.L36    Phases=3 Bus1=35d.1.2.3   Bus2=40d.1.2.3   Linecode=3P_OH_AL_ACSR_795_3    Length=0.25 normamps=910
+New Line.L37    Phases=1 Bus1=36d.1       Bus2=37d.1       LineCode=9    Length=0.3 normamps=80
+New Line.L38    Phases=1 Bus1=36d.2       Bus2=38d.2       LineCode=10   Length=0.25 normamps=80
+New Line.L39    Phases=1 Bus1=38d.2       Bus2=39d.2       LineCode=10   Length=0.325 normamps=80
+New Line.L40    Phases=1 Bus1=40d.3       Bus2=41d.3       LineCode=11   Length=0.325 normamps=80
+New Line.L41    Phases=3 Bus1=40d.1.2.3   Bus2=42d.1.2.3   Linecode=3P_OH_AL_ACSR_795_3    Length=0.25 normamps=910
+New Line.L42    Phases=1 Bus1=42d.2       Bus2=43d.2       LineCode=10   Length=0.5 normamps=80
+New Line.L43    Phases=3 Bus1=42d.1.2.3   Bus2=44d.1.2.3   Linecode=3P_OH_AL_ACSR_336_4_3    Length=0.2 normamps=530
+New Line.L44    Phases=1 Bus1=44d.1       Bus2=45d.1       LineCode=9    Length=0.2 normamps=80
+New Line.L45    Phases=3 Bus1=44d.1.2.3   Bus2=47d.1.2.3   Linecode=3P_OH_AL_ACSR_336_4_3    Length=0.25 normamps=530
+New Line.L46    Phases=1 Bus1=45d.1       Bus2=46d.1       LineCode=9    Length=0.3 normamps=80
+New Line.L47    Phases=3 Bus1=47d.1.2.3   Bus2=48d.1.2.3   LineCode=4    Length=0.15 normamps=150
+New Line.L48    Phases=3 Bus1=47d.1.2.3   Bus2=49d.1.2.3   LineCode=4    Length=0.25 normamps=150
+New Line.L49    Phases=3 Bus1=49d.1.2.3   Bus2=50d.1.2.3   LineCode=4    Length=0.25 normamps=150
+New Line.L50    Phases=3 Bus1=50d.1.2.3   Bus2=51d.1.2.3   LineCode=4    Length=0.25 normamps=150
+New Line.L51    Phases=3 Bus1=51d.1.2.3   Bus2=151d.1.2.3  LineCode=4    Length=0.5 normamps=150
+New Line.L52    Phases=3 Bus1=52d.1.2.3   Bus2=53d.1.2.3   Linecode=3P_OH_AL_ACSR_3/0_3    Length=0.2 normamps=300
+New Line.L53    Phases=3 Bus1=53d.1.2.3   Bus2=54d.1.2.3   Linecode=3P_OH_AL_ACSR_3/0_3    Length=0.125 normamps=300
+New Line.L54    Phases=3 Bus1=54d.1.2.3   Bus2=55d.1.2.3   LineCode=1    Length=0.275 normamps=150
+New Line.L55    Phases=3 Bus1=54d.1.2.3   Bus2=57d.1.2.3   Linecode=3P_OH_AL_ACSR_1/0_3    Length=0.35 normamps=230
+New Line.L56    Phases=3 Bus1=55d.1.2.3   Bus2=56d.1.2.3   LineCode=1    Length=0.275 normamps=150
+New Line.L57    Phases=1 Bus1=57d.2       Bus2=58d.2       LineCode=10   Length=0.25 normamps=80
+New Line.L58    Phases=3 Bus1=57d.1.2.3   Bus2=60d.1.2.3   Linecode=3P_OH_AL_ACSR_1/0_3    Length=0.75 normamps=230
+New Line.L59    Phases=1 Bus1=58d.2       Bus2=59d.2       LineCode=10   Length=0.25 normamps=80
+New Line.L60    Phases=3 Bus1=60d.1.2.3   Bus2=61d.1.2.3   LineCode=5    Length=0.55 normamps=150
+New Line.L61    Phases=3 Bus1=60d.1.2.3   Bus2=62d.1.2.3   LineCode=12   Length=0.25 normamps=120
+New Line.L62    Phases=3 Bus1=62d.1.2.3   Bus2=63d.1.2.3   LineCode=12   Length=0.175 normamps=120
+New Line.L63    Phases=3 Bus1=63d.1.2.3   Bus2=64d.1.2.3   LineCode=12   Length=0.35 normamps=120
+New Line.L64    Phases=3 Bus1=64d.1.2.3   Bus2=65d.1.2.3   LineCode=12   Length=0.425 normamps=120
+New Line.L65    Phases=3 Bus1=65d.1.2.3   Bus2=66d.1.2.3   LineCode=12   Length=0.325 normamps=120
+New Line.L66    Phases=1 Bus1=67d.1       Bus2=68d.1       LineCode=9    Length=0.2 normamps=80
+New Line.L67    Phases=3 Bus1=67d.1.2.3   Bus2=72d.1.2.3   Linecode=3P_OH_AL_ACSR_4/0_Penguin_3    Length=0.275 normamps=340
+New Line.L68    Phases=3 Bus1=67d.1.2.3   Bus2=97d.1.2.3   Linecode=3P_OH_AL_ACSR_336_4_3    Length=0.25 normamps=530
+New Line.L69    Phases=1 Bus1=68d.1       Bus2=69d.1       LineCode=9    Length=0.275 normamps=80
+New Line.L70    Phases=1 Bus1=69d.1       Bus2=70d.1       LineCode=9    Length=0.325 normamps=80
+New Line.L71    Phases=1 Bus1=70d.1       Bus2=71d.1       LineCode=9    Length=0.275 normamps=80
+New Line.L72    Phases=1 Bus1=72d.3       Bus2=73d.3       LineCode=11   Length=0.275 normamps=80
+New Line.L73    Phases=3 Bus1=72d.1.2.3   Bus2=76d.1.2.3   LineCode=3    Length=0.2 normamps=150
+New Line.L74    Phases=1 Bus1=73d.3       Bus2=74d.3       LineCode=11   Length=0.35 normamps=80
+New Line.L75    Phases=1 Bus1=74d.3       Bus2=75d.3       LineCode=11   Length=0.4 normamps=80
+New Line.L76    Phases=3 Bus1=76d.1.2.3   Bus2=77d.1.2.3   LineCode=6    Length=0.4 normamps=150
+New Line.L77    Phases=3 Bus1=76d.1.2.3   Bus2=86d.1.2.3   LineCode=3    Length=0.7 normamps=150
+New Line.L78    Phases=3 Bus1=77d.1.2.3   Bus2=78d.1.2.3   LineCode=6    Length=0.1 normamps=150
+New Line.L79    Phases=3 Bus1=78d.1.2.3   Bus2=79d.1.2.3   LineCode=6    Length=0.225 normamps=150
+New Line.L80    Phases=3 Bus1=78d.1.2.3   Bus2=80d.1.2.3   LineCode=6    Length=0.475 normamps=150
+New Line.L81    Phases=3 Bus1=80d.1.2.3   Bus2=81d.1.2.3   LineCode=6    Length=0.175 normamps=150
+New Line.L82    Phases=3 Bus1=81d.1.2.3   Bus2=82d.1.2.3   LineCode=6    Length=0.25 normamps=150
+New Line.L83    Phases=1 Bus1=81d.3       Bus2=84d.3       LineCode=11   Length=0.675 normamps=80
+New Line.L84    Phases=3 Bus1=82d.1.2.3   Bus2=83d.1.2.3   LineCode=6    Length=0.25 normamps=150
+New Line.L85    Phases=1 Bus1=84d.3       Bus2=85d.3       LineCode=11   Length=0.475 normamps=80
+New Line.L86    Phases=3 Bus1=86d.1.2.3   Bus2=87d.1.2.3   LineCode=6    Length=0.45 normamps=150
+New Line.L87    Phases=1 Bus1=87d.1       Bus2=88d.1       LineCode=9    Length=0.175 normamps=80
+New Line.L88    Phases=3 Bus1=87d.1.2.3   Bus2=89d.1.2.3   LineCode=6    Length=0.275 normamps=150
+New Line.L89    Phases=1 Bus1=89d.2       Bus2=90d.2       LineCode=10   Length=0.25 normamps=80
+New Line.L90    Phases=3 Bus1=89d.1.2.3   Bus2=91d.1.2.3   LineCode=6    Length=0.225 normamps=150
+New Line.L91    Phases=1 Bus1=91d.3       Bus2=92d.3       LineCode=11   Length=0.3 normamps=80
+New Line.L92    Phases=3 Bus1=91d.1.2.3   Bus2=93d.1.2.3   LineCode=6    Length=0.225 normamps=150
+New Line.L93    Phases=1 Bus1=93d.1       Bus2=94d.1       LineCode=9    Length=0.275 normamps=80
+New Line.L94    Phases=3 Bus1=93d.1.2.3   Bus2=95d.1.2.3   LineCode=6    Length=0.3 normamps=150
+New Line.L95    Phases=1 Bus1=95d.2       Bus2=96d.2       LineCode=10   Length=0.2 normamps=80
+New Line.L96    Phases=3 Bus1=97d.1.2.3   Bus2=98d.1.2.3   LineCode=3    Length=0.275 normamps=150
+New Line.L97    Phases=3 Bus1=98d.1.2.3   Bus2=99d.1.2.3   LineCode=3    Length=0.55 normamps=150
+New Line.L98    Phases=3 Bus1=99d.1.2.3   Bus2=100d.1.2.3  LineCode=3    Length=0.3 normamps=150
+New Line.L99    Phases=3 Bus1=100d.1.2.3  Bus2=450d.1.2.3  LineCode=3    Length=0.8 normamps=150
+New Line.L118   Phases=3 Bus1=197d.1.2.3  Bus2=101d.1.2.3  Linecode=3P_OH_AL_ACSR_336_4_3    Length=0.25 normamps=530
+New Line.L100   Phases=1 Bus1=101d.3      Bus2=102d.3      LineCode=11   Length=0.225 normamps=80
+New Line.L101   Phases=3 Bus1=101d.1.2.3  Bus2=105d.1.2.3  Linecode=3P_OH_AL_ACSR_477_3    Length=0.275 normamps=670
+New Line.L102   Phases=1 Bus1=102d.3      Bus2=103d.3      LineCode=11   Length=0.325 normamps=80
+New Line.L103   Phases=1 Bus1=103d.3      Bus2=104d.3      LineCode=11   Length=0.7 normamps=80
+New Line.L104   Phases=1 Bus1=105d.2      Bus2=106d.2      LineCode=10   Length=0.225 normamps=80
+New Line.L105   Phases=3 Bus1=105d.1.2.3  Bus2=108d.1.2.3  LineCode=3    Length=0.325 normamps=150
+New Line.L106   Phases=1 Bus1=106d.2      Bus2=107d.2      LineCode=10   Length=0.575 normamps=80
+New Line.L107   Phases=1 Bus1=108d.1      Bus2=109d.1      LineCode=9    Length=0.45 normamps=80
+New Line.L108   Phases=3 Bus1=108d.1.2.3  Bus2=300d.1.2.3  LineCode=3    Length=1 normamps=150
+New Line.L109   Phases=1 Bus1=109d.1      Bus2=110d.1      LineCode=9    Length=0.3 normamps=80
+New Line.L110   Phases=1 Bus1=110d.1      Bus2=111d.1      LineCode=9    Length=0.575 normamps=80
+New Line.L111   Phases=1 Bus1=110d.1      Bus2=112d.1      LineCode=9    Length=0.125 normamps=80
+New Line.L112   Phases=1 Bus1=112d.1      Bus2=113d.1      LineCode=9    Length=0.525 normamps=80
+New Line.L113   Phases=1 Bus1=113d.1      Bus2=114d.1      LineCode=9    Length=0.325 normamps=80
+New Line.L114   Phases=3 Bus1=135d.1.2.3  Bus2=35d.1.2.3   Linecode=3P_OH_AL_OTHER_3    Length=0.375 normamps=3000
+New Line.L116   Phases=3 Bus1=152d.1.2.3  Bus2=52d.1.2.3   Linecode=3P_OH_AL_ACSR_4/0_Penguin_3    Length=0.4 normamps=340
+New Line.L117   Phases=3 Bus1=160rd.1.2.3  Bus2=67d.1.2.3   Linecode=3P_OH_AL_ACSR_#2_3    Length=0.35 normamps=180
+
+! NORMALLY CLOSED SWITCHES ARE DEFINED AS SHORT LINES
+! Could also be defned by setting the Switch=Yes property
+
+New Line.Sw1    phases=3  Bus1=150rd   Bus2=149d    r1=1e-3 r0=1e-3 x1=1e-3 x0=1e-3 c1=0.000 c0=0.000 Length=0.00 switch=y
+New Line.Sw2    phases=3  Bus1=13d     Bus2=152d    r1=1e-3 r0=1e-3 x1=1e-3 x0=1e-3 c1=0.000 c0=0.000 Length=0.00 switch=y
+New Line.Sw3    phases=3  Bus1=18d     Bus2=135d    r1=1e-3 r0=1e-3 x1=1e-3 x0=1e-3 c1=0.000 c0=0.000 Length=0.00 switch=y
+New Line.Sw4    phases=3  Bus1=60d     Bus2=160d    r1=1e-3 r0=1e-3 x1=1e-3 x0=1e-3 c1=0.000 c0=0.000 Length=0.00 switch=y
+New Line.Sw5    phases=3  Bus1=97d     Bus2=197d    r1=1e-3 r0=1e-3 x1=1e-3 x0=1e-3 c1=0.000 c0=0.000 Length=0.00 switch=y
+! New Line.Sw6    phases=3  Bus1=61     Bus2=61s    r1=1e-3 r0=1e-3 x1=0.000 x0=0.000 c1=0.000 c0=0.000 Length=0.00 switch=y
+
+! NORMALLY OPEN SWITCHES; DEFINED AS SHORT LINE TO OPEN BUS SO WE CAN SEE OPEN POINT VOLTAGES. 
+! COULD ALSO BE DEFINED AS DISABLED OR THE TERMINCAL COULD BE OPENED AFTER BEING DEFINED
+
+New Line.Sw7    phases=3  Bus1=151d    Bus2=300d   r1=1e-3 r0=1e-3  x1=0.000 x0=0.000 c1=0.000 c0=0.000 Length=0.00 switch=y
+New Line.Sw8    phases=1  Bus1=54d.1   Bus2=94d.1  r1=1e-3 r0=1e-3  x1=0.000 x0=0.000 c1=0.000 c0=0.000 Length=0.00 switch=y
+
+! LOAD TRANSFORMER AT 61s/610
+! This is a 150 kVA Delta-Delta stepdown from 4160V to 480V.
+
+! New Transformer.XFM1  Phases=3   Windings=2 Xhl=2.72 Enabled=No
+! ~ wdg=1 bus=61s       conn=Delta kv=4.16    kva=150    %r=0.635
+! ~ wdg=2 bus=610       conn=Delta kv=0.48    kva=150    %r=0.635
+
+! CAPACITORS
+! Capacitors are 2-terminal devices. The 2nd terminal (Bus2=...) defaults to all phases
+! connected to ground (Node 0). Thus, it need not be specified if a Y-connected or L‑N connected
+! capacitor is desired
+
+! New Capacitor.C83       Bus1=83      Phases=3     kVAR=600     kV=4.16
+! New Capacitor.C88a      Bus1=88.1    Phases=1     kVAR=50      kV=2.402
+! New Capacitor.C90b      Bus1=90.2    Phases=1     kVAR=50      kV=2.402
+! New Capacitor.C92c      Bus1=92.3    Phases=1     kVAR=50      kV=2.402
+
+
+!REGULATORS - REDIRECT TO DEFINITIONS FILE
+! This file contains definitions for the remainder of regulators on the feeder:
+! Regulators disabled for LODGE — Enabled=No set inside the file
+
+Redirect IEEE123Regulators.DSS
+
+! SPOT LOADS -- REDIRECT INPUT STREAM TO LOAD DEFINITIONS FILE
+
+Redirect IEEE123Loads.DSS
+
+! All devices in the test feeder are now defined.
+!
+! Many of the voltages are reported in per unit, so it is important to establish the base voltages at each bus so
+! that we can compare with the result with greater ease.
+! We will let the DSS compute the voltage bases by doing a zero-load power flow.
+! There are only two voltage bases in the problem: 4160V and 480V. These must be expressed in kV
+
+Set VoltageBases = [4.16, 0.48]    ! ARRAY OF VOLTAGES IN KV
+CalcVoltageBases  ! PERFORMS ZERO LOAD POWER FLOW TO ESTIMATE VOLTAGE BASES
+
+Buscoords Buscoords.dss

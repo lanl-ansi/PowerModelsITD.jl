@@ -411,7 +411,7 @@ function _rebase_pu_bus!(bus::Dict{String,<:Any}, vbase::Real, sbase::Real, sbas
     end
 
     # save new vbase
-    bus["vbase"] = vbase
+    bus["vbase"] = vbase # comment out this line?
 end
 
 
@@ -688,17 +688,17 @@ function solution_make_si(
             for (comp_type, comp_dict) in [(x,y) for (x,y) in nw if isa(y, Dict) && x != "settings"]
                 dimensionalize_math_comp = get(dimensionalize_math, comp_type, Dict())
                 ext_comp = get(dimensionalize_math_extensions, comp_type, Dict())
-
                 vbase_props   = mult_vbase      ? [get(dimensionalize_math_comp, "vbase", []); get(ext_comp, "vbase", [])]   : []
                 sbase_props   = mult_sbase      ? [get(dimensionalize_math_comp, "sbase", []); get(ext_comp, "sbase", [])]   : []
                 ibase_props   = mult_ibase      ? [get(dimensionalize_math_comp, "ibase", []); get(ext_comp, "ibase", [])]   : []
                 rad2deg_props = convert_rad2deg ? [get(dimensionalize_math_comp, "rad2deg", []); get(ext_comp, "rad2deg", [])] : []
 
 
+                # need to add "w" multiplied by v_base^2
+                # need to make sure original base_kv are in vbases_default
                 for (id, comp) in comp_dict
                     vbase = -1
                     if !isempty(vbase_props) || !isempty(ibase_props)
-                        #println(nw_data[n][comp_type][id])
                         if haskey(nw_data[n][comp_type][id], "vbase")
                             vbase = nw_data[n][comp_type][id]["vbase"]
                         elseif comp_type == "branch"

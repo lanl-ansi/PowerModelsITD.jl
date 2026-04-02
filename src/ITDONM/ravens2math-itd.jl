@@ -76,7 +76,7 @@ function peel_off_feeder!(nw_t, nw_d, feeder_name)
 	pop!(nw_d, feeder_name)
 end
 
-function transform_data_model_ravens_itd(nw)
+function transform_data_model_ravens_itd(nw,intermediate_file)
 
     nw_t = deepcopy(nw)
     nw_d = deepcopy(nw)
@@ -140,13 +140,13 @@ function transform_data_model_ravens_itd(nw)
 
 
     pre_rt = transform_data_model_ravens_transmission(nw_t)
-    open("118_peeled_PM_temp_DC.json","w") do f
+    open(intermediate_file,"w") do f
     JSON.print(f, pre_rt, 2)
     end
 
 
 
-    rt = JSON.parsefile("118_peeled_PM_temp_DC.json") 
+    rt = JSON.parsefile(intermediate_file) 
 
     full_dict = Dict("multiinfrastructure" => true, "per_unit" => true, "it" => Dict())
 

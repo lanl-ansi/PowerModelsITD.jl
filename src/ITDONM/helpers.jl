@@ -55,10 +55,13 @@ end
 function set_voltage_bounds_math!(full_dict; vmin=0.9, vmax=1.1) 
 	for nw in nw_keys
     		for bus in bus_keys
-	   		 if bus != string(source_ind)
+	   		 if bus != string(source_ind) 
 				 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmin"]= vmin * ones(3)
-				 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmax"]= vmax * ones(3)
-       			 end
+				 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmax"]= vmax * ones(3) 
+			else
+				 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmin"]= 0.0 * ones(3)
+				 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmax"]= [Inf, Inf, Inf] 
+			end
    		 end
 	end
 end
@@ -69,7 +72,7 @@ function bound_switch_closures!(full_dict; close_ub::Int64 = 1)
 	end
 end
 
-function create_dummy_generator!(full_dict)
+function create_dummy_generator!(full_dict,gen_dummy_ind)
 # Gotcha #3 -- a dummy generator so the ref has a distribution slack to filter
 	gens = full_dict["it"]["pmd"]["nw"]["1"]["gen"]
 	gen_keys = collect(keys(gens))
@@ -82,7 +85,7 @@ function create_dummy_generator!(full_dict)
 			gen_source_ind = gen
 		end
 	end
-	gen_dummy_ind = string(N_gen+1)
+	#gen_dummy_ind = string(N_gen+1)
 	for nw in nw_keys
 		full_dict["it"]["pmd"]["nw"][nw]["gen"][gen_dummy_ind] = deepcopy(full_dict["it"]["pmd"]["nw"][nw]["gen"][gen_source_ind])
 		full_dict["it"]["pmd"]["nw"][nw]["gen"][gen_dummy_ind]["pmin"] = [0.0, 0.0, 0.0]
@@ -93,6 +96,7 @@ function create_dummy_generator!(full_dict)
 end
 
 function create_source_outage!(full_dict; create_outage=true)
+	nw_keys = collect(keys(full_dict["it"]["pmd"]["nw"]))
 	gens = full_dict["it"]["pmd"]["nw"]["1"]["gen"]
 	gen_keys = collect(keys(gens))
 	N_gen = length(gen_keys)
@@ -107,9 +111,11 @@ function create_source_outage!(full_dict; create_outage=true)
 	gen_dummy_ind = string(N_gen+1)
 
 	if create_outage == true
-		full_dict["it"]["pmd"]["nw"][nw]["gen"][gen_source_ind]["gen_status"] = Int(_ONM.DISABLED)
-		create_dummy_generator!(full_dict)
-		full_dict["it"]["pmd"]["nw"][nw]["gen"][gen_dummy_ind]["gen_status"] = Int(_ONM.ENABLED)
+		for nw_k in nw_keys
+			full_dict["it"]["pmd"]["nw"][nw_k]["gen"][gen_source_ind]["gen_status"] = Int(_ONM.DISABLED)
+			create_dummy_generator!(full_dict,gen_dummy_ind)
+			full_dict["it"]["pmd"]["nw"][nw_k]["gen"][gen_dummy_ind]["gen_status"] = Int(_ONM.ENABLED)
+		end
 	end
 end
 

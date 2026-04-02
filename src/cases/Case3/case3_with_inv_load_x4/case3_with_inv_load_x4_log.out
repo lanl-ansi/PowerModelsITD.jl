@@ -1,0 +1,485 @@
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 32, "name" => "83d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.83d", "vmin" => [0.0, 0.0, 2.0], "index" => 32)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 29, "name" => "106d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.106d", "vmin" => [2.0], "index" => 29)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 1, "name" => "1d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.1d", "vmin" => [2.0, 0.0, 0.0], "index" => 1)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 54, "name" => "18d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.18d", "vmin" => [0.0, 0.0, 0.0], "index" => 54)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 78, "name" => "5d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.5d", "vmin" => [2.0], "index" => 78)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 81, "name" => "92d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.92d", "vmin" => [2.0], "index" => 81)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 101, "name" => "2d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.2d", "vmin" => [2.0], "index" => 101)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 2, "name" => "45d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.45d", "vmin" => [2.0], "index" => 2)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 105, "name" => "150rd", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.150rd", "vmin" => [0.0, 0.0, 0.0], "index" => 105)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 109, "name" => "40d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.40d", "vmin" => [0.0, 0.0, 0.0], "index" => 109)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 74, "name" => "109d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.109d", "vmin" => [2.0], "index" => 74)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 41, "name" => "14d", "bus_type" => 1, "terminals" => [1], "vmax" => [Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.14d", "vmin" => [0.0], "index" => 41)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 132, "name" => "_virtual_bus.EnergySource.source", "bus_type" => 3, "terminals" => [1, 2, 3], "vmax" => [1.0, 1.0, 1.0], "vbase" => 79.67433714816836, "source_id" => "EnergySource.source", "vmin" => [1.0, 1.0, 1.0], "index" => 132, "va" => [0.0, -2.0943951023931953, 2.0943951023931957], "vm" => [1.0, 1.0, 1.0])
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 65, "name" => "11d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.11d", "vmin" => [2.0], "index" => 65)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 51, "name" => "69d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.69d", "vmin" => [2.0], "index" => 51)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 53, "name" => "96d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.96d", "vmin" => [2.0], "index" => 53)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 106, "name" => "9d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.9d", "vmin" => [2.0], "index" => 106)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 119, "name" => "34d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.34d", "vmin" => [2.0], "index" => 119)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 27, "name" => "30d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.30d", "vmin" => [0.0, 0.0, 2.0], "index" => 27)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 75, "name" => "149d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.149d", "vmin" => [0.0, 0.0, 0.0], "index" => 75)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 42, "name" => "60d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.60d", "vmin" => [2.0, 0.0, 0.0], "index" => 42)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 33, "name" => "56d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, 2.9999999999999996, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.56d", "vmin" => [0.0, 2.0, 0.0], "index" => 33)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 28, "name" => "87d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, 2.9999999999999996, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.87d", "vmin" => [0.0, 2.0, 0.0], "index" => 28)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 50, "name" => "99d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, 2.9999999999999996, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.99d", "vmin" => [0.0, 2.0, 0.0], "index" => 50)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 52, "name" => "41d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.41d", "vmin" => [2.0], "index" => 52)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 111, "name" => "28d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.28d", "vmin" => [2.0, 0.0, 0.0], "index" => 111)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 63, "name" => "63d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.63d", "vmin" => [2.0, 0.0, 0.0], "index" => 63)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 121, "name" => "sourcebus", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 79.67433714816836, "source_id" => "ConnectivityNode.sourcebus", "vmin" => [0.0, 0.0, 0.0], "index" => 121)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 115, "name" => "107d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.107d", "vmin" => [2.0], "index" => 115)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 92, "name" => "197d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.197d", "vmin" => [0.0, 0.0, 0.0], "index" => 92)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 88, "name" => "13d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.13d", "vmin" => [0.0, 0.0, 0.0], "index" => 88)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 93, "name" => "47d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, 2.9999999999999996, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.47d", "vmin" => [2.0, 2.0, 2.0], "index" => 93)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 26, "name" => "77d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, 2.9999999999999996, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.77d", "vmin" => [0.0, 2.0, 0.0], "index" => 26)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 10, "name" => "108d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.108d", "vmin" => [0.0, 0.0, 0.0], "index" => 10)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 120, "name" => "81d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.81d", "vmin" => [0.0, 0.0, 0.0], "index" => 120)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 77, "name" => "89d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.89d", "vmin" => [0.0, 0.0, 0.0], "index" => 77)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 24, "name" => "54d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.54d", "vmin" => [0.0, 0.0, 0.0], "index" => 24)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 87, "name" => "38d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.38d", "vmin" => [2.0], "index" => 87)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 117, "name" => "97d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.97d", "vmin" => [0.0, 0.0, 0.0], "index" => 117)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 58, "name" => "65d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, 2.9999999999999996, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.65d", "vmin" => [2.0, 2.0, 2.0], "index" => 58)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 25, "name" => "31d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.31d", "vmin" => [2.0], "index" => 25)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 114, "name" => "113d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.113d", "vmin" => [2.0], "index" => 114)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 23, "name" => "39d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.39d", "vmin" => [2.0], "index" => 23)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 49, "name" => "50d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.50d", "vmin" => [0.0, 0.0, 2.0], "index" => 49)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 59, "name" => "88d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.88d", "vmin" => [2.0], "index" => 59)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 5, "name" => "26d", "bus_type" => 1, "terminals" => [1, 3], "vmax" => [Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.26d", "vmin" => [0.0, 0.0], "index" => 5)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 31, "name" => "112d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.112d", "vmin" => [2.0], "index" => 31)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 89, "name" => "100d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.100d", "vmin" => [0.0, 0.0, 2.0], "index" => 89)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 62, "name" => "111d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.111d", "vmin" => [2.0], "index" => 62)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 43, "name" => "110d", "bus_type" => 1, "terminals" => [1], "vmax" => [Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.110d", "vmin" => [0.0], "index" => 43)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 122, "name" => "98d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.98d", "vmin" => [2.0, 0.0, 0.0], "index" => 122)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 90, "name" => "73d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.73d", "vmin" => [2.0], "index" => 90)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 39, "name" => "90d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.90d", "vmin" => [2.0], "index" => 39)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 112, "name" => "84d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.84d", "vmin" => [2.0], "index" => 112)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 34, "name" => "53d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.53d", "vmin" => [2.0, 0.0, 0.0], "index" => 34)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 44, "name" => "95d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, 2.9999999999999996, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.95d", "vmin" => [0.0, 2.0, 0.0], "index" => 44)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "source_id" => "transformer.reg1a", "grounded" => Bool[0, 0, 0], "vmin" => [0.0, 0.0, 0.0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 129, "index" => 129, "name" => "_virtual_bus.transformer.reg1a_2", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "base_kv" => 1.0, "vbase" => 0.23094010767585033)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 94, "name" => "17d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.17d", "vmin" => [2.0], "index" => 94)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 55, "name" => "103d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.103d", "vmin" => [2.0], "index" => 55)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 86, "name" => "52d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.52d", "vmin" => [2.0, 0.0, 0.0], "index" => 86)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 126, "name" => "450d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.450d", "vmin" => [0.0, 0.0, 0.0], "index" => 126)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 17, "name" => "42d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.42d", "vmin" => [2.0, 0.0, 0.0], "index" => 17)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 99, "name" => "44d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.44d", "vmin" => [0.0, 0.0, 0.0], "index" => 99)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 71, "name" => "13rd", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.13rd", "vmin" => [0.0, 0.0, 0.0], "index" => 71)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 37, "name" => "6d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.6d", "vmin" => [2.0], "index" => 37)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 47, "name" => "20d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.20d", "vmin" => [2.0], "index" => 47)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 9, "name" => "91d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.91d", "vmin" => [0.0, 0.0, 0.0], "index" => 9)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 73, "name" => "61d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.61d", "vmin" => [0.0, 0.0, 0.0], "index" => 73)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 82, "name" => "79d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.79d", "vmin" => [2.0, 0.0, 0.0], "index" => 82)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 12, "name" => "48d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, 2.9999999999999996, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.48d", "vmin" => [2.0, 2.0, 2.0], "index" => 12)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 79, "name" => "37d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.37d", "vmin" => [2.0], "index" => 79)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 20, "name" => "64d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, 2.9999999999999996, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.64d", "vmin" => [0.0, 2.0, 0.0], "index" => 20)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 6, "name" => "135d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.135d", "vmin" => [0.0, 0.0, 0.0], "index" => 6)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 84, "name" => "25d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.25d", "vmin" => [0.0, 0.0, 0.0], "index" => 84)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 80, "name" => "58d", "bus_type" => 1, "terminals" => [2], "vmax" => [0.34615384615384615], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.58d", "vmin" => [0.23076923076923075], "index" => 80)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 104, "name" => "66d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.66d", "vmin" => [0.0, 0.0, 2.0], "index" => 104)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 124, "name" => "70d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.70d", "vmin" => [2.0], "index" => 124)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 125, "name" => "10d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.10d", "vmin" => [2.0], "index" => 125)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 98, "name" => "72d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.72d", "vmin" => [0.0, 0.0, 0.0], "index" => 98)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 113, "name" => "86d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, 2.9999999999999996, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.86d", "vmin" => [0.0, 2.0, 0.0], "index" => 113)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 110, "name" => "71d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.71d", "vmin" => [2.0], "index" => 110)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 70, "name" => "104d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.104d", "vmin" => [2.0], "index" => 70)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 14, "name" => "36d", "bus_type" => 1, "terminals" => [1, 2], "vmax" => [Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.36d", "vmin" => [0.0, 0.0], "index" => 14)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 127, "name" => "101d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.101d", "vmin" => [0.0, 0.0, 0.0], "index" => 127)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 7, "name" => "76d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, 2.9999999999999996, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.76d", "vmin" => [2.0, 2.0, 2.0], "index" => 7)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 96, "name" => "24d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.24d", "vmin" => [2.0], "index" => 96)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 57, "name" => "12d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.12d", "vmin" => [2.0], "index" => 57)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 123, "name" => "250d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.250d", "vmin" => [0.0, 0.0, 0.0], "index" => 123)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 8, "name" => "300d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.300d", "vmin" => [0.0, 0.0, 0.0], "index" => 8)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 64, "name" => "102d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.102d", "vmin" => [2.0], "index" => 64)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 19, "name" => "160rd", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.160rd", "vmin" => [0.0, 0.0, 0.0], "index" => 19)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 91, "name" => "151d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.151d", "vmin" => [0.0, 0.0, 0.0], "index" => 91)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 107, "name" => "75d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.75d", "vmin" => [2.0], "index" => 107)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 102, "name" => "7d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.7d", "vmin" => [2.0, 0.0, 0.0], "index" => 102)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 69, "name" => "22d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.22d", "vmin" => [2.0], "index" => 69)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 60, "name" => "85d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.85d", "vmin" => [2.0], "index" => 60)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 97, "name" => "32d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.32d", "vmin" => [2.0], "index" => 97)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 4, "name" => "94d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.94d", "vmin" => [2.0], "index" => 4)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "source_id" => "transformer.reg1a", "grounded" => Bool[0, 0, 0], "vmin" => [0.0, 0.0, 0.0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 130, "index" => 130, "name" => "_virtual_bus.transformer.reg1a_3", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "base_kv" => 1.0, "vbase" => 0.23094010767585033)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 22, "name" => "67d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.67d", "vmin" => [0.0, 0.0, 0.0], "index" => 22)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 11, "name" => "114d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.114d", "vmin" => [2.0], "index" => 11)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 35, "name" => "35d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.35d", "vmin" => [2.0, 0.0, 0.0], "index" => 35)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 13, "name" => "80d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, 2.9999999999999996, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.80d", "vmin" => [0.0, 2.0, 0.0], "index" => 13)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "source_id" => "transformer.reg1a", "grounded" => Bool[0, 0, 0], "vmin" => [0.0, 0.0, 0.0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 131, "index" => 131, "name" => "_virtual_bus.transformer.reg1a_1", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "base_kv" => 1.0, "vbase" => 0.23094010767585033)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 15, "name" => "55d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.55d", "vmin" => [2.0, 0.0, 0.0], "index" => 15)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 61, "name" => "59d", "bus_type" => 1, "terminals" => [2], "vmax" => [0.34615384615384615], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.59d", "vmin" => [0.23076923076923075], "index" => 61)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 67, "name" => "57d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.57d", "vmin" => [0.0, 0.0, 0.0], "index" => 67)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 108, "name" => "15d", "bus_type" => 1, "terminals" => [3], "vmax" => [Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.15d", "vmin" => [0.0], "index" => 108)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 118, "name" => "19d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.19d", "vmin" => [2.0], "index" => 118)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 16, "name" => "160d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.160d", "vmin" => [0.0, 0.0, 0.0], "index" => 16)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 100, "name" => "27d", "bus_type" => 1, "terminals" => [1, 3], "vmax" => [Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.27d", "vmin" => [0.0, 0.0], "index" => 100)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 40, "name" => "8d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.8d", "vmin" => [0.0, 0.0, 0.0], "index" => 40)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 21, "name" => "68d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.68d", "vmin" => [2.0], "index" => 21)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 38, "name" => "29d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.29d", "vmin" => [2.0, 0.0, 0.0], "index" => 38)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 46, "name" => "93d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.93d", "vmin" => [0.0, 0.0, 0.0], "index" => 46)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 72, "name" => "43d", "bus_type" => 1, "terminals" => [2], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.43d", "vmin" => [2.0], "index" => 72)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 83, "name" => "78d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.78d", "vmin" => [0.0, 0.0, 0.0], "index" => 83)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 45, "name" => "3d", "bus_type" => 1, "terminals" => [3], "vmax" => [Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.3d", "vmin" => [0.0], "index" => 45)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 68, "name" => "33d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.33d", "vmin" => [2.0], "index" => 68)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 56, "name" => "74d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.74d", "vmin" => [2.0], "index" => 56)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 116, "name" => "49d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, 2.9999999999999996, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.49d", "vmin" => [2.0, 2.0, 2.0], "index" => 116)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "source_id" => "transformer.reg1a", "grounded" => Bool[0, 0, 0], "vmin" => [0.0, 0.0, 0.0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 128, "index" => 128, "name" => "_virtual_bus.transformer.reg1a_4", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "base_kv" => 1.0, "vbase" => 0.23094010767585033)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 36, "name" => "16d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.16d", "vmin" => [2.0], "index" => 36)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 66, "name" => "62d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, 2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.62d", "vmin" => [0.0, 0.0, 2.0], "index" => 66)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 76, "name" => "105d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.105d", "vmin" => [0.0, 0.0, 0.0], "index" => 76)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 95, "name" => "4d", "bus_type" => 1, "terminals" => [3], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.4d", "vmin" => [2.0], "index" => 95)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 85, "name" => "21d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.21d", "vmin" => [0.0, 0.0, 0.0], "index" => 85)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 48, "name" => "23d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.23d", "vmin" => [0.0, 0.0, 0.0], "index" => 48)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 18, "name" => "46d", "bus_type" => 1, "terminals" => [1], "vmax" => [2.9999999999999996], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.46d", "vmin" => [2.0], "index" => 18)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 103, "name" => "82d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.82d", "vmin" => [2.0, 0.0, 0.0], "index" => 103)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 30, "name" => "51d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [2.9999999999999996, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.51d", "vmin" => [2.0, 0.0, 0.0], "index" => 30)
+Dict{String, Any}("vm_pair_lb" => Tuple{Any, Any, Real}[], "grounded" => Bool[0, 0, 0], "vm_pair_ub" => Tuple{Any, Any, Real}[], "bus_i" => 3, "name" => "152d", "bus_type" => 1, "terminals" => [1, 2, 3], "vmax" => [Inf, Inf, Inf], "vbase" => 0.9607108479315374, "source_id" => "ConnectivityNode.152d", "vmin" => [0.0, 0.0, 0.0], "index" => 3)
+[info | PowerModels]: deactivating load 29 due to zero pd and qd
+[info | PowerModels]: deactivating load 74 due to zero pd and qd
+[info | PowerModels]: deactivating load 63 due to zero pd and qd
+[info | PowerModels]: deactivating load 59 due to zero pd and qd
+[info | PowerModels]: deactivating load 43 due to zero pd and qd
+[info | PowerModels]: deactivating load 34 due to zero pd and qd
+[info | PowerModels]: deactivating load 64 due to zero pd and qd
+[info | PowerModels]: deactivating load 100 due to zero pd and qd
+[info | PowerModels]: deactivating load 16 due to zero pd and qd
+[info | PowerModels]: deactivating load 46 due to zero pd and qd
+[info | PowerModels]: deactivating load 30 due to zero pd and qd
+[info | PowerModels]: deactivating load 29 due to zero pd and qd
+[info | PowerModels]: deactivating load 74 due to zero pd and qd
+[info | PowerModels]: deactivating load 63 due to zero pd and qd
+[info | PowerModels]: deactivating load 59 due to zero pd and qd
+[info | PowerModels]: deactivating load 43 due to zero pd and qd
+[info | PowerModels]: deactivating load 34 due to zero pd and qd
+[info | PowerModels]: deactivating load 64 due to zero pd and qd
+[info | PowerModels]: deactivating load 100 due to zero pd and qd
+[info | PowerModels]: deactivating load 16 due to zero pd and qd
+[info | PowerModels]: deactivating load 46 due to zero pd and qd
+[info | PowerModels]: deactivating load 30 due to zero pd and qd
+[info | PowerModels]: network simplification fixpoint reached in 2 rounds
+Running HiGHS 1.13.1 (git hash: 1d267d97c): Copyright (c) 2026 under Apache 2.0 license terms
+Using BLAS: blastrampoline 
+Hessian has dimension 19935 but no nonzeros, so is ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.00579e-10, 5.00579e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.94915e-10, 9.94915e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.94915e-10, 9.94915e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [2.98872e-10, 2.98872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.05672e-10, 9.05672e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [3.31685e-10, 3.31685e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [6.91227e-10, 6.91227e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.71314e-10, 8.71314e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [1.76405e-10, 1.76405e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.34561e-10, 5.34561e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.49465e-11, 5.49465e-11] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.89973e-10, 7.89973e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.20095e-10, 7.20095e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.43413e-10, 9.43413e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.92252e-10, 9.92252e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.42722e-10, 9.42722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.43316e-10, 6.43316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [4.60861e-10, 4.60861e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [3.94987e-10, 3.94987e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.13472e-10, 6.13472e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.34722e-10, 7.34722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.13472e-10, 6.13472e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.34722e-10, 7.34722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.95932e-10, 7.95932e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.95932e-10, 7.95932e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [1.91278e-10, 1.91278e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.7963e-10, 5.7963e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [2.12278e-10, 2.12278e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.89973e-10, 7.89973e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [1.76405e-10, 1.76405e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.34561e-10, 5.34561e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.49465e-11, 5.49465e-11] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.34716e-10, 8.34716e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.90316e-10, 7.90316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.90316e-10, 7.90316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.90316e-10, 7.90316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.55613e-10, 7.55613e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.55613e-10, 7.55613e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.55613e-10, 7.55613e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.20898e-12, 1.20898e-12] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [3.98964e-13, 3.98964e-13] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [3.98964e-13, 3.98964e-13] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [3.2037e-16, 1.10321e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.70819e-16, 3.98171e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.71261e-15, 3.34306e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.43413e-10, 9.43413e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.92252e-10, 9.92252e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.43316e-10, 6.43316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [4.60861e-10, 4.60861e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.42722e-10, 9.42722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.51123e-12, 1.51123e-12] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-13, 4.98704e-13] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-13, 4.98704e-13] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.00579e-16, 1.72377e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.51691e-15, 6.22142e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [2.67595e-15, 5.22353e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.9248e-10, 5.9248e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.16421e-10, 9.16421e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.13472e-10, 6.13472e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.34722e-10, 7.34722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.30621e-10, 5.30621e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.30621e-10, 5.30621e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.50124e-11, 7.03758e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [2.57613e-10, 2.57613e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.43458e-11, 9.43458e-11] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.71314e-10, 8.71314e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.71314e-10, 8.71314e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.07559e-10, 7.07559e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.84096e-10, 7.84096e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.44189e-10, 7.44189e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [2.72654e-10, 2.72654e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [3.26543e-10, 3.26543e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.58717e-10, 5.58717e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.6822e-10, 8.6822e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.25486e-10, 8.25486e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.14778e-10, 9.14778e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.60476e-10, 7.60476e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [3.71113e-10, 3.71113e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [4.44462e-10, 4.44462e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.93733e-10, 4.93733e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [6.91227e-10, 6.91227e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.71314e-10, 8.71314e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.64085e-10, 6.64085e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.64085e-10, 6.64085e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.64085e-10, 6.64085e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.00579e-10, 5.00579e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.89973e-10, 7.89973e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.96126e-10, 4.96126e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.71706e-10, 4.71706e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.2273e-10, 5.2273e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [2.48319e-10, 6.29912e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.2118e-10, 7.47921e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.4513e-10, 7.85839e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.89973e-10, 7.89973e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.43413e-10, 9.43413e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.92252e-10, 9.92252e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.42722e-10, 9.42722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.43316e-10, 6.43316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [4.60861e-10, 4.60861e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.00579e-10, 5.00579e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.94915e-10, 9.94915e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.94915e-10, 9.94915e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [2.98872e-10, 2.98872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.05672e-10, 9.05672e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [3.31685e-10, 3.31685e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [6.91227e-10, 6.91227e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.71314e-10, 8.71314e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [1.76405e-10, 1.76405e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.34561e-10, 5.34561e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.49465e-11, 5.49465e-11] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.89973e-10, 7.89973e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.20095e-10, 7.20095e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.43413e-10, 9.43413e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.92252e-10, 9.92252e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.42722e-10, 9.42722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.43316e-10, 6.43316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [4.60861e-10, 4.60861e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [3.94987e-10, 3.94987e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.13472e-10, 6.13472e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.34722e-10, 7.34722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.13472e-10, 6.13472e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.34722e-10, 7.34722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.95932e-10, 7.95932e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.95932e-10, 7.95932e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [1.91278e-10, 1.91278e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.7963e-10, 5.7963e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [2.12278e-10, 2.12278e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.89973e-10, 7.89973e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [1.76405e-10, 1.76405e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.34561e-10, 5.34561e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.49465e-11, 5.49465e-11] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.34716e-10, 8.34716e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.90316e-10, 7.90316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.90316e-10, 7.90316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.90316e-10, 7.90316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.55613e-10, 7.55613e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.55613e-10, 7.55613e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.55613e-10, 7.55613e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.20898e-12, 1.20898e-12] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [3.98964e-13, 3.98964e-13] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [3.98964e-13, 3.98964e-13] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [3.2037e-16, 1.10321e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.70819e-16, 3.98171e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.71261e-15, 3.34306e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.43413e-10, 9.43413e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.92252e-10, 9.92252e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.43316e-10, 6.43316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [4.60861e-10, 4.60861e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.42722e-10, 9.42722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.51123e-12, 1.51123e-12] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-13, 4.98704e-13] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-13, 4.98704e-13] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.00579e-16, 1.72377e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.51691e-15, 6.22142e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [2.67595e-15, 5.22353e-15] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.9248e-10, 5.9248e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.16421e-10, 9.16421e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.13472e-10, 6.13472e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.34722e-10, 7.34722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.30621e-10, 5.30621e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.30621e-10, 5.30621e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.50124e-11, 7.03758e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [2.57613e-10, 2.57613e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.43458e-11, 9.43458e-11] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.71314e-10, 8.71314e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.71314e-10, 8.71314e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.07559e-10, 7.07559e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.84096e-10, 7.84096e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.44189e-10, 7.44189e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [2.72654e-10, 2.72654e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [3.26543e-10, 3.26543e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.58717e-10, 5.58717e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.8872e-10, 8.8872e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.6822e-10, 8.6822e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [8.25486e-10, 8.25486e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.14778e-10, 9.14778e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.60476e-10, 7.60476e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [3.71113e-10, 3.71113e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [4.44462e-10, 4.44462e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.93733e-10, 4.93733e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [6.91227e-10, 6.91227e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.87467e-10, 9.87467e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [8.71314e-10, 8.71314e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.64085e-10, 6.64085e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.64085e-10, 6.64085e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.64085e-10, 6.64085e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.98704e-10, 4.98704e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [5.00579e-10, 5.00579e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.89973e-10, 7.89973e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.96126e-10, 4.96126e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [4.71706e-10, 4.71706e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [5.2273e-10, 5.2273e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [2.48319e-10, 6.29912e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.2118e-10, 7.47921e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [1.4513e-10, 7.85839e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [7.89973e-10, 7.89973e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.43413e-10, 9.43413e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 2 |values| in [9.92252e-10, 9.92252e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.42722e-10, 9.42722e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [6.43316e-10, 6.43316e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [4.60861e-10, 4.60861e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [7.57373e-10, 7.57373e-10] less than or equal to 1e-09: ignored
+WARNING: LP matrix packed vector contains 1 |values| in [9.07065e-10, 9.07065e-10] less than or equal to 1e-09: ignored
+MIP has 22620 rows; 19935 cols; 68651 nonzeros; 83 integer variables (83 binary)
+Coefficient ranges:
+  Matrix  [1e-09, 1e+12]
+  Cost    [1e+00, 1e+02]
+  Bound   [2e-05, 7e+01]
+  RHS     [1e-222, 1e+12]
+WARNING: Problem has some excessively small column bounds
+WARNING: Problem has some excessively small row bounds
+WARNING: Problem has some excessively large row bounds
+WARNING:    Consider scaling the    bounds by 1e-6, or setting the user_bound_scale option to -20
+Attempting to find feasible solution by solving LP for user-supplied values of discrete variables
+Solving LP without presolve or useful basis
+Using dual simplex solver
+  Iteration        Objective     Infeasibilities num(sum)
+          0     1.1820247321e+01 Pr: 12348(28931.2); Du: 0(6.44675e-09) 0.0s
+      15722     2.6915484167e+03 Pr: 0(0); Du: 0(1.32714e-11) 0.8s
+
+Model status        : Optimal
+Simplex   iterations: 15722
+Objective value     :  2.6915484167e+03
+P-D objective error :  1.0979957724e-15
+HiGHS run time      :          0.78
+
+Presolve is switched off
+
+MIP start solution is feasible, objective value is 2691.54841674
+
+Solving MIP model with:
+   22620 rows
+   19935 cols (75 binary, 0 integer, 0 implied int., 18891 continuous, 969 domain fixed)
+   68177 nonzeros
+
+Src: B => Branching; C => Central rounding; F => Feasibility pump; H => Heuristic;
+     I => Shifting; J => Feasibility jump; L => Sub-MIP; P => Empty MIP; R => Randomized rounding;
+     S => Solve LP; T => Evaluate node; U => Unbounded; X => User solution; Y => HiGHS solution;
+     Z => ZI Round; l => Trivial lower; p => Trivial point; u => Trivial upper; z => Trivial zero
+
+        Nodes      |    B&B Tree     |            Objective Bounds              |  Dynamic Constraints |       Work      
+Src  Proc. InQueue |  Leaves   Expl. | BestBound       BestSol              Gap |   Cuts   InLp Confl. | LpIters     Time
+
+         0       0         0   0.00%   5.91            2691.548417       99.78%        0      0      0         0     0.2s
+         0       0         0   0.00%   2687.385297     2691.548417        0.15%        0      0      0      6167     0.6s
+ H       0       0         0   0.00%   2690.461493     2690.461493        0.00%     2838    430      0      9889     3.3s
+ T       0       0         0   0.00%   2690.461493     2690.461493        0.00%     2838    430      0     16897     3.7s
+         1       0         1 100.00%   2690.461493     2690.461493        0.00%     2838    430      0     16897     3.7s
+
+Solving report
+  Status            Optimal
+  Primal bound      2690.46149309
+  Dual bound        2690.46149309
+  Gap               0% (tolerance: 0.01%)
+  P-D integral      0.29788215678
+  Solution status   feasible
+                    2690.46149309 (objective)
+                    0 (bound viol.)
+                    4.52022549977e-09 (int. viol.)
+                    0 (row viol.)
+  Timing            3.69
+  Max sub-MIP depth 0
+  Nodes             1
+  Repair LPs        0
+  LP iterations     16897
+                    0 (strong br.)
+                    3722 (separation)
+                    3864 (heuristics)
