@@ -1,8 +1,8 @@
 function transform_solution_ravens_itd(res, full_nw_math)
-    sol_t_r = transform_solution_ravens_transmission(r["solution"]["it"]["pm"], full_nw_math["it"]["pm"])["AnalysisResult"]
+    sol_t_r = transform_solution_ravens_transmission(res["solution"]["it"]["pm"], full_nw_math["it"]["pm"])["AnalysisResult"]
 
     res_d = res["solution"]["it"]["pmd"]
-    sol_d_rv = transform_solution_ravens(res_d, full_nw_math["it"]["pmd"])["AnalysisResult"]
+    sol_d_rv = _PMD.transform_solution_ravens(res_d, full_nw_math["it"]["pmd"])["AnalysisResult"]
 
     bd_keys = collect(keys(res["solution"]["it"]["pmitd"]["nw"]["1"]["boundary"]))
 

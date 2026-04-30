@@ -18,7 +18,7 @@ function locate_voltage_source(buses)
 	return source_ind
 end
 
-function revise_names_source_ids!(full_dict, dc_feeder_name)
+function revise_names_source_ids!(source_ind, nw_keys, full_dict, dc_feeder_name)
 	for b in collect(keys((full_dict["it"]["pm"]["bus"])))
 		full_dict["it"]["pm"]["bus"][b]["source_id"] = ["bus", parse(Int,b)]
 		full_dict["it"]["pm"]["bus"][b]["source_id"] = ["bus", parse(Int,b)]
@@ -55,24 +55,24 @@ end
 function set_voltage_bounds_math!(full_dict; vmin=0.9, vmax=1.1) 
 	for nw in nw_keys
     		for bus in bus_keys
-	   		 if bus != string(source_ind) 
+	   		 #if bus != string(source_ind) 
 				 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmin"]= vmin * ones(3)
 				 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmax"]= vmax * ones(3) 
-			else
-				 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmin"]= 0.0 * ones(3)
-				 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmax"]= [Inf, Inf, Inf] 
-			end
+			#else
+			#	 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmin"]= 0.0 * ones(3)
+			#	 full_dict["it"]["pmd"]["nw"][nw]["bus"][bus]["vmax"]= [Inf, Inf, Inf] 
+			#end
    		 end
 	end
 end
 
-function bound_switch_closures!(full_dict; close_ub::Int64 = 1)
+function bound_switch_closures!(nw_keys, full_dict; close_ub::Int64 = 1)
 	for nw in nw_keys
 		full_dict["it"]["pmd"]["nw"][nw]["switch_close_actions_ub"] = close_ub
 	end
 end
 
-function create_dummy_generator!(full_dict,gen_dummy_ind)
+function create_dummy_generator!(nw_keys, full_dict,gen_dummy_ind)
 # Gotcha #3 -- a dummy generator so the ref has a distribution slack to filter
 	gens = full_dict["it"]["pmd"]["nw"]["1"]["gen"]
 	gen_keys = collect(keys(gens))
@@ -95,7 +95,7 @@ function create_dummy_generator!(full_dict,gen_dummy_ind)
 	end
 end
 
-function create_source_outage!(full_dict; create_outage=true)
+function create_source_outage!(nw_keys, full_dict; create_outage=true)
 	nw_keys = collect(keys(full_dict["it"]["pmd"]["nw"]))
 	gens = full_dict["it"]["pmd"]["nw"]["1"]["gen"]
 	gen_keys = collect(keys(gens))
@@ -113,13 +113,13 @@ function create_source_outage!(full_dict; create_outage=true)
 	if create_outage == true
 		for nw_k in nw_keys
 			full_dict["it"]["pmd"]["nw"][nw_k]["gen"][gen_source_ind]["gen_status"] = Int(_ONM.DISABLED)
-			create_dummy_generator!(full_dict,gen_dummy_ind)
+			create_dummy_generator!(nw_keys, full_dict,gen_dummy_ind)
 			full_dict["it"]["pmd"]["nw"][nw_k]["gen"][gen_dummy_ind]["gen_status"] = Int(_ONM.ENABLED)
 		end
 	end
 end
 
-function create_transmission_settings!(itd_data, r)
+function create_transmission_settings!(nw_keys, itd_data, r)
     nw_keys = collect(keys(itd_data["it"]["pm"]["nw"]))
     for nw in nw_keys
         itd_data["it"]["pm"]["nw"][nw]["settings"] = deepcopy(itd_data["it"]["pmd"]["nw"][nw]["settings"])

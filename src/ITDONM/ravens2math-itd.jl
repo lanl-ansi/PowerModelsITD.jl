@@ -1,4 +1,4 @@
-function peel_off_feeder!(nw_t, nw_d, feeder_name)
+function peel_off_feeder!(nw, nw_t, nw_d, feeder_name)
 
     buses = nw[feeder_name]["ConnectivityNodeContainer.ConnectivityNodes"]
     buses_d = [split.(nw[feeder_name]["ConnectivityNodeContainer.ConnectivityNodes"], ''')[k][2] for k in 1:length(buses)]
@@ -102,12 +102,14 @@ function transform_data_model_ravens_itd(nw,intermediate_file)
 
 
     for feeder_name in feeder_keys
-        peel_off_feeder!(nw_t, nw_d, feeder_name)
+        peel_off_feeder!(nw, nw_t, nw_d, feeder_name)
     end
     
-    rd = _PMD.transform_data_model_ravens(nw_d,multinetwork=true)
+    rd = _PMD.transform_data_model_ravens(nw_d, multinetwork=true)
 
-    t_bus_keys_rv = collect(keys(nw_t["ConnectivityNode"]))
+    bb = sort(collect(keys(nw_t["ConnectivityNode"])))
+    t_bus_keys_rv = [bb[i] for i in 1:length(bb) if isassigned(bb, i)]
+    #t_bus_keys_rv = sort(collect(string.(1:118)))
     itd = Dict{String,Any}()
     dc_feeder_key = findfirst(x->nw_d["Group"]["ConnectivityNodeContainer"][x]["Ravens.cimObjectType"]=="Line", collect(keys(nw_d["Group"]["ConnectivityNodeContainer"])))
     dc_feeder_name = collect(keys(nw_d["Group"]["ConnectivityNodeContainer"]))[dc_feeder_key]    

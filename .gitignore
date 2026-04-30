@@ -1,2 +1,6 @@
 /Manifest.toml
 /docs/Manifest.toml
+.venv/
+.julia_depot/
+__pycache__/
+.DS_Store

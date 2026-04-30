@@ -87,7 +87,7 @@ function constraint_boundary_voltage_magnitude_ONM_McCormick(pm::_PM.AbstractBFM
     d3l = max(_PMD.ref(pmd, nw, :bus)[t_bus]["vmin"][3]^2, 0^2)
     tu = min(_PM.ref(pm, nw, :bus)[f_bus]["vmax"]^2, 1E6)
     tl = max(_PM.ref(pm, nw, :bus)[f_bus]["vmin"]^2, -1E6)
-    println("bounds = ", [d1u, d2u, d3u, d1l, d2l, d3l, tu, tl])
+    #println("bounds = ", [d1u, d2u, d3u, d1l, d2l, d3l, tu, tl])
 
     u1 = tu - d1l; u2 = tu - d2l; u3 = tu - d3l;
     l1 = tl -d1u; l2 = tl -d2u; l3 = tl -d3u;
@@ -295,15 +295,15 @@ function build_mn_opfitd_restore(pmitd::AbstractBFPowerModelITD)
 
         #!con_opts["disable-grid-forming-inverter-constraint"] && _ONM.constraint_grid_forming_inverter_per_cc_block(pmd_model; nw=n, relax=var_opts["relax-integer-variables"])
 
-       if con_opts["disable-grid-forming-inverter-constraint"]
+       #if con_opts["disable-grid-forming-inverter-constraint"]
             for i in _ONM.ids(pmd_model, n, :ref_buses)
                 _PMD.constraint_mc_theta_ref(pmd_model, i; nw=n)
             end
-        else
-            for i in _ONM.ids(pmd_model, n, :bus)
-                _ONM.constraint_mc_inverter_theta_ref(pmd_model, i; nw=n)
-            end
-        end
+        #else
+        #   for i in _ONM.ids(pmd_model, n, :bus)
+        #        _ONM.constraint_mc_inverter_theta_ref(pmd_model, i; nw=n)
+        #    end
+        #end
         
 
         _ONM.constraint_mc_bus_voltage_block_on_off(pmd_model; nw=n)

@@ -1,0 +1,4 @@
+julia
+fastapi
+pydantic
+uvicorn

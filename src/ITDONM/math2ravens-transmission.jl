@@ -112,7 +112,6 @@ function transform_solution_ravens_transmission(
         dimensionalize_math_extensions=dimensionalize_math_extensions
     )
 
-
     mn_flag = _PMD.ismultinetwork(data_math)
     nws = mn_flag ? sort(collect(keys(solution_math["nw"])), by = x -> parse(Int, x)) : []
     nw_data = mn_flag ? data_math["nw"]["1"] : data_math
@@ -244,7 +243,7 @@ function transform_solution_ravens_transmission(
             #if !occursin("virtual", nw_data[ed][ed_id]["name"])
                 cond_eq_type = split(nw_data[ed][ed_id]["source_id"], '.')[1]
                 cond_eq_name = split(nw_data[ed][ed_id]["source_id"], '.')[2]
-                println(cond_eq_name)
+                #println(cond_eq_name)
                 #cond_eq_type = ed
                 #cond_eq_name = ed_id
 				# ---- EXCLUSIVE state for Switches ----
@@ -377,8 +376,8 @@ function transform_solution_ravens_transmission(
                             )
                         )
                     end
-                    println(cond_eq_name)
-                    println(data)
+                    #println(cond_eq_name)
+                    #println(data)
                     _push_result!(solution_ravens, "OperationsResult.PowerFlows", _build_powerflow_entry(phase, cond_eq_type, cond_eq_name, data))
                 end
         end

@@ -66,14 +66,14 @@ function objective_min_shed_load_block_mod(pmitd::AbstractPowerModelITD)
     JuMP.@objective(pmitd.model, Min,
         sum(
             sum(block_weights[n][i] * Int(!obj_opts[n]["disable-load-block-shed-cost"]) * (1-_ONM.var(pm, n, :z_block, i)) for (i,block) in nw_ref[:blocks])
-            + sum(load_weights[n][i] * Int(!obj_opts[n]["disable-load-block-shed-cost"]) * (1-_ONM.var(pm, n, :z_demand, i)) for (i,load) in nw_ref[:dispatchable_loads])
-            + sum( Int(obj_opts[n]["enable-switch-state-open-cost"]) * _ONM.ref(pm, n, :switch_scores, l)*(1-_ONM.var(pm, n, :switch_state, l)) for l in _ONM.ids(pm, n, :switch_dispatchable) )
-            #+ sum( Int(!obj_opts[n]["disable-switch-state-change-cost"]) * sum(_ONM.var(pm, n, :delta_sw_state, l)) for l in _ONM.ids(pm, n, :switch_dispatchable)) / n_dispatchable_switches[n]
+            +sum(load_weights[n][i] * Int(!obj_opts[n]["disable-load-block-shed-cost"]) * (1-_ONM.var(pm, n, :z_demand, i)) for (i,load) in nw_ref[:dispatchable_loads])
+            + sum(_ONM.ref(pm, n, :switch_scores, l)*(1-_ONM.var(pm, n, :switch_state, l)) for l in _ONM.ids(pm, n, :switch_dispatchable) )
+            #+ sum( Int(!obj_opts[n]["enable-switch-state-open-cost"]) * _ONM.ref(pm, n, :switch_scores, l)*(1-_ONM.var(pm, n, :switch_state, l)) for l in _ONM.ids(pm, n, :switch_dispatchable) )
+            + sum( Int(!obj_opts[n]["disable-switch-state-change-cost"]) * sum(_ONM.var(pm, n, :delta_sw_state, l)) for l in _ONM.ids(pm, n, :switch_dispatchable)) / n_dispatchable_switches[n]
             +sum( Int(!obj_opts[n]["disable-storage-discharge-cost"]) * (strg["energy_rating"] - _ONM.var(pm, n, :se, i)) for (i,strg) in nw_ref[:storage]) / total_energy_ub
             + sum( Int(!obj_opts[n]["disable-generation-dispatch-cost"]) * sum(get(gen,  "cost", [0.0, 0.0])[2] * _ONM.var(pm, n, :pg, i)[c] + get(gen,  "cost", [0.0, 0.0])[1] for c in  gen["connections"]) for (i,gen) in nw_ref[:gen]) / total_energy_ub
         for (n, nw_ref) in _ONM.nws(pm))
-        +
-        0.01*sum(
+        +0.0001*sum(
             sum( _PM.var(pm_t, n,   :pg_cost, i) for (i,gen) in nw_ref[:gen]) +
             sum( _PM.var(pm_t, n, :p_dc_cost, i) for (i,dcline) in nw_ref[:dcline])
         for (n, nw_ref) in _PM.nws(pm_t))
