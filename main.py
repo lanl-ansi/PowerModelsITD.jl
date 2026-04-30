@@ -71,6 +71,15 @@ class Settings(BaseModel):
 @app.get("/RunITDRestore")
 async def RunITDRestore(InputVals: dict[str, Any]):               
 
+    folder = Path("./data")
+    if not folder.exists():
+        folder.mkdir()
+
+    file_path = Path("./data/ravensinput.json")
+    if not file_path.exists():
+        with file_path.open("w") as f:
+            json.dump({}, f)  
+
     with open('./data/ravensinput.json', "w") as outfile: 
         json.dump(InputVals, outfile)
 

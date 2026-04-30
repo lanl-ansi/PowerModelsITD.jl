@@ -48,6 +48,16 @@ Please see our [online documentation](https://lanl-ansi.github.io/PowerModelsITD
 
 Examples of how to use `PowerModelsITD` can be found in the main documentation in the [Beginners Guide](https://lanl-ansi.github.io/PowerModelsITD.jl/stable/tutorials/BeginnersGuide.html).
 
+## To launch docker container
+
+Navigate to directory with docker file.  Ensure that docker desktop is open.
+
+docker build --no-cache -t onmapi:latest .
+
+docker run --rm -it -p 8800:8800 --name onmapi onmapi:latest
+
+
+
 ## Development
 
 Community-driven development and enhancement of `PowerModelsITD` is welcomed and encouraged.

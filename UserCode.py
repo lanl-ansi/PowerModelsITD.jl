@@ -1,7 +1,7 @@
 import requests
 import json
 
-ravens_file = './testcase.json'
+ravens_file = './data/case118_case123_x4.json'
 with open(ravens_file, 'r') as file:    
     inputdata = json.load(file)
 
