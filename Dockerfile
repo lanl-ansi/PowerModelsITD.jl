@@ -22,7 +22,7 @@ ENV PATH="/usr/local/julia/bin:/venv/bin:${PATH}" \
     PYTHON="/venv/bin/python" \
     PYCALL_JL_RUNTIME_PYTHON="/venv/bin/python"
 
-RUN julia --project=/app -e 'using Pkg; Pkg.instantiate(); ENV["PYTHON"]="/venv/bin/python"; Pkg.build("PyCall")'
+RUN julia --project=/app -e 'using Pkg; Pkg.add(url="https://github.com/lanl-ansi/PowerModelsDistribution.jl.git", rev="COSTADMG"); Pkg.instantiate(); ENV["PYTHON"]="/venv/bin/python"; Pkg.build("PyCall")'
 RUN python -c "import julia; julia.install();"
 
 CMD ["uvicorn","main:app","--reload","--port","8800","--host","0.0.0.0"]
